@@ -1,0 +1,15 @@
+.navbar{
+    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 5%), inset 0 -1px 0 rgb(0 0 0 / 15%);
+}
+.spinner-border{
+    margin-left: 47%;
+}
+#spinner{
+    display: none;
+}
+#navbarSupportedContent{
+    padding-right: 10px;
+}
+main{
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
