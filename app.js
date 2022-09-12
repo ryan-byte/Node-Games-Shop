@@ -14,7 +14,7 @@ app.get("/api/games/:id",rateLimiter_Middleware(),api_routes.api_getOnegame);
 
 
 //website routes
-app.get("/search",(req,res)=>{
+app.get("/",(req,res)=>{
     server_routes.getHomepage(req,res);
 })
 
