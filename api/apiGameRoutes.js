@@ -1,12 +1,12 @@
 const database = require("../server/database/database");
 
 
-function api_getAllProducts(req,res){
+function api_getAllgames(req,res){
     let data = database.getAllData();
     res.status(200);
     res.json(data);
 }
-function api_getOneProduct(req,res){
+function api_getOnegame(req,res){
     let id = req.params.id;
     let data = database.getOneData(id);
     if (data == -1){
@@ -16,4 +16,4 @@ function api_getOneProduct(req,res){
     }
 }
 
-module.exports = {api_getAllProducts,api_getOneProduct}
+module.exports = {api_getAllgames,api_getOnegame}

@@ -3,11 +3,11 @@ const itemContainer = document.getElementById("itemContainer");
 
 searchButton.addEventListener("click",(ev)=>{
     spinnerStatus(false);
-    getAllProducts();
+    getAllgames();
 })
 
-async function getAllProducts(){
-    const request = await fetch("/api/products");
+async function getAllgames(){
+    const request = await fetch("/api/games");
     const jsonData = await request.json();
     spinnerStatus(true);
     itemContainer.innerHTML = "";

@@ -1,12 +1,12 @@
 [
     {
-        "title": "test",
-        "price": "890",
+        "title": "Lord of the rings",
+        "price": "89",
         "id": 0
     },
     {
-        "title": "Sale",
-        "price": "631",
+        "title": "salty",
+        "price": "30",
         "id": 2
     }
 ]
