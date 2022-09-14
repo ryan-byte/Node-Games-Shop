@@ -12,6 +12,7 @@ app.use(express.static('./server/assets'));
 app.get("/api/games",rateLimiter_Middleware(),api_routes.api_getAllgames);
 app.get("/api/games/:title",rateLimiter_Middleware(),api_routes.api_getGameByTitle);
 app.post("/api/games",rateLimiter_Middleware(),api_routes.api_addGame);
+app.delete("/api/games/:id",rateLimiter_Middleware(),api_routes.api_removeGame);
 
 
 //website routes

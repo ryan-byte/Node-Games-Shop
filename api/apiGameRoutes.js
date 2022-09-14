@@ -33,4 +33,14 @@ async function api_addGame(req,res){
     }
 }
 
-module.exports = {api_getAllgames,api_getGameByTitle,api_addGame}
+async function api_removeGame(req,res){
+    let id = req.params.id;
+    let gameRemoved = await database.removeGame(id);
+    if (gameRemoved){
+        res.sendStatus(200);
+    }else{
+        res.sendStatus(404);
+    }
+}
+
+module.exports = {api_getAllgames,api_getGameByTitle,api_addGame,api_removeGame}

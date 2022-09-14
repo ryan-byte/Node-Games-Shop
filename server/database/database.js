@@ -1,4 +1,4 @@
-const {MongoClient} = require("mongodb");
+const {MongoClient,ObjectId} = require("mongodb");
 const {password} = require("./databasePwd.json")
 const URI = `mongodb+srv://thesoulsreaper:${password}@cluster0.muz1azg.mongodb.net/?retryWrites=true&w=majority`
 
@@ -43,5 +43,17 @@ const addNewGame = async (title,price,stock,type)=>{
     return validateInputs;
 }
 
+const removeGame = async (id)=>{
+    try{
+        const query = {"_id": new ObjectId(id)};
+        let testdata = await gamesCollection.deleteOne(query);
+        if (testdata.deletedCount === 0){
+            return false;
+        }
+        return true;
+    }catch(err){
+        return false;
+    }
+}
 
-module.exports = {getAllgames,getGamesByTitle,addNewGame};
+module.exports = {getAllgames,getGamesByTitle,addNewGame,removeGame};
