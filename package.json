@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "express": "^4.18.1",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.9.1"
   },
   "name": "ecommerce-site",
   "version": "1.0.0",

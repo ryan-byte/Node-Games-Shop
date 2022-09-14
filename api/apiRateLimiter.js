@@ -11,7 +11,6 @@ class Bucket{
     }
     useToken(){
         this.#checkRefill();
-        console.log(this.available_tokens);
         if (this.available_tokens>0){
             --this.available_tokens;
             return true;

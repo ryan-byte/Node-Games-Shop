@@ -1,52 +1,20 @@
-const fs = require("fs");
+const {MongoClient} = require("mongodb");
+const {password} = require("./databasePwd.json")
+const URI = `mongodb+srv://thesoulsreaper:${password}@cluster0.muz1azg.mongodb.net/?retryWrites=true&w=majority`
 
-const path = __dirname + "/database.json";
+const client = new MongoClient(URI);
+const gameShopDB = client.db("GameShop");
+const gamesCollection = gameShopDB.collection("Games");
 
 
-const getAllData = ()=>{
-    let allData = fs.readFileSync(path,"utf-8");
-    return JSON.parse(allData);
+const getAllgames = async ()=>{
+    let allGames = await gamesCollection.find({}).toArray();
+    return allGames;
 }
-const getOneData = (id)=>{
-    let jsonAllData = JSON.parse(fs.readFileSync(path,"utf-8"));
-    for (let data of jsonAllData){
-        if (data.id == id){
-            return data;
-        }
-    }
-    return -1;
-}
-const addData = (newData)=>{
-    let currentJsonData = getAllData();
-    newData.id = currentJsonData.length;
-    currentJsonData.push(newData);
-    currentJsonData = JSON.stringify(currentJsonData,null,4);
-    fs.writeFileSync(path,currentJsonData,"utf-8");
-}
-const updateData = (id,newData)=>{
-    let jsonAllData = JSON.parse(fs.readFileSync(path,"utf-8"));
-    for (let i =0; i<jsonAllData.length; i++){
-        if (jsonAllData[i].id == id){
-            newData.id = parseInt(id);
-            jsonAllData[i] = newData;
-            jsonAllData = JSON.stringify(jsonAllData,null,4);
-            fs.writeFileSync(path,jsonAllData,"utf-8");
-            return 1;
-        }
-    }
-    return -1;
-}
-const deleteData = (id)=>{
-    let jsonAllData = JSON.parse(fs.readFileSync(path,"utf-8"));
-    for (let i =0; i<jsonAllData.length; i++){
-        if (jsonAllData[i].id == id){
-            jsonAllData.splice(i,1);
-            jsonAllData = JSON.stringify(jsonAllData,null,4);
-            fs.writeFileSync(path,jsonAllData,"utf-8");
-            return 1;
-        }
-    }
-    return -1;
+const getGamesByTitle = async (title)=>{
+    const query = {title:{$regex:title}};
+    let getGames = await gamesCollection.find(query).toArray()
+    return getGames;
 }
 
-module.exports = {getAllData,getOneData,addData,updateData,deleteData};
+module.exports = {getAllgames,getGamesByTitle};
