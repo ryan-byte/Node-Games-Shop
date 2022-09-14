@@ -8,13 +8,40 @@ const gamesCollection = gameShopDB.collection("Games");
 
 
 const getAllgames = async ()=>{
-    let allGames = await gamesCollection.find({}).toArray();
-    return allGames;
+    try{
+        let allGames = await gamesCollection.find({}).toArray();
+        return allGames;
+    }catch (err){
+        console.error(err)
+        return {error:"connection to db error"}
+    }
 }
 const getGamesByTitle = async (title)=>{
-    const query = {title:{$regex:title}};
-    let getGames = await gamesCollection.find(query).toArray()
-    return getGames;
+    try{
+        const query = {title:{$regex:title}};
+        let getGames = await gamesCollection.find(query).toArray()
+        return getGames;
+    }catch (err){
+        console.error(err)
+        return {error:"connection to db error"}
+    }
 }
 
-module.exports = {getAllgames,getGamesByTitle};
+const addNewGame = async (title,price,stock,type)=>{
+    const validateInputs = typeof title === "string" && 
+                        typeof price === "number" && 
+                        typeof stock === "number" && 
+                        typeof type === "string";
+    if (validateInputs){
+        const newGame = {title,price,stock,type}
+        try{
+            await gamesCollection.insertOne(newGame)
+        }catch (err){
+            console.error(err)
+        }
+    }
+    return validateInputs;
+}
+
+
+module.exports = {getAllgames,getGamesByTitle,addNewGame};

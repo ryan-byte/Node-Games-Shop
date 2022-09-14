@@ -16,4 +16,21 @@ async function api_getGameByTitle(req,res){
     }
 }
 
-module.exports = {api_getAllgames,api_getGameByTitle}
+async function api_addGame(req,res){
+    let {title,price,stock,type} = req.query;
+    price = parseInt(price);
+    stock = parseInt(stock);
+    const validate =    typeof title === "undefined" ||
+                        typeof price === "undefined" ||
+                        isNaN(price) ||
+                        typeof stock === "undefined" ||
+                        isNaN(stock) ||
+                        typeof type === "undefined"
+    if (validate) res.sendStatus(400);
+    else{
+        database.addNewGame(title,price,stock,type);
+        res.sendStatus(201);
+    }
+}
+
+module.exports = {api_getAllgames,api_getGameByTitle,api_addGame}
