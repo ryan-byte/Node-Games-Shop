@@ -20,13 +20,13 @@ async function api_addGame(req,res){
     let {title,price,stock,type} = req.query;
     price = parseInt(price);
     stock = parseInt(stock);
-    const validate =    typeof title === "undefined" ||
+    const invalid =    typeof title === "undefined" ||
                         typeof price === "undefined" ||
                         isNaN(price) ||
                         typeof stock === "undefined" ||
                         isNaN(stock) ||
                         typeof type === "undefined"
-    if (validate) res.sendStatus(400);
+    if (invalid) res.sendStatus(400);
     else{
         database.addNewGame(title,price,stock,type);
         res.sendStatus(201);
@@ -35,12 +35,27 @@ async function api_addGame(req,res){
 
 async function api_removeGame(req,res){
     let id = req.params.id;
-    let gameRemoved = await database.removeGame(id);
-    if (gameRemoved){
-        res.sendStatus(200);
-    }else{
-        res.sendStatus(404);
-    }
+    let gameRemovedStatus = await database.removeGame(id);
+    res.sendStatus(gameRemovedStatus);
 }
 
-module.exports = {api_getAllgames,api_getGameByTitle,api_addGame,api_removeGame}
+async function api_updateGame(req,res){
+    let id = req.params.id;
+    let {title,price,stock,type} = req.query;
+    price = parseInt(price);
+    stock = parseInt(stock);
+    const invalid =    typeof title === "undefined" ||
+                        typeof price === "undefined" ||
+                        isNaN(price) ||
+                        typeof stock === "undefined" ||
+                        isNaN(stock) ||
+                        typeof type === "undefined"
+    if (invalid) res.sendStatus(400);
+    else{
+        const updateGameStatus = await database.updateGame(id,title,price,stock,type);
+        res.sendStatus(updateGameStatus);
+    }
+
+}
+
+module.exports = {api_getAllgames,api_getGameByTitle,api_addGame,api_removeGame,api_updateGame}

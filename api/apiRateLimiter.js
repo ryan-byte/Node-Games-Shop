@@ -13,6 +13,7 @@ class Bucket{
         this.#checkRefill();
         if (this.available_tokens>0){
             --this.available_tokens;
+            // console.log("tokens left in the bucket = "+this.available_tokens);
             return true;
         }else{
             return false;
@@ -44,7 +45,8 @@ const rateLimiter_Middleware = (capacity = 60,refill_rate_sec = 60)=>{
                 res.status(403).send("error rate capacity reached")
             }
         }else{
-            newBucket = new Bucket(capacity,refill_rate_sec); 
+            newBucket = new Bucket(capacity,refill_rate_sec);
+            newBucket.useToken();
             allUsersBuckets[userIp] = newBucket;
             next();
         }

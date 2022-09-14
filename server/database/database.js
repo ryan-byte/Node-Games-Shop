@@ -28,11 +28,11 @@ const getGamesByTitle = async (title)=>{
 }
 
 const addNewGame = async (title,price,stock,type)=>{
-    const validateInputs = typeof title === "string" && 
+    const validInputs = typeof title === "string" && 
                         typeof price === "number" && 
                         typeof stock === "number" && 
                         typeof type === "string";
-    if (validateInputs){
+    if (validInputs){
         const newGame = {title,price,stock,type}
         try{
             await gamesCollection.insertOne(newGame)
@@ -40,20 +40,49 @@ const addNewGame = async (title,price,stock,type)=>{
             console.error(err)
         }
     }
-    return validateInputs;
+    return validInputs;
 }
 
 const removeGame = async (id)=>{
     try{
         const query = {"_id": new ObjectId(id)};
-        let testdata = await gamesCollection.deleteOne(query);
-        if (testdata.deletedCount === 0){
-            return false;
+        let output = await gamesCollection.deleteOne(query);
+        if (output.deletedCount === 0){
+            return 404;
         }
-        return true;
+        return 200;
     }catch(err){
-        return false;
+        return 400;
     }
 }
 
-module.exports = {getAllgames,getGamesByTitle,addNewGame,removeGame};
+const updateGame = async (id,title,price,stock,type)=>{
+    try{
+        const validInputs = typeof id === "string"&&
+                            typeof title === "string"&&
+                            typeof price === "number"&&
+                            typeof stock === "number"&&
+                            typeof type === "string";
+        if (!validInputs){
+            return 400;
+        }
+        const filter = {"_id": new ObjectId(id)};
+        const updateDoc = {
+            $set:{
+                title,
+                price,
+                stock,
+                type
+            }
+        };
+        let output = await gamesCollection.updateOne(filter,updateDoc);
+        if (output.matchedCount === 0){
+            return 404;
+        }
+        return 200;
+    }catch(err){
+        return 400;
+    }
+}
+
+module.exports = {getAllgames,getGamesByTitle,addNewGame,removeGame,updateGame};
