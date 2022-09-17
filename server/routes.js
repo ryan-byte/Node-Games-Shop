@@ -46,7 +46,7 @@ function postAdminLogin(req,res){
 }
 
 function getAdminPanel(req,res){
-    res.sendStatus(200);
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminPanel.html"));
 }
 
 module.exports = {getHomepage,getAdminLogin,postAdminLogin,getAdminPanel};
