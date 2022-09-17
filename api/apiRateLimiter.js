@@ -42,7 +42,7 @@ const rateLimiter_Middleware = (capacity = 60,refill_rate_sec = 60)=>{
             if (tokensBucket.useToken()){
                 next();
             }else{
-                res.status(403).send("error rate capacity reached")
+                res.sendStatus(429);
             }
         }else{
             newBucket = new Bucket(capacity,refill_rate_sec);

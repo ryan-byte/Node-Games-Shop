@@ -58,4 +58,9 @@ async function api_updateGame(req,res){
 
 }
 
-module.exports = {api_getAllgames,api_getGameByTitle,api_addGame,api_removeGame,api_updateGame}
+module.exports = {
+                    api_getAllgames,
+                    api_getGameByTitle,
+                    api_addGame,
+                    api_removeGame,
+                    api_updateGame}
