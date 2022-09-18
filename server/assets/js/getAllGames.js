@@ -1,13 +1,28 @@
 const searchButton = document.getElementById("search");
 const itemContainer = document.getElementById("itemContainer");
+const titleInput = document.getElementById("title");
 
+titleInput.addEventListener("keypress",(ev)=>{
+    if (ev.key === "Enter"){
+        searchButton.click();
+    }
+})
 searchButton.addEventListener("click",(ev)=>{
     spinnerStatus(false);
-    getAllgames();
+    getAllgames(titleInput.value);
 })
 
-async function getAllgames(){
-    const request = await fetch("/api/games");
+async function getAllgames(title = ""){
+    const request = await fetch(`/api/games/${title}`);
+    if (request.status === 404){
+        spinnerStatus(true);
+        itemContainer.innerHTML = "Not Found";
+        return;
+    }else if (request.status === 204){
+        spinnerStatus(true);
+        itemContainer.innerHTML = "";
+        return;
+    }
     const jsonData = await request.json();
     spinnerStatus(true);
     itemContainer.innerHTML = "";
