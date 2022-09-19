@@ -14,13 +14,13 @@ searchButton.addEventListener("click",(ev)=>{
 
 async function getAllgames(title = ""){
     const request = await fetch(`/api/games/${title}`);
-    if (request.status === 404){
+    if (request.status === 502){
         spinnerStatus(true);
-        itemContainer.innerHTML = "Not Found";
+        itemContainer.innerHTML = "Bad Gateway";
         return;
     }else if (request.status === 204){
         spinnerStatus(true);
-        itemContainer.innerHTML = "";
+        itemContainer.innerHTML = "No Content";
         return;
     }
     const jsonData = await request.json();
@@ -28,11 +28,10 @@ async function getAllgames(title = ""){
     itemContainer.innerHTML = "";
     jsonData.forEach(data => {
         let div = document.createElement("div");
-        div.classList.add("p-5");
-        div.innerHTML = `
-        <b>Title:</b> ${data.title}<br>
-        <b>price:</b> ${data.price}DT<br>
-        `
+        div.classList.add("border");
+        div.classList.add("w-25");
+        div.classList.add("p-3");
+        renderGame(div,data);
         itemContainer.appendChild(div)
     });
 }
@@ -45,3 +44,15 @@ function spinnerStatus(hide = true){
     }
 }
 
+function renderGame(div,data){
+    div.dataset.title = data.title;
+    div.dataset.type = data.type;
+    div.dataset.stock = data.stock;
+    div.dataset.price = data.price;
+    div.innerHTML = `
+    <b>Title:</b> ${data.title}<br>
+    <b>Type:</b> ${data.type}<br>
+    <b>Price:</b> ${data.price}DT<br>
+    <b>Stock:</b> ${data.stock}<br>
+    `;
+}
