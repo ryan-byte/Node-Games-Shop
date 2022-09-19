@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/spinner.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand" href="#">Admin panel</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link"  href="/adminPanel" >Manage Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page">Add New Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminPanel/stock">Manage Stock</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <form action="/logout" method="post">
+                        <button id = "submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container-xxl my-md-4 bd-layout">
+        <div class="bd-main order-1">
+                
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col"></div>
+                        <div class="col-8">
+                            <form id = "addGameForm">
+                                <div class="mb-3">
+                                    <label for="newGameTitle" class="form-label">Game Title:</label>
+                                    <input required type="text" class="form-control" id="newGameTitle">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newGameType" class="form-label">Type:</label>
+                                    <input required type="text" class="form-control" id="newGameType">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newGamePrice" class="form-label">Price:</label>
+                                    <input required type="text" class="form-control" id="newGamePrice">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newGameStock" class="form-label">Stock:</label>
+                                    <input required type="text" class="form-control" id="newGameStock">
+                                </div>
+                                <div style="display: none;" id ="validationError" class="alert alert-danger" role="alert"></div>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </form> 
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                </div>
+        </div>
+    </main>
+    
+    <footer></footer>
+    <script src="../../js/adminPanel/addGame.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

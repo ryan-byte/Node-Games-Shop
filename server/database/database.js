@@ -13,7 +13,7 @@ const getAllgames = async ()=>{
         return allGames;
     }catch (err){
         console.error(err)
-        return {error:"connection to db error"}
+        return {error:"db error"}
     }
 }
 const getGamesByTitle = async (title)=>{
@@ -23,7 +23,7 @@ const getGamesByTitle = async (title)=>{
         return getGames;
     }catch (err){
         console.error(err)
-        return {error:"connection to db error"}
+        return {error:"db error"}
     }
 }
 
@@ -37,7 +37,8 @@ const addNewGame = async (title,price,stock,type)=>{
         try{
             await gamesCollection.insertOne(newGame)
         }catch (err){
-            console.error(err)
+            console.log(err);
+            return {error:"db error"}
         }
     }
     return validInputs;

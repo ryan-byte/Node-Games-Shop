@@ -4,7 +4,7 @@ const database = require("../server/database/database");
 async function api_getAllgames(req,res){
     let data = await database.getAllgames();
     if (data["error"]){
-        res.status(502)
+        res.sendStatus(502)
     }else{
         res.status(200);
         res.json(data);
@@ -14,7 +14,7 @@ async function api_getGameByTitle(req,res){
     let title = req.params.title;
     let data = await database.getGamesByTitle(title);
     if (data["error"]){
-        res.status(502)
+        res.sendStatus(502)
     }
     else if (data.length === 0){
         res.sendStatus(204);
@@ -32,11 +32,19 @@ async function api_addGame(req,res){
                         isNaN(price) ||
                         typeof stock === "undefined" ||
                         isNaN(stock) ||
-                        typeof type === "undefined"
+                        typeof type === "undefined"||
+                        title === ""||
+                        type === ""||
+                        price === ""||
+                        stock === "";
     if (invalid) res.sendStatus(400);
     else{
-        database.addNewGame(title,price,stock,type);
-        res.sendStatus(201);
+        let data = await database.addNewGame(title,price,stock,type);
+        if (data["error"]){
+            res.sendStatus(502)
+        }else{
+            res.sendStatus(201);
+        }
     }
 }
 
@@ -56,7 +64,12 @@ async function api_updateGame(req,res){
                         isNaN(price) ||
                         typeof stock === "undefined" ||
                         isNaN(stock) ||
-                        typeof type === "undefined"
+                        typeof type === "undefined"||
+                        title === ""||
+                        type === ""||
+                        price === ""||
+                        stock === "";
+                        
     if (invalid) res.sendStatus(400);
     else{
         const updateGameStatus = await database.updateGame(id,title,price,stock,type);

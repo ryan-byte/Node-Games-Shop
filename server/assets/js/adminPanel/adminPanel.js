@@ -11,6 +11,7 @@ const input_updatePrice = document.getElementById("updatePrice");
 const input_updateStock = document.getElementById("updateStock");
 
 
+
 titleInput.addEventListener("keypress",(ev)=>{
     if (ev.key === "Enter"){
         searchButton.click();
@@ -43,6 +44,21 @@ async function getAllgames(title = ""){
         renderGame(div,data);
         itemContainer.appendChild(div);
     });
+}
+function renderGame(div,data){
+    div.dataset.objectId = data["_id"];
+    div.dataset.title = data.title;
+    div.dataset.type = data.type;
+    div.dataset.stock = data.stock;
+    div.dataset.price = data.price;
+    div.innerHTML = `
+    <b>Title:</b> ${data.title}<br>
+    <b>Type:</b> ${data.type}<br>
+    <b>Price:</b> ${data.price}DT<br>
+    <b>Stock:</b> ${data.stock}<br>
+    <button type="button" class="btn btn-danger" onclick="deleteGame(this)">Delete</button>
+    <button type="button" class="btn btn-warning" onclick="fillUpdateForm(this)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Update</button>
+    `;
 }
 function spinnerStatus(hide = true){
     const button = document.getElementById("spinner");
@@ -135,21 +151,4 @@ async function updateGame(){
             alert("unknown error (try reloading the page)");
         }
     }
-}
-
-
-function renderGame(div,data){
-    div.dataset.objectId = data["_id"];
-    div.dataset.title = data.title;
-    div.dataset.type = data.type;
-    div.dataset.stock = data.stock;
-    div.dataset.price = data.price;
-    div.innerHTML = `
-    <b>Title:</b> ${data.title}<br>
-    <b>Type:</b> ${data.type}<br>
-    <b>Price:</b> ${data.price}DT<br>
-    <b>Stock:</b> ${data.stock}<br>
-    <button type="button" class="btn btn-danger" onclick="deleteGame(this)">Delete</button>
-    <button type="button" class="btn btn-warning" onclick="fillUpdateForm(this)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Update</button>
-    `;
 }

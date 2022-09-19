@@ -46,7 +46,10 @@ function postAdminLogin(req,res){
 }
 
 function getAdminPanel(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminPanel.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminPanel/adminPanel.html"));
+}
+function getAdminPanelAddGame(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminPanel/addGame.html"));
 }
 
-module.exports = {getHomepage,getAdminLogin,postAdminLogin,getAdminPanel};
+module.exports = {getHomepage,getAdminLogin,postAdminLogin,getAdminPanel,getAdminPanelAddGame};

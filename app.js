@@ -36,5 +36,7 @@ app.post("/adminLogin",server_routes.postAdminLogin);
 
 app.get("/adminPanel",server_middleware.webpage_verifyAdmin_middlware,
                     server_routes.getAdminPanel)
+app.get("/adminPanel/add",server_middleware.webpage_verifyAdmin_middlware,
+                    server_routes.getAdminPanelAddGame)
 
 app.listen(PORT, ()=>console.log("server is on 127.0.0.1:" + PORT))
