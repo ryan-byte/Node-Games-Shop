@@ -5,6 +5,8 @@ const cookie = require("cookie");
 const {secretKey} = require("./jwtSecretKey.json");
 const tokenExpire = 60 * 60 * 24;
 
+const adminLoginCookieName = "jwt"
+
 function getHomepage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/index.html"));
 }
@@ -12,7 +14,7 @@ function getHomepage(req,res){
 function getAdminLogin(req,res){
     //if cookie doesnt exist show the admin login page otherwise redirect
     let jwtCookie = cookie.parse(req.headers.cookie || "");
-    let token = jwtCookie.jwt;
+    let token = jwtCookie[adminLoginCookieName];
     if (token){
         //verify the token if it is invalid then show the user the page
         try{
@@ -25,7 +27,6 @@ function getAdminLogin(req,res){
         res.status(200).sendFile(path.join(__dirname + "/assets/html/adminLogin.html"));
     }
 }
-
 function postAdminLogin(req,res){
     //verify login
 
@@ -33,7 +34,7 @@ function postAdminLogin(req,res){
     try{
         let token = jwt.sign({adminID:2},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
 
-        res.setHeader('Set-Cookie', cookie.serialize('jwt', token, {
+        res.setHeader('Set-Cookie', cookie.serialize(adminLoginCookieName, token, {
             httpOnly: true,
             sameSite:"strict",
             maxAge: tokenExpire //1 day
@@ -52,4 +53,14 @@ function getAdminPanelAddGame(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/adminPanel/addGame.html"));
 }
 
-module.exports = {getHomepage,getAdminLogin,postAdminLogin,getAdminPanel,getAdminPanelAddGame};
+function adminLogout(req,res){
+    res.clearCookie(adminLoginCookieName);
+    res.redirect("/");
+}
+
+module.exports = {getHomepage,
+                getAdminLogin,
+                postAdminLogin,
+                getAdminPanel,
+                getAdminPanelAddGame,
+                adminLogout};
