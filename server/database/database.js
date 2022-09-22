@@ -1,10 +1,12 @@
 const {MongoClient,ObjectId} = require("mongodb");
 const {password} = require("./databasePwd.json")
-const URI = `mongodb+srv://thesoulsreaper:${password}@cluster0.muz1azg.mongodb.net/?retryWrites=true&w=majority`
+const hashPassword = require("../utils/hashPassword");
 
+const URI = `mongodb+srv://thesoulsreaper:${password}@cluster0.muz1azg.mongodb.net/?retryWrites=true&w=majority`
 const client = new MongoClient(URI);
 const gameShopDB = client.db("GameShop");
 const gamesCollection = gameShopDB.collection("Games");
+const adminCollection = gameShopDB.collection("admin");
 
 
 const getAllgames = async ()=>{
@@ -85,5 +87,37 @@ const updateGame = async (id,title,price,stock,type)=>{
         return 400;
     }
 }
+const createAdmin = async (username,hashedPassword,hashKey)=>{
+    try{
+        await adminCollection.insertOne({username,hashedPassword,hashKey});
+    }catch(err){
+        console.error(err);
+    }
+}
+const getAdmin = async (username)=>{
+    try{
+        let data = await adminCollection.findOne({username: {$regex : new RegExp("^"+username+"$","i")}});
+        return data;
+    }catch(err){
+        return {"error":err};
+    }
+}
+const verifyAdmin = async (username,password)=>{
+    try{
+        let adminData = await getAdmin(username);
+        if (adminData === null){
+            return false;
+        }else if (adminData["error"]){
+            return adminData;
+        }
+        let hashedPassword = hashPassword(password,adminData.hashKey);
+        if (hashedPassword === adminData.hashedPassword){
+            return true;
+        }
+        return false;
+    }catch (err){
+        return {"error":err};
+    }
+}
 
-module.exports = {getAllgames,getGamesByTitle,addNewGame,removeGame,updateGame};
+module.exports = {getAllgames,getGamesByTitle,addNewGame,removeGame,updateGame,createAdmin,getAdmin,verifyAdmin};

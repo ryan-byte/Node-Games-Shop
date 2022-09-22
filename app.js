@@ -6,6 +6,8 @@ const server_routes = require("./server/routes");
 const server_middleware = require("./server/middleware")
 const PORT = 3000;
 
+app.use(express.urlencoded({ extended: true }));
+
 //make the assets folder public
 app.use(express.static('./server/assets'));
 
