@@ -1,11 +1,10 @@
 # Games-Shop
-### How Run the Project:
-
+### How to Run the Project:
 - Install nodejs from https://nodejs.org/en/download/
 
 - Open the terminal or cmd at the project directory then run:
 ```
-npm i
+$ npm i
 ```
 - Add config.env file to the project folder, then add the following:
 
