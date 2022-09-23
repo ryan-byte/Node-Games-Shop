@@ -39,14 +39,16 @@ async function api_addGame(req,res){
                         stock === "";
     if (invalid) res.sendStatus(400);
     else{
-        let data = await database.addNewGame(title,price,stock,type);
-        if (data["error"]){
+        let dataStatus = await database.addNewGame(title,price,stock,type);
+        if (dataStatus["error"]){
             res.sendStatus(502)
         }else{
-            //log the username action
-            let username = res.locals.username;
-            database.logUserAction(username,`Added ${title} (type: ${type} /price: ${price}/ stock: ${stock})`);
-            res.sendStatus(201);
+            res.sendStatus(dataStatus);
+            if (dataStatus === 201){
+                //log the username action
+                let username = res.locals.username;
+                database.logUserAction(username,`Added ${title} (type: ${type} /price: ${price}/ stock: ${stock})`);
+            }
         }
     }
 }

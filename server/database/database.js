@@ -39,12 +39,14 @@ const addNewGame = async (title,price,stock,type)=>{
         const newGame = {title,price,stock,type}
         try{
             await gamesCollection.insertOne(newGame)
+            return 201;
         }catch (err){
             console.log(err);
             return {error:"db error"}
         }
+    }else{
+        return 400;
     }
-    return validInputs;
 }
 const removeGame = async (id)=>{
     try{
