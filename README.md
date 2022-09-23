@@ -11,7 +11,7 @@ npm i
 ```
 PORT = <integer>
 jwtSecretKey = <string>
-mongoURL = <mongodb atlas connect>
+mongoURL = <mongodb atlas connect url>
 digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
 ```
