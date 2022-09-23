@@ -9,7 +9,7 @@ npm i
 - Add config.env file to the project folder, then add the following:
 
 ```
-PORT = <integer> (server port)
+PORT = <integer>
 jwtSecretKey = <string>
 mongoURL = <mongodb atlas connect>
 digestAlgorithm = <crypto digest algorithm>
