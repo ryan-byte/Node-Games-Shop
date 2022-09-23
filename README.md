@@ -1,10 +1,10 @@
 # Games-Shop
-### How to Run the Project:
+### How to Setup the Project:
 - Install nodejs from https://nodejs.org/en/download/
 
 - Open the terminal or cmd at the project directory then run:
 ```
-$ npm i
+npm i
 ```
 - Add config.env file to the project folder, then add the following:
 
@@ -29,3 +29,9 @@ A secret key that is used to sign jwt tokens this key should never be exposed (r
 Change the digest algorithm that is used for hashing password (default value sha256)
 ##### apiRequestsPerMin (OPTIONAL)
 Max number of API requests a user can make per minute (default value 60)
+
+### How to Run the Project:
+- Open the terminal or cmd at the project directory then run:
+```
+npm run start
+```
