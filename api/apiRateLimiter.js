@@ -1,6 +1,7 @@
 //using bucket token algorithm (store the bucket in Redis in production)
 //(currently storing bucket token in-memory)
 //tested with a dos attack on the api endpoint
+const apiRequestsPerMin = parseInt(process.env.apiRequestsPerMin) || 60;
 
 class Bucket{
     constructor(capacity,refill_rate_sec){
@@ -33,8 +34,7 @@ class Bucket{
 
 
 let allUsersBuckets = {};
-
-const rateLimiter_Middleware = (capacity = 60,refill_rate_sec = 60)=>{
+const rateLimiter_Middleware = (capacity = apiRequestsPerMin,refill_rate_sec = 60)=>{
     return (req,res,next)=>{
         let userIp = req.ip;
         let tokensBucket = allUsersBuckets[userIp];

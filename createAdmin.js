@@ -1,3 +1,7 @@
+//now all the env variables can be used in all scripts
+require('dotenv').config({path:__dirname+'/config.env'});
+
+//upload the required packages
 const crypto = require("crypto");
 const readLine = require("readline");
 const hashPassword = require("./server/utils/hashPassword");

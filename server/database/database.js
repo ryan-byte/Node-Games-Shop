@@ -1,14 +1,12 @@
 const {MongoClient,ObjectId} = require("mongodb");
-const {password} = require("./databasePwd.json")
 const hashPassword = require("../utils/hashPassword");
 
-const URI = `mongodb+srv://thesoulsreaper:${password}@cluster0.muz1azg.mongodb.net/?retryWrites=true&w=majority`
-const client = new MongoClient(URI);
+const URL = process.env.mongoURL;
+const client = new MongoClient(URL);
 const gameShopDB = client.db("GameShop");
 const gamesCollection = gameShopDB.collection("Games");
 const adminCollection = gameShopDB.collection("admin");
 const logsCollection = gameShopDB.collection("logs");
-
 
 const getAllgames = async ()=>{
     try{
@@ -106,13 +104,16 @@ const getAdmin = async (username)=>{
 }
 const verifyAdmin = async (username,password)=>{
     try{
+        //get the admin data
         let adminData = await getAdmin(username);
         if (adminData === null){
             return false;
         }else if (adminData["error"]){
             return adminData;
         }
+        //hash the given password with the hashKey that is stored in the admin data
         let hashedPassword = hashPassword(password,adminData.hashKey);
+        //verify if the hashedpassword is the same as the stored one
         if (hashedPassword === adminData.hashedPassword){
             return true;
         }

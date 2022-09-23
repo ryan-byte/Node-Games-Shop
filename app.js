@@ -1,10 +1,14 @@
+//now all the env variables can be used in all scripts
+require('dotenv').config({path:__dirname+'/config.env'});
+
+//upload the required packages
 const express = require("express");
 const app = express();
 const api_routes = require("./api/apiGameRoutes");
 const rateLimiter_Middleware = require("./api/apiRateLimiter");
 const server_routes = require("./server/routes");
 const server_middleware = require("./server/middleware")
-const PORT = 3000;
+const PORT = process.env.PORT || 8080;
 
 app.use(express.urlencoded({ extended: true }));
 

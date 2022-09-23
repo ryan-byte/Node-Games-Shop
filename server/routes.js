@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const database = require("./database/database")
 
-const {secretKey} = require("./jwtSecretKey.json");
+const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
 
 const adminLoginCookieName = "jwt"
@@ -13,15 +13,16 @@ function getHomepage(req,res){
 }
 
 function getAdminLogin(req,res){
-    //if cookie doesnt exist show the admin login page otherwise redirect
-    let jwtCookie = cookie.parse(req.headers.cookie || "");
-    let token = jwtCookie[adminLoginCookieName];
-    if (token){
-        //verify the token if it is invalid then show the user the page
+    //get the jwt token (stored in a cookie)
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let jwtToken = allCookies[adminLoginCookieName];
+    if (jwtToken){
         try{
-            jwt.verify(token,secretKey);
+            //verify the token if it is valid then redirect
+            jwt.verify(jwtToken,secretKey);
             res.status(302).redirect("/adminPanel");
         }catch (err){
+            //when the token is invalid then the admin login page
             res.status(200).sendFile(path.join(__dirname + "/assets/html/adminLogin.html"));
         }
     }else{
@@ -30,6 +31,7 @@ function getAdminLogin(req,res){
 }
 async function postAdminLogin(req,res){
     //verify login
+    //username and password must be sent from urlencoded form
     let {username,password} = req.body;
     let verification = await database.verifyAdmin(username,password);
     if (verification["error"]){

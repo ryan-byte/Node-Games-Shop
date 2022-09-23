@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 
-const {secretKey} = require("./jwtSecretKey.json");
-
+const secretKey = process.env.jwtSecretKey;
 
 //the difference between this function and the server_verifyAdmin is:
 //api function sends an unauth status code
