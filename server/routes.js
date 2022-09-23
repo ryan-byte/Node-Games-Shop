@@ -39,14 +39,16 @@ async function postAdminLogin(req,res){
     }else if (verification === true){
         //sign a jwt token
         try{
-            let token = jwt.sign({adminID:2},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
-    
+            let token = jwt.sign({username},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+            
             res.setHeader('Set-Cookie', cookie.serialize(adminLoginCookieName, token, {
                 httpOnly: true,
                 sameSite:"strict",
                 maxAge: tokenExpire //1 day
             }));
             res.redirect("/adminPanel");
+            //save logs
+            database.logUserAction(username,`User logged in`);
         }catch (err){
             res.sendStatus(400);
         }

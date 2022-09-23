@@ -14,7 +14,8 @@ function api_verifyAdmin_middlware(req,res,next){
     let token = jwtCookie.jwt;
     if (token){
         try{
-            jwt.verify(token,secretKey);
+            let decode = jwt.verify(token,secretKey);
+            res.locals.username = decode.username;
             next();
         }catch (err){
             res.sendStatus(401);

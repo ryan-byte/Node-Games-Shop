@@ -7,6 +7,7 @@ const client = new MongoClient(URI);
 const gameShopDB = client.db("GameShop");
 const gamesCollection = gameShopDB.collection("Games");
 const adminCollection = gameShopDB.collection("admin");
+const logsCollection = gameShopDB.collection("logs");
 
 
 const getAllgames = async ()=>{
@@ -45,20 +46,18 @@ const addNewGame = async (title,price,stock,type)=>{
     }
     return validInputs;
 }
-
 const removeGame = async (id)=>{
     try{
         const query = {"_id": new ObjectId(id)};
-        let output = await gamesCollection.deleteOne(query);
-        if (output.deletedCount === 0){
-            return 404;
+        let output = await gamesCollection.findOneAndDelete(query);
+        if (output.value === null){
+            return {status:404};
         }
-        return 200;
+        return {status:200,title:output.value.title};
     }catch(err){
-        return 400;
+        return {status:400};
     }
 }
-
 const updateGame = async (id,title,price,stock,type)=>{
     try{
         const validInputs = typeof id === "string"&&
@@ -67,7 +66,7 @@ const updateGame = async (id,title,price,stock,type)=>{
                             typeof stock === "number"&&
                             typeof type === "string";
         if (!validInputs){
-            return 400;
+            return {status:400};
         }
         const filter = {"_id": new ObjectId(id)};
         const updateDoc = {
@@ -78,15 +77,16 @@ const updateGame = async (id,title,price,stock,type)=>{
                 type
             }
         };
-        let output = await gamesCollection.updateOne(filter,updateDoc);
-        if (output.matchedCount === 0){
-            return 404;
+        let output = await gamesCollection.findOneAndUpdate(filter,updateDoc);
+        if (output.value === null){
+            return {status:404};
         }
-        return 200;
+        return {status:200,oldValues:output.value};
     }catch(err){
-        return 400;
+        return {status:400};
     }
 }
+
 const createAdmin = async (username,hashedPassword,hashKey)=>{
     try{
         await adminCollection.insertOne({username,hashedPassword,hashKey});
@@ -120,4 +120,15 @@ const verifyAdmin = async (username,password)=>{
     }
 }
 
-module.exports = {getAllgames,getGamesByTitle,addNewGame,removeGame,updateGame,createAdmin,getAdmin,verifyAdmin};
+async function logUserAction(username,action){
+    try{
+        let timeStamp = Math.floor(Date.now() / 1000)
+        await logsCollection.insertOne({username,action,timeStamp});
+    }catch(err){
+        console.error(err);
+    }
+}
+
+module.exports = {getAllgames,getGamesByTitle,
+                addNewGame,removeGame,updateGame,
+                createAdmin,getAdmin,verifyAdmin,logUserAction};
