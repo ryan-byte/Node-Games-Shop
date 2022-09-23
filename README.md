@@ -29,4 +29,4 @@ A secret key that is used to sign jwt tokens this key should never be exposed (r
 ##### digestAlgorithm (OPTIONAL)
 Change the digest algorithm that is used for hashing password (default value sha256)
 ##### apiRequestsPerMin (OPTIONAL)
-Max number of API requests a user can make per minute
+Max number of API requests a user can make per minute (default value 60)
