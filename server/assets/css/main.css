@@ -17,14 +17,23 @@ main{
 }
 .gameItem:hover>.gameImage{
     animation-name: imageHoverAnimation;
-    animation-duration: 0.5s;
+    animation-duration: 0.3s;
     animation-fill-mode: forwards;
 }
 @keyframes imageHoverAnimation {
     100%{
-        filter: brightness(50%);
+        filter: brightness(30%);
         transform:scale(1.05);
     }
+}
+.title{
+    position: absolute;
+    text-align: center;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 255, 255);
+    display: none;
 }
 .info{
     position: absolute;
@@ -34,8 +43,11 @@ main{
     color: rgb(255, 255, 255);
     display: none;
 }
-.gameItem:hover>.info{
+.gameItem:hover>.info,.gameItem:hover>.title{
     display: block;
+}
+.price{
+    text-align: center;
 }
 
 

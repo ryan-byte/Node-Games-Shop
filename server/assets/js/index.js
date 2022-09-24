@@ -28,9 +28,8 @@ async function getAllgames(title = ""){
     itemContainer.innerHTML = "";
     jsonData.forEach(data => {
         let div = document.createElement("div");
-        div.classList.add("border");
-        div.classList.add("w-25");
-        div.classList.add("p-3");
+        div.classList.add("gameItem");
+        div.classList.add("m-2");
         renderGame(div,data);
         itemContainer.appendChild(div)
     });
@@ -50,9 +49,13 @@ function renderGame(div,data){
     div.dataset.stock = data.stock;
     div.dataset.price = data.price;
     div.innerHTML = `
-    <b>Title:</b> ${data.title}<br>
-    <b>Type:</b> ${data.type}<br>
-    <b>Price:</b> ${data.price}DT<br>
-    <b>Stock:</b> ${data.stock}<br>
+    <div class="gameImage" style="background-image:url('../images/download1.jpeg');"></div>
+    <div class="title">
+        <b> ${data.title} </b>
+    </div>
+    <div class="info" >
+        <h3 class="price"><b> ${data.price}DT </b></h3>
+        <h5 style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></h5>
+    </div>
     `;
 }
