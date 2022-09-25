@@ -48,4 +48,7 @@ app.get("/adminPanel/add",server_middleware.webpage_verifyAdmin_middlware,
 app.post("/adminPanel/logout",server_middleware.api_verifyAdmin_middlware,
                     server_routes.adminLogout);
 
+app.post("/adminPanel/uploadFile",server_middleware.api_verifyAdmin_middlware,
+                    server_routes.uploadFile)
+
 app.listen(PORT, ()=>console.log("server is on 127.0.0.1:" + PORT))

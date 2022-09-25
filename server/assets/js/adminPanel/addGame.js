@@ -3,6 +3,7 @@ const input_newGameTitle = document.getElementById("newGameTitle");
 const input_newGameType = document.getElementById("newGameType");
 const input_newGamePrice = document.getElementById("newGamePrice");
 const input_newGameStock = document.getElementById("newGameStock");
+const input_imageFileUpload = document.getElementById("imageFileUpload");
 
 const validationError = document.getElementById("validationError");
 
@@ -15,20 +16,7 @@ addGameForm.addEventListener("submit",async (ev)=>{
     let price = input_newGamePrice.value;
     let stock = input_newGameStock.value;
     //verify the values
-    price = parseInt(price);
-    stock = parseInt(stock);
-    if (isNaN(price)){
-        validationError.style.display = "block";
-        validationError.innerHTML = "Price must be a number.";
-        return;
-    }else if (isNaN(stock)){
-        validationError.style.display = "block";
-        validationError.innerHTML = "Stock must be a number.";
-        return;
-    }else{
-        validationError.style.display = "none";
-        validationError.innerHTML = "";
-    }
+    input_verification(price,stock);
     //confirm from the user
     let confirmation = confirm("are you sure ?")
     if (confirmation){
@@ -37,6 +25,8 @@ addGameForm.addEventListener("submit",async (ev)=>{
         let request = await fetch(createGameURI,{
             method:"POST"
         });
+        //upload the image file
+        let imageUploadStatus = await uploadImage();
         //show an output based on the status code
         if (request.status === 201){
             alert("Game added successfully");
@@ -54,5 +44,33 @@ addGameForm.addEventListener("submit",async (ev)=>{
             alert("unknown error");
         }
     }
-
 })
+
+function input_verification(price,stock){
+    price = parseInt(price);
+    stock = parseInt(stock);
+    if (isNaN(price)){
+        validationError.style.display = "block";
+        validationError.innerHTML = "Price must be a number.";
+        return;
+    }else if (isNaN(stock)){
+        validationError.style.display = "block";
+        validationError.innerHTML = "Stock must be a number.";
+        return;
+    }else{
+        validationError.style.display = "none";
+        validationError.innerHTML = "";
+    }
+}
+
+async function uploadImage(){
+    let formData = new FormData()
+    formData.append("imageFileUpload",input_imageFileUpload.files[0],"imageFileUpload");
+    let URI = "/adminPanel/uploadFile";
+    let request = await fetch(URI,{
+        method:"POST",
+        body:formData
+    });
+    console.log(request.status);
+    return request.status;
+}

@@ -1,10 +1,12 @@
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
-const database = require("./database/database")
+const database = require("./database/database");
+const Busboy = require("busboy");
 
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
+const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
 const adminLoginCookieName = "jwt"
 
@@ -71,9 +73,35 @@ function adminLogout(req,res){
     res.redirect("/");
 }
 
+function uploadFile(req,res){
+    const bb = Busboy({headers:req.headers,limits:{fileSize:maxImgUploadSize}});
+    bb.totalSize = 0;
+    bb.status = 200;
+    bb.on("file",(name,file,info)=>{
+        const {mimeType} = info;
+        console.log(mimeType);
+        file.on("data",(chunk)=>{
+            bb.totalSize += chunk.length;
+        });
+        file.on("close",()=>{
+            if (file.truncated){
+                bb.emit("filesLimit");
+            }
+        })
+    })
+    bb.on("filesLimit",()=>{
+        bb.status = 413;
+    })
+    bb.on("close",()=>{
+        res.sendStatus(bb.status);
+    })
+    req.pipe(bb);
+}
+
 module.exports = {getHomepage,
                 getAdminLogin,
                 postAdminLogin,
                 getAdminPanel,
                 getAdminPanelAddGame,
-                adminLogout};
+                adminLogout,
+                uploadFile};
