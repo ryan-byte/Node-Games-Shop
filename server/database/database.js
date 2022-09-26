@@ -58,7 +58,7 @@ const removeGame = async (id)=>{
         return {status:400};
     }
 }
-const updateGame = async (id,title,price,stock,type)=>{
+const updateGame = async (id,title,price,stock,type,imageName = undefined)=>{
     try{
         const validInputs = typeof id === "string"&&
                             typeof title === "string"&&
@@ -69,7 +69,7 @@ const updateGame = async (id,title,price,stock,type)=>{
             return {status:400};
         }
         const filter = {"_id": new ObjectId(id)};
-        const updateDoc = {
+        let updateDoc = {
             $set:{
                 title,
                 price,
@@ -77,12 +77,26 @@ const updateGame = async (id,title,price,stock,type)=>{
                 type
             }
         };
+        if (imageName){
+            //if the file is uploaded then update the database imageName field
+            updateDoc = {
+                $set:{
+                    title,
+                    price,
+                    stock,
+                    type,
+                    imageName
+                }
+            };
+        }
+
         let output = await gamesCollection.findOneAndUpdate(filter,updateDoc);
         if (output.value === null){
             return {status:404};
         }
         return {status:200,oldValues:output.value};
     }catch(err){
+        console.log(err);
         return {status:400};
     }
 }

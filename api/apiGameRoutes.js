@@ -48,7 +48,7 @@ async function api_addGame(req,res){
             if (dataStatus === 201){
                 //log the username action
                 let username = res.locals.username;
-                if (res.locals.imageName === "default.jpg"){
+                if (res.locals.imageName === undefined){
                     database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
                 }else{
                     database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
@@ -76,6 +76,8 @@ async function api_removeGame(req,res){
 }
 
 async function api_updateGame(req,res){
+    let imageName = res.locals.imageName;
+
     let id = req.params.id;
     let {title,price,stock,type} = req.query;
     price = parseInt(price);
@@ -94,11 +96,13 @@ async function api_updateGame(req,res){
     if (invalid) res.sendStatus(400);
     else{
         //update data
-        const updateGame = await database.updateGame(id,title,price,stock,type);
+        const updateGame = await database.updateGame(id,title,price,stock,type,imageName);
         let updateGameStatus = updateGame.status;
         let oldValues = updateGame.oldValues;
-        //log the username action
         if (updateGameStatus === 200){
+            //delete the old image
+
+            //log the username action
             let username = res.locals.username;
             database.logUserAction(username,`Updated old values(title: ${oldValues.title} /type: ${oldValues.type} /price: ${oldValues.price}/ stock: ${oldValues.stock}) new values (title: ${title} /type: ${type} /price: ${price}/ stock: ${stock})`);
         }
