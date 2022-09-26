@@ -21,33 +21,10 @@ addGameForm.addEventListener("submit",async (ev)=>{
     let confirmation = confirm("are you sure ?")
     if (confirmation){
         //procceed to the api
-        let formData = new FormData()
-        formData.append("imageFileUpload",input_imageFileUpload.files[0],"imageFileUpload");
-        let createGameURI = encodeURI(`/api/games?title=${title}&type=${type}&price=${price}&stock=${stock}`);
-        let request = await fetch(createGameURI,{
-            method:"POST",
-            body:formData
-        });
+        let imageFile = input_imageFileUpload.files[0];
+        let statusCode = await addGameAPI(title,type,price,stock,imageFile);
         //show an output based on the status code
-        if (request.status === 201){
-            alert("Game added successfully");
-            input_newGameTitle.value = "";
-            input_newGamePrice.value  = "";
-            input_newGameType.value = "";
-            input_newGameStock.value  = "";
-        }else if (request.status === 415){
-            alert("uploading image failed must be (jpeg/jng)")
-        }else if (request.status === 413){
-            alert("file size is too large")
-        }else if (request.status === 400){
-            alert("Bad parameters");
-        }else if (request.status === 502){
-            alert("Bad Gateway");
-        }else if (request.status === 401){
-            alert("unauthorized (reload the page)");
-        }else{
-            alert("unknown error");
-        }
+        statusCodeOutput(statusCode)
     }
 })
 
@@ -65,5 +42,36 @@ function input_verification(price,stock){
     }else{
         validationError.style.display = "none";
         validationError.innerHTML = "";
+    }
+}
+async function addGameAPI(title,type,price,stock,imageFile){
+    let formData = new FormData()
+    formData.append("imageFileUpload",imageFile,"imageFileUpload");
+    let createGameURI = encodeURI(`/api/games?title=${title}&type=${type}&price=${price}&stock=${stock}`);
+    let request = await fetch(createGameURI,{
+        method:"POST",
+        body:formData
+    });
+    return request.status;
+}
+function statusCodeOutput(statusCode){
+    if (statusCode === 201){
+        alert("Game added successfully");
+        input_newGameTitle.value = "";
+        input_newGamePrice.value  = "";
+        input_newGameType.value = "";
+        input_newGameStock.value  = "";
+    }else if (statusCode === 415){
+        alert("uploading image failed must be (jpeg/jng)")
+    }else if (statusCode === 413){
+        alert("file size is too large")
+    }else if (statusCode === 400){
+        alert("Bad parameters");
+    }else if (statusCode === 502){
+        alert("Bad Gateway");
+    }else if (statusCode === 401){
+        alert("unauthorized (reload the page)");
+    }else{
+        alert("unknown error");
     }
 }
