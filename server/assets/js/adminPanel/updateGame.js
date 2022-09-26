@@ -10,7 +10,7 @@ const input_updateStock = document.getElementById("updateStock");
 
 function fillUpdateForm(elem){
     //get the object id
-    let gameElem = elem.parentElement;
+    let gameElem = elem.parentElement.parentElement.parentElement;
     let gameDataSet = gameElem.dataset;
     //fill the form
     updateForm.dataset.objectId = gameDataSet.objectId;
@@ -48,7 +48,7 @@ async function updateGame(){
                         type,
                         stock:parseInt(stock),
                         price:parseInt(price)};
-            renderGame(gameElem,data);
+            adminPanel_renderGame(gameElem,data);
             //close the form
             updateFormClose.click();
         }else if (request.status === 400){

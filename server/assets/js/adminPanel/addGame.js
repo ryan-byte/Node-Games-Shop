@@ -16,7 +16,7 @@ addGameForm.addEventListener("submit",async (ev)=>{
     let price = input_newGamePrice.value;
     let stock = input_newGameStock.value;
     //verify the values
-    input_verification(price,stock);
+    addGame_input_verification(price,stock);
     //confirm from the user
     let confirmation = confirm("are you sure ?")
     if (confirmation){
@@ -24,11 +24,11 @@ addGameForm.addEventListener("submit",async (ev)=>{
         let imageFile = input_imageFileUpload.files[0];
         let statusCode = await addGameAPI(title,type,price,stock,imageFile);
         //show an output based on the status code
-        statusCodeOutput(statusCode)
+        addGame_statusCodeOutput(statusCode)
     }
 })
 
-function input_verification(price,stock){
+function addGame_input_verification(price,stock){
     price = parseInt(price);
     stock = parseInt(stock);
     if (isNaN(price)){
@@ -54,7 +54,7 @@ async function addGameAPI(title,type,price,stock,imageFile){
     });
     return request.status;
 }
-function statusCodeOutput(statusCode){
+function addGame_statusCodeOutput(statusCode){
     if (statusCode === 201){
         alert("Game added successfully");
         input_newGameTitle.value = "";
