@@ -21,12 +21,13 @@ addGameForm.addEventListener("submit",async (ev)=>{
     let confirmation = confirm("are you sure ?")
     if (confirmation){
         //procceed to the api
+        let formData = new FormData()
+        formData.append("imageFileUpload",input_imageFileUpload.files[0],"imageFileUpload");
         let createGameURI = encodeURI(`/api/games?title=${title}&type=${type}&price=${price}&stock=${stock}`);
         let request = await fetch(createGameURI,{
-            method:"POST"
+            method:"POST",
+            body:formData
         });
-        //upload the image file
-        let imageUploadStatus = await uploadImage();
         //show an output based on the status code
         if (request.status === 201){
             alert("Game added successfully");
@@ -34,6 +35,10 @@ addGameForm.addEventListener("submit",async (ev)=>{
             input_newGamePrice.value  = "";
             input_newGameType.value = "";
             input_newGameStock.value  = "";
+        }else if (request.status === 415){
+            alert("uploading image failed must be (jpeg/jng)")
+        }else if (request.status === 413){
+            alert("file size is too large")
         }else if (request.status === 400){
             alert("Bad parameters");
         }else if (request.status === 502){
@@ -61,16 +66,4 @@ function input_verification(price,stock){
         validationError.style.display = "none";
         validationError.innerHTML = "";
     }
-}
-
-async function uploadImage(){
-    let formData = new FormData()
-    formData.append("imageFileUpload",input_imageFileUpload.files[0],"imageFileUpload");
-    let URI = "/adminPanel/uploadFile";
-    let request = await fetch(URI,{
-        method:"POST",
-        body:formData
-    });
-    console.log(request.status);
-    return request.status;
 }

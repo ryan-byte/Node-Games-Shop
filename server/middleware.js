@@ -1,13 +1,15 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
+const Busboy = require("busboy");
 
 const secretKey = process.env.jwtSecretKey;
+const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
 //the difference between this function and the server_verifyAdmin is:
 //api function sends an unauth status code
 //server function redirect to the /adminLogin route  
 
-function api_verifyAdmin_middlware(req,res,next){
+function api_verifyAdmin_middleware(req,res,next){
     //get jwt token
     let jwtCookie = cookie.parse(req.headers.cookie || "");
     let token = jwtCookie.jwt;
@@ -24,7 +26,7 @@ function api_verifyAdmin_middlware(req,res,next){
     }
 }
 
-function webpage_verifyAdmin_middlware(req,res,next){
+function webpage_verifyAdmin_middleware(req,res,next){
     //get jwt token
     let jwtCookie = cookie.parse(req.headers.cookie || "");
     let token = jwtCookie.jwt;
@@ -40,4 +42,36 @@ function webpage_verifyAdmin_middlware(req,res,next){
     }
 }
 
-module.exports = {api_verifyAdmin_middlware,webpage_verifyAdmin_middlware};
+function image_upload_middleware(req,res,next){
+    const bb = Busboy({headers:req.headers,limits:{fileSize:maxImgUploadSize}});
+    bb.totalSize = 0;
+    bb.status = 200;
+    bb.on("file",(name,file,info)=>{
+        const {mimeType} = info;
+        if (mimeType !== "image/jpeg" && mimeType !== "image/png"){
+            bb.status = 415;
+        }
+        file.on("data",(chunk)=>{
+            bb.totalSize += chunk.length;
+        });
+        file.on("close",()=>{
+            if (file.truncated){
+                bb.emit("filesLimit");
+            }
+        })
+    })
+    bb.on("filesLimit",()=>{
+        bb.status = 413;
+    })
+    bb.on("close",()=>{
+        if (bb.status === 200){
+            next();
+        }else{
+            res.sendStatus(bb.status);
+        }
+    })
+    req.pipe(bb);
+}
+
+module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
+                image_upload_middleware};
