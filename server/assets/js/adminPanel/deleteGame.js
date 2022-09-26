@@ -3,7 +3,7 @@ async function deleteGame(elem){
     let confirmation = confirm("Are you sure?");
     if (confirmation){
         //get the object id
-        let gameElem = elem.parentElement;
+        let gameElem = elem.parentElement.parentElement;
         let objectId = gameElem.dataset.objectId;
         //call the delete api 
         let request = await fetch(`/api/games/${objectId}`,{

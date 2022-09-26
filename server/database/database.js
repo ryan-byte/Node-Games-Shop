@@ -28,13 +28,13 @@ const getGamesByTitle = async (title)=>{
     }
 }
 
-const addNewGame = async (title,price,stock,type)=>{
+const addNewGame = async (title,price,stock,type,imageName)=>{
     const validInputs = typeof title === "string" && 
                         typeof price === "number" && 
                         typeof stock === "number" && 
                         typeof type === "string";
     if (validInputs){
-        const newGame = {title,price,stock,type}
+        const newGame = {title,price,stock,type,imageName}
         try{
             await gamesCollection.insertOne(newGame)
             return 201;

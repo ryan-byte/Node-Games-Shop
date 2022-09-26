@@ -43,7 +43,16 @@ main{
     color: rgb(255, 255, 255);
     display: none;
 }
-.gameItem:hover>.info,.gameItem:hover>.title{
+.gameBottom{
+    position: absolute;
+    text-align: center;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 255, 255);
+    display: none;
+}
+.gameItem:hover>.info, .gameItem:hover>.title, .gameItem:hover>.gameBottom{
     display: block;
 }
 .price{

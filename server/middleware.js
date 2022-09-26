@@ -1,7 +1,11 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const Busboy = require("busboy");
+const fs = require("fs");
+const path = require("path");
+const randomName = require("./utils/randomName");
 
+const imageFolder = path.join(__dirname,"assets","images");
 const secretKey = process.env.jwtSecretKey;
 const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
@@ -48,13 +52,36 @@ function image_upload_middleware(req,res,next){
     bb.status = 200;
     bb.on("file",(name,file,info)=>{
         const {mimeType} = info;
-        if (mimeType !== "image/jpeg" && mimeType !== "image/png"){
+        let ext = "";
+        if (mimeType === "image/jpeg"){
+            ext = ".jpg";
+        }else if (mimeType === "image/png"){
+            ext = ".png";
+        }else{
+            //a client error status code that indicates that his file mimetype is unaccepted
             bb.status = 415;
         }
+        
+        bb.fileName = randomName() + ext;
+        const filePath = path.join(imageFolder,bb.fileName);
+        let fileStream = fs.createWriteStream(filePath);
+
         file.on("data",(chunk)=>{
-            bb.totalSize += chunk.length;
-        });
+            //only write in the file if the extention is for images
+            if (ext === ".png" || ext === ".jpg"){
+                fileStream.write(chunk);
+                fileStream.bytesWritten+=chunk.length;
+            }
+        })
+
         file.on("close",()=>{
+            fileStream.close();
+            if (fileStream.bytesWritten === 0){
+                //if the file is empty then remove it 
+                fs.unlink(filePath,(err)=>{
+                    if (err) throw err;
+                });
+            }
             if (file.truncated){
                 bb.emit("filesLimit");
             }
@@ -65,8 +92,11 @@ function image_upload_middleware(req,res,next){
     })
     bb.on("close",()=>{
         if (bb.status === 200){
+            //proceed to the next function if everything is fine
+            res.locals.imageName = bb.fileName;
             next();
         }else{
+            //sending an error status code
             res.sendStatus(bb.status);
         }
     })

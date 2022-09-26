@@ -39,7 +39,12 @@ async function api_addGame(req,res){
                         stock === "";
     if (invalid) res.sendStatus(400);
     else{
-        let dataStatus = await database.addNewGame(title,price,stock,type);
+        //when there is no image uploaded make the imageName -> default.jpg
+        if (res.locals.imageName === undefined){
+            console.log("setting image to default");
+            res.locals.imageName = "default.jpg";
+        }
+        let dataStatus = await database.addNewGame(title,price,stock,type,res.locals.imageName);
         if (dataStatus["error"]){
             res.sendStatus(502)
         }else{
@@ -47,7 +52,11 @@ async function api_addGame(req,res){
             if (dataStatus === 201){
                 //log the username action
                 let username = res.locals.username;
-                database.logUserAction(username,`Added ${title} (type: ${type} /price: ${price}/ stock: ${stock})`);
+                if (res.locals.imageName === "default.jpg"){
+                    database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
+                }else{
+                    database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
+                }
             }
         }
     }
