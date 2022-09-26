@@ -48,7 +48,7 @@ function adminPanel_renderGame(div,data){
     div.dataset.stock = data.stock;
     div.dataset.price = data.price;
     div.innerHTML = `
-    <div class="gameImage" style="background-image:url('../images/${data.imageName}');"></div>
+    <div class="gameImage" style="background-image:url('../images/${data.imageName === null ? "default.jpg":data.imageName}');"></div>
     <div class="title">
         <b> ${data.title} </b>
     </div>

@@ -40,10 +40,6 @@ async function api_addGame(req,res){
     if (invalid) res.sendStatus(400);
     else{
         //when there is no image uploaded make the imageName -> default.jpg
-        if (res.locals.imageName === undefined){
-            console.log("setting image to default");
-            res.locals.imageName = "default.jpg";
-        }
         let dataStatus = await database.addNewGame(title,price,stock,type,res.locals.imageName);
         if (dataStatus["error"]){
             res.sendStatus(502)

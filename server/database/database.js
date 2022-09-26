@@ -1,6 +1,9 @@
 const {MongoClient,ObjectId} = require("mongodb");
 const hashPassword = require("../utils/hashPassword");
+const fs = require("fs");
+const path = require("path");
 
+const imageFolderPath = path.resolve(__dirname,"../assets/images")+"/";
 const URL = process.env.mongoURL;
 const client = new MongoClient(URL);
 const gameShopDB = client.db("GameShop");
@@ -53,6 +56,13 @@ const removeGame = async (id)=>{
         if (output.value === null){
             return {status:404};
         }
+        if (output.value.imageName){
+            //delete game image
+            fs.unlink(imageFolderPath + output.value.imageName,(err)=>{
+                if (err) throw err;
+            });
+        }
+        
         return {status:200,title:output.value.title};
     }catch(err){
         return {status:400};
