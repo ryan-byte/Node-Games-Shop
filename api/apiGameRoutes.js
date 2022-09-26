@@ -1,5 +1,5 @@
 const database = require("../server/database/database");
-
+const deleteImageFile = require("../server/utils/deleteImageFile");
 
 async function api_getAllgames(req,res){
     let data = await database.getAllgames();
@@ -64,6 +64,10 @@ async function api_removeGame(req,res){
     let gameTitle = gameRemoved.title;
     let status = gameRemoved.status;
     if (status === 200){
+        //delete the image file
+        if (gameRemoved.imageName){
+            deleteImageFile(gameRemoved.imageName);
+        }
         //log the username action
         let username = res.locals.username;
         database.logUserAction(username,`Deleted ${gameTitle} from the game list`);
