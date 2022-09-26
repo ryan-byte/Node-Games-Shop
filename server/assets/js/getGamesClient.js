@@ -14,19 +14,24 @@ searchButton.addEventListener("click",(ev)=>{
 
 async function getAllgames(title = ""){
     const request = await fetch(`/api/games/${title}`);
-    if (request.status === 502){
+    getGames_statusCodeOutput(request.status);
+    const jsonData = await request.json();
+    showGames(jsonData);
+}
+function getGames_statusCodeOutput(statusCode){
+    if (statusCode === 502){
         spinnerStatus(true);
         itemContainer.innerHTML = "Bad Gateway";
-        return;
-    }else if (request.status === 204){
+    }else if (statusCode === 204){
         spinnerStatus(true);
         itemContainer.innerHTML = "No Content";
-        return;
     }
-    const jsonData = await request.json();
+}
+
+function showGames(gamesData){
     spinnerStatus(true);
     itemContainer.innerHTML = "";
-    jsonData.forEach(data => {
+    gamesData.forEach(data => {
         let div = document.createElement("div");
         div.classList.add("gameItem");
         div.classList.add("m-2");
@@ -34,6 +39,7 @@ async function getAllgames(title = ""){
         itemContainer.appendChild(div)
     });
 }
+
 function spinnerStatus(hide = true){
     const button = document.getElementById("spinner");
     if (hide){

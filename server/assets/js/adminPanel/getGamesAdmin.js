@@ -25,11 +25,9 @@ function getGames_statusCodeOutput(statusCode){
     if (statusCode === 502){
         spinnerStatus(true);
         itemContainer.innerHTML = "Bad Gateway";
-        return;
     }else if (statusCode === 204){
         spinnerStatus(true);
         itemContainer.innerHTML = "No Content";
-        return;
     }
 }
 function showGames(gamesData){
