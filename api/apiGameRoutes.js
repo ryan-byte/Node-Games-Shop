@@ -101,7 +101,10 @@ async function api_updateGame(req,res){
         let oldValues = updateGame.oldValues;
         if (updateGameStatus === 200){
             //delete the old image
-
+            if (imageName){
+                //only delete if we have updated the image
+                deleteImageFile(oldValues.imageName);
+            }
             //log the username action
             let username = res.locals.username;
             database.logUserAction(username,`Updated old values(title: ${oldValues.title} /type: ${oldValues.type} /price: ${oldValues.price}/ stock: ${oldValues.stock}) new values (title: ${title} /type: ${type} /price: ${price}/ stock: ${stock})`);

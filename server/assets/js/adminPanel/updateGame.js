@@ -57,6 +57,12 @@ function updateGame_statusCode(statusCode,title,type,stock,price,objectId){
         alert("Bad parameters");
     }else if (statusCode === 401){
         alert("unauthorized (reload the page)")
+    }else if (statusCode === 415){
+        alert("uploading image failed must be (jpeg/jng)")
+    }else if (statusCode === 413){
+        alert("file size is too large")
+    }else if (statusCode === 502){
+        alert("Bad Gateway");
     }else{
         alert("unknown error (try reloading the page)");
     }
