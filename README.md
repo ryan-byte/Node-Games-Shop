@@ -14,6 +14,7 @@ jwtSecretKey = <string>
 mongoURL = <mongodb atlas connect url>
 digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
+maxImgUploadSize = <integer>
 ```
 
 #### config.env variables
@@ -29,6 +30,8 @@ A secret key that is used to sign jwt tokens this key should never be exposed (r
 Change the digest algorithm that is used for hashing password (default value sha256)
 ###### apiRequestsPerMin (OPTIONAL)
 Max number of API requests a user can make per minute (default value 60)
+###### maxImgUploadSize (OPTIONAL)
+Max size of the image file for a game (deafult 5mb)
 
 ### How to Run the Project:
 - Open the terminal or cmd at the project directory then run:
