@@ -5,9 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/spinner.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/spinner.css">
+    <link rel="stylesheet" href="/css/adminPanel.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -53,8 +54,9 @@
                     <div class="col"></div>
                 </div>
             </div>
-            <div id = "itemContainer" class="d-flex justify-content-center flex-wrap mx-auto">
-            </div>
+            <table id = "itemContainer" class="table table-bordered table-hover">
+                
+            </table>
             <div id = "spinner" class="spinner-border" role="status">
                 <span  class="visually-hidden">Loading...</span>
             </div>
@@ -88,6 +90,10 @@
                         <label for="updateStock" class="form-label">Stock:</label>
                         <input type="text" class="form-control" id="updateStock">
                     </div>
+                    <div class="mb-3">
+                        <label for="newGameStock" class="form-label">image:</label>
+                        <input type="file" class="form-control" id="imageFileUpload" name = "imageFileUpload">
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -101,9 +107,9 @@
 
     <footer></footer>
 
-    <script src="../../js/adminPanel/getGame.js"></script>
-    <script src="../../js/adminPanel/deleteGame.js"></script>
-    <script src="../../js/adminPanel/updateGame.js"></script>
-    <script src="../../js/bootstrap.min.js"></script>
+    <script defer src="/js/adminPanel/getGamesAdmin.js"></script>
+    <script defer src="/js/adminPanel/deleteGame.js"></script>
+    <script defer src="/js/adminPanel/updateGame.js"></script>
+    <script defer src="/js/bootstrap.min.js"></script>
 </body>
 </html>

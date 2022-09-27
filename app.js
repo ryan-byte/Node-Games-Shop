@@ -22,13 +22,15 @@ app.get("/api/games/:title",rateLimiter_Middleware(),
                     api_routes.api_getGameByTitle);
 //admins api
 app.post("/api/games",rateLimiter_Middleware(),
-                    server_middleware.api_verifyAdmin_middlware,
+                    server_middleware.api_verifyAdmin_middleware,
+                    server_middleware.image_upload_middleware,
                     api_routes.api_addGame);
 app.delete("/api/games/:id",rateLimiter_Middleware(),
-                    server_middleware.api_verifyAdmin_middlware,
+                    server_middleware.api_verifyAdmin_middleware,
                     api_routes.api_removeGame);
 app.put("/api/games/:id",rateLimiter_Middleware(),
-                    server_middleware.api_verifyAdmin_middlware,
+                    server_middleware.api_verifyAdmin_middleware,
+                    server_middleware.image_upload_middleware,
                     api_routes.api_updateGame);
 
 
@@ -40,12 +42,12 @@ app.get("/",(req,res)=>{
 app.get("/adminLogin",server_routes.getAdminLogin);
 app.post("/adminLogin",server_routes.postAdminLogin);
 
-app.get("/adminPanel",server_middleware.webpage_verifyAdmin_middlware,
+app.get("/adminPanel",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.getAdminPanel)
-app.get("/adminPanel/add",server_middleware.webpage_verifyAdmin_middlware,
+app.get("/adminPanel/add",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.getAdminPanelAddGame)
 
-app.post("/adminPanel/logout",server_middleware.api_verifyAdmin_middlware,
+app.post("/adminPanel/logout",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.adminLogout);
 
 app.listen(PORT, ()=>console.log("server is on 127.0.0.1:" + PORT))

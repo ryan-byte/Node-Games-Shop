@@ -14,27 +14,32 @@ searchButton.addEventListener("click",(ev)=>{
 
 async function getAllgames(title = ""){
     const request = await fetch(`/api/games/${title}`);
-    if (request.status === 502){
+    getGames_statusCodeOutput(request.status);
+    const jsonData = await request.json();
+    showGames(jsonData);
+}
+function getGames_statusCodeOutput(statusCode){
+    if (statusCode === 502){
         spinnerStatus(true);
         itemContainer.innerHTML = "Bad Gateway";
-        return;
-    }else if (request.status === 204){
+    }else if (statusCode === 204){
         spinnerStatus(true);
         itemContainer.innerHTML = "No Content";
-        return;
     }
-    const jsonData = await request.json();
+}
+
+function showGames(gamesData){
     spinnerStatus(true);
     itemContainer.innerHTML = "";
-    jsonData.forEach(data => {
+    gamesData.forEach(data => {
         let div = document.createElement("div");
-        div.classList.add("border");
-        div.classList.add("w-25");
-        div.classList.add("p-3");
+        div.classList.add("gameItem");
+        div.classList.add("m-2");
         renderGame(div,data);
         itemContainer.appendChild(div)
     });
 }
+
 function spinnerStatus(hide = true){
     const button = document.getElementById("spinner");
     if (hide){
@@ -50,9 +55,13 @@ function renderGame(div,data){
     div.dataset.stock = data.stock;
     div.dataset.price = data.price;
     div.innerHTML = `
-    <b>Title:</b> ${data.title}<br>
-    <b>Type:</b> ${data.type}<br>
-    <b>Price:</b> ${data.price}DT<br>
-    <b>Stock:</b> ${data.stock}<br>
+    <div class="gameImage" style="background-image:url('../images/${data.imageName}');"></div>
+    <div class="title">
+        <b> ${data.title} </b>
+    </div>
+    <div class="info" >
+        <h3 class="price"><b> ${data.price}DT </b></h3>
+        <h5 style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></h5>
+    </div>
     `;
 }

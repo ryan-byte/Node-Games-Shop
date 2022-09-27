@@ -1,5 +1,5 @@
 const database = require("../server/database/database");
-
+const deleteImageFile = require("../server/utils/deleteImageFile");
 
 async function api_getAllgames(req,res){
     let data = await database.getAllgames();
@@ -39,7 +39,8 @@ async function api_addGame(req,res){
                         stock === "";
     if (invalid) res.sendStatus(400);
     else{
-        let dataStatus = await database.addNewGame(title,price,stock,type);
+        //when there is no image uploaded make the imageName -> default.jpg
+        let dataStatus = await database.addNewGame(title,price,stock,type,res.locals.imageName);
         if (dataStatus["error"]){
             res.sendStatus(502)
         }else{
@@ -47,7 +48,11 @@ async function api_addGame(req,res){
             if (dataStatus === 201){
                 //log the username action
                 let username = res.locals.username;
-                database.logUserAction(username,`Added ${title} (type: ${type} /price: ${price}/ stock: ${stock})`);
+                if (res.locals.imageName === undefined){
+                    database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
+                }else{
+                    database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
+                }
             }
         }
     }
@@ -59,6 +64,10 @@ async function api_removeGame(req,res){
     let gameTitle = gameRemoved.title;
     let status = gameRemoved.status;
     if (status === 200){
+        //delete the image file
+        if (gameRemoved.imageName){
+            deleteImageFile(gameRemoved.imageName);
+        }
         //log the username action
         let username = res.locals.username;
         database.logUserAction(username,`Deleted ${gameTitle} from the game list`);
@@ -67,6 +76,8 @@ async function api_removeGame(req,res){
 }
 
 async function api_updateGame(req,res){
+    let imageName = res.locals.imageName;
+
     let id = req.params.id;
     let {title,price,stock,type} = req.query;
     price = parseInt(price);
@@ -85,11 +96,16 @@ async function api_updateGame(req,res){
     if (invalid) res.sendStatus(400);
     else{
         //update data
-        const updateGame = await database.updateGame(id,title,price,stock,type);
+        const updateGame = await database.updateGame(id,title,price,stock,type,imageName);
         let updateGameStatus = updateGame.status;
         let oldValues = updateGame.oldValues;
-        //log the username action
         if (updateGameStatus === 200){
+            //delete the old image
+            if (imageName){
+                //only delete if we have updated the image
+                deleteImageFile(oldValues.imageName);
+            }
+            //log the username action
             let username = res.locals.username;
             database.logUserAction(username,`Updated old values(title: ${oldValues.title} /type: ${oldValues.type} /price: ${oldValues.price}/ stock: ${oldValues.stock}) new values (title: ${title} /type: ${type} /price: ${price}/ stock: ${stock})`);
         }

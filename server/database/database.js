@@ -28,13 +28,13 @@ const getGamesByTitle = async (title)=>{
     }
 }
 
-const addNewGame = async (title,price,stock,type)=>{
+const addNewGame = async (title,price,stock,type,imageName)=>{
     const validInputs = typeof title === "string" && 
                         typeof price === "number" && 
                         typeof stock === "number" && 
                         typeof type === "string";
     if (validInputs){
-        const newGame = {title,price,stock,type}
+        const newGame = {title,price,stock,type,imageName}
         try{
             await gamesCollection.insertOne(newGame)
             return 201;
@@ -53,12 +53,12 @@ const removeGame = async (id)=>{
         if (output.value === null){
             return {status:404};
         }
-        return {status:200,title:output.value.title};
+        return {status:200,title:output.value.title,imageName:output.value.imageName};
     }catch(err){
         return {status:400};
     }
 }
-const updateGame = async (id,title,price,stock,type)=>{
+const updateGame = async (id,title,price,stock,type,imageName = undefined)=>{
     try{
         const validInputs = typeof id === "string"&&
                             typeof title === "string"&&
@@ -69,7 +69,7 @@ const updateGame = async (id,title,price,stock,type)=>{
             return {status:400};
         }
         const filter = {"_id": new ObjectId(id)};
-        const updateDoc = {
+        let updateDoc = {
             $set:{
                 title,
                 price,
@@ -77,12 +77,26 @@ const updateGame = async (id,title,price,stock,type)=>{
                 type
             }
         };
+        if (imageName){
+            //if the file is uploaded then update the database imageName field
+            updateDoc = {
+                $set:{
+                    title,
+                    price,
+                    stock,
+                    type,
+                    imageName
+                }
+            };
+        }
+
         let output = await gamesCollection.findOneAndUpdate(filter,updateDoc);
         if (output.value === null){
             return {status:404};
         }
         return {status:200,oldValues:output.value};
     }catch(err){
+        console.log(err);
         return {status:400};
     }
 }

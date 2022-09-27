@@ -1,7 +1,7 @@
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
-const database = require("./database/database")
+const database = require("./database/database");
 
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
@@ -71,9 +71,11 @@ function adminLogout(req,res){
     res.redirect("/");
 }
 
+
+
 module.exports = {getHomepage,
                 getAdminLogin,
                 postAdminLogin,
                 getAdminPanel,
                 getAdminPanelAddGame,
-                adminLogout};
+                adminLogout,};
