@@ -31,7 +31,7 @@ Change the digest algorithm that is used for hashing password (default value sha
 ###### apiRequestsPerMin (OPTIONAL)
 Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
-Max size of the image file for a game (deafult 5mb)
+Max size of the image file for a game (deafult 5000000 in bytes = 5mb)
 
 ### How to Run the Project:
 - Open the terminal or cmd at the project directory then run:
