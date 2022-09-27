@@ -32,36 +32,47 @@ function getGames_statusCodeOutput(statusCode){
 }
 function showGames(gamesData){
     spinnerStatus(true);
-    itemContainer.innerHTML = "";
+    itemContainer.innerHTML = `
+    <thead>
+        <tr>  
+            <th scope="col" colspan="4">title</th>
+            <th scope="col" colspan="4">type</th>
+            <th scope="col" colspan="4">price</th>
+            <th scope="col" colspan="4">stock</th>   
+            <th scope="col" colspan="1">update</th>   
+            <th scope="col" colspan="1">delete</th>   
+                                
+        </tr>
+    </thead>
+    <tbody></tbody>`;
+    let itemContainerTBody = itemContainer.getElementsByTagName("tbody")[0];
     gamesData.forEach(data => {
-        let div = document.createElement("div");
-        div.classList.add("gameItem");
-        div.classList.add("m-2");
-        adminPanel_renderGame(div,data);
-        itemContainer.appendChild(div);
+        let tr = document.createElement("tr");
+        adminPanel_renderGame(tr,data);
+        itemContainerTBody.appendChild(tr);
     });
 }
-function adminPanel_renderGame(div,data){
-    div.dataset.objectId = data["_id"];
-    div.dataset.title = data.title;
-    div.dataset.type = data.type;
-    div.dataset.stock = data.stock;
-    div.dataset.price = data.price;
-    div.innerHTML = `
-    <div class="gameImage" style="background-image:url('../images/${data.imageName === null ? "default.jpg":data.imageName}');"></div>
-    <div class="title">
-        <b> ${data.title} </b>
-    </div>
-    <div class="info" >
-        <h3 class="price"><b> ${data.price}DT </b></h3>
-        <h5 style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></h5>
-    </div>
-    <div class = "gameBottom">
-        <div class = "d-flex flex-row">
-            <button type="button" class="btn btn-danger" onclick="deleteGame(this)">Delete</button>
-            <button type="button" class="btn btn-warning" onclick="fillUpdateForm(this)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Update</button>
-        </div>
-    </div>
+function adminPanel_renderGame(tr,data){
+    tr.dataset.objectId = data["_id"];
+    tr.dataset.title = data.title;
+    tr.dataset.type = data.type;
+    tr.dataset.stock = data.stock;
+    tr.dataset.price = data.price;
+    tr.innerHTML = `
+    <td colspan="4" scope="row">${data.title}</td>
+    <td colspan="4">${data.type}</td>
+    <td colspan="4">${data.stock}</td>
+    <td colspan="4">${data.price}</td>
+    <td colspan="1">
+        <span class = "linkButton" onclick="fillUpdateForm(this)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            Update
+        </span>
+    </td>
+    <td colspan="1">
+        <span class = "linkButton" onclick="deleteGame(this)">
+            Delete
+        </span>
+    </td>
     `;
 }
 function spinnerStatus(hide = true){

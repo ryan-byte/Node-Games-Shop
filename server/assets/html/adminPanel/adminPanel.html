@@ -5,9 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/spinner.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/spinner.css">
+    <link rel="stylesheet" href="/css/adminPanel.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -53,8 +54,45 @@
                     <div class="col"></div>
                 </div>
             </div>
-            <div id = "itemContainer" class="d-flex justify-content-center flex-wrap mx-auto">
-            </div>
+            <table id = "itemContainer" class="table table-bordered table-hover">
+                <thead>
+                    <tr>  
+                        <th scope="col" colspan="4">title</th>
+                        <th scope="col" colspan="4">type</th>
+                        <th scope="col" colspan="4">price</th>
+                        <th scope="col" colspan="4">stock</th>   
+                        <th scope="col" colspan="1">update</th>   
+                        <th scope="col" colspan="1">delete</th>   
+                                         
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4" scope="row">Red dead</td>
+                        <td colspan="4">fighting</td>
+                        <td colspan="4">95</td>
+                        <td colspan="4">30</td>
+                        <td colspan="1">update</td>
+                        <td colspan="1">delete</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" scope="row">Red dead</td>
+                        <td colspan="4">fighting</td>
+                        <td colspan="4">95</td>
+                        <td colspan="4">30</td>
+                        <td colspan="1">update</td>
+                        <td colspan="1">delete</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" scope="row">Red dead</td>
+                        <td colspan="4">fighting</td>
+                        <td colspan="4">95</td>
+                        <td colspan="4">30</td>
+                        <td colspan="1">update</td>
+                        <td colspan="1">delete</td>
+                    </tr>
+                </tbody>
+            </table>
             <div id = "spinner" class="spinner-border" role="status">
                 <span  class="visually-hidden">Loading...</span>
             </div>
@@ -105,9 +143,9 @@
 
     <footer></footer>
 
-    <script defer src="../../js/adminPanel/getGamesAdmin.js"></script>
-    <script defer src="../../js/adminPanel/deleteGame.js"></script>
-    <script defer src="../../js/adminPanel/updateGame.js"></script>
-    <script defer src="../../js/bootstrap.min.js"></script>
+    <script defer src="/js/adminPanel/getGamesAdmin.js"></script>
+    <script defer src="/js/adminPanel/deleteGame.js"></script>
+    <script defer src="/js/adminPanel/updateGame.js"></script>
+    <script defer src="/js/bootstrap.min.js"></script>
 </body>
 </html>

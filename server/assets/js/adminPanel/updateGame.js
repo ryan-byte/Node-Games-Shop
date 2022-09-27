@@ -44,7 +44,7 @@ async function updateGameApi(objectId,title,type,stock,price){
 function updateGame_statusCode(statusCode,title,type,stock,price,objectId){
     if (statusCode === 200){
         //change the game values
-        let gameElem = document.querySelector(`div[data-object-id='${objectId}']`)
+        let gameElem = document.querySelector(`tr[data-object-id='${objectId}']`)
         let data = {"_id":objectId,
                     title,
                     type,
@@ -70,7 +70,7 @@ function updateGame_statusCode(statusCode,title,type,stock,price,objectId){
 
 function fillUpdateForm(elem){
     //get the object id
-    let gameElem = elem.parentElement.parentElement.parentElement;
+    let gameElem = elem.parentElement.parentElement;
     let gameDataSet = gameElem.dataset;
     //fill the form
     updateForm.dataset.objectId = gameDataSet.objectId;
