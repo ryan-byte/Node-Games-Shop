@@ -96,3 +96,6 @@ main{
     color: white;
     display: none;
 }
+.garbageButton{
+    cursor: pointer;
+}

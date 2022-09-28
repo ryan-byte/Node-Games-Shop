@@ -73,19 +73,19 @@
         <div class="modal-content">
             <div class="modal-header">
             <h5 class="modal-title" id="cartModalLabel">Cart</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button id = "closeModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body container-fluid">
                 <div class="row">
-                    <div class="col" id="gamesSide">
-                        <!--work on the games display here is an image for reference-->
-                        <img src="/images/1664322591729-980504453.jpg" alt="">
-                        <!---->
+                    <div class="col border-end" id="gamesSide">
+                        
                     </div>
-                    <div class="col-5" id="moneySide">
-                        <div id="totalMoney" style="text-align: center;font: bold;">
-                            <b>total:</b> 80.000 DT<br><br>
-                            <button type="button" class="btn btn-primary">Order</button>
+                    <div class="col-3 ms-5">
+                        <div class="position-fixed" id="moneySide">
+                            <div id="totalMoney" style="text-align: center;font: bold;">
+                                <b>total:</b> 80.000 DT<br><br>
+                                <button type="button" class="btn btn-primary">Order</button>
+                            </div>
                         </div>
                     </div>
                 </div>
