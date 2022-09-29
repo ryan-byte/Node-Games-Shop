@@ -1,9 +1,20 @@
 const cart = document.getElementById("cartNum");
 const gamesSide = document.getElementById("gamesSide");
-const moneySide = document.getElementById("moneySide");
+const totalMoney = document.getElementById("totalMoney");
 const closeModal = document.getElementById("closeModal");
+const cartButtons = document.getElementById("cartMoneyButtons");
+
+//events
+window.addEventListener("storage",(ev)=>{
+    //if the user tries to clear the cart value from the storage
+    if (ev.key === "cart" || ev.key === null){
+        updateCartNumberOnLoadup();
+        updateCartUI();
+    }
+})
 
 
+//cart functions
 updateCartNumberOnLoadup();
 function updateCartNumberOnLoadup(){
     let cart = localStorage.getItem("cart");
@@ -18,7 +29,6 @@ function updateCartNumberOnLoadup(){
     displayCartNumber(false);        
 }
 
-
 function updateCartUI(){
     let cart = localStorage.getItem("cart");
     if (cart){
@@ -26,11 +36,13 @@ function updateCartUI(){
         if (cart.length !== 0){
             showCartMoney(cart);
             showCartGames(cart);
+            cartButtons.style.display = "block";
             return;
         }
     }
     gamesSide.innerHTML = "EMPTY";
-    moneySide.innerHTML = "0 DT";
+    totalMoney.innerHTML = "0";
+    cartButtons.style.display = "none";
 }
 
 function showCartGames(cart){
@@ -108,7 +120,10 @@ function deleteGameFromCart(elem){
                 if (len === 0){
                     displayCartNumber(false);    
                     gamesSide.innerHTML = "EMPTY";
-                    moneySide.innerHTML = "0 DT";    
+                    totalMoney.innerHTML = "0";    
+                    cartButtons.style.display = "none";
+                }else{
+                    cartButtons.style.display = "block";
                 }
                 //store the cart new values
                 cart = JSON.stringify(cart);
@@ -124,12 +139,7 @@ function deleteGameFromCart(elem){
 
 function showCartMoney(cart){
     let total = calculateTotalMoneyInCart(cart);
-    moneySide.innerHTML = `
-    <div id="totalMoney" style="text-align: center;font: bold;">
-        <b>total:</b> ${total}.000 DT<br><br>
-        <button type="button" class="btn btn-primary">Order</button>
-        <button type="button" class="btn btn-danger" onclick = "clearCartButton()">Clear Cart</button>
-    </div>`;
+    totalMoney.innerHTML = total;
 }
 
 function clearCartButton(){

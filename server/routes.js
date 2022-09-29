@@ -11,6 +11,9 @@ const adminLoginCookieName = "jwt"
 function getHomepage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/index.html"));
 }
+function getOrderPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/order/order.html"));
+}
 
 function getAdminLogin(req,res){
     //get the jwt token (stored in a cookie)
@@ -73,7 +76,9 @@ function adminLogout(req,res){
 
 
 
+
 module.exports = {getHomepage,
+                getOrderPage,
                 getAdminLogin,
                 postAdminLogin,
                 getAdminPanel,

@@ -1,9 +1,0 @@
-tayara site uses bearer authentication for there api
-create an api with bearer authentication then try and exploit it
-
-add timeout to the search all games js that interact with the api:
-    if the api doesnt respond in some time then stop the spinner and print an error message
-    to see the issue start the server then go to the route of the page and then stop the server
-    once the server is stopped try pressing on the search button
-
-encrypt and decrypt the jwt

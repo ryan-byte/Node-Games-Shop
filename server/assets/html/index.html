@@ -81,10 +81,13 @@
                         
                     </div>
                     <div class="col-3 ms-5">
-                        <div class="position-fixed" id="moneySide">
-                            <div id="totalMoney" style="text-align: center;font: bold;">
-                                <b>total:</b> 80.000 DT<br><br>
-                                <button type="button" class="btn btn-primary">Order</button>
+                        <div class="position-fixed">
+                            <div style="text-align: center;font: bold;">
+                                <b>total:</b> <span id = "totalMoney"></span>.000 DT<br><br>
+                                <div id = "cartMoneyButtons">
+                                    <a href = "/order" class="btn btn-primary">Order</a>
+                                    <button type="button" class="btn btn-danger" onclick = "clearCartButton()">Clear Cart</button>
+                                </div>
                             </div>
                         </div>
                     </div>
