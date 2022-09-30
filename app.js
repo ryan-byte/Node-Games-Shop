@@ -39,6 +39,9 @@ app.get("/",(req,res)=>{
     server_routes.getHomepage(req,res);
 })
 
+app.get("/order",server_routes.getOrderPage);
+app.post("/order",server_routes.postOrder);
+
 app.get("/adminLogin",server_routes.getAdminLogin);
 app.post("/adminLogin",server_routes.postAdminLogin);
 

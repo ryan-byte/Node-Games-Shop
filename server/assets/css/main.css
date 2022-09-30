@@ -84,3 +84,18 @@ main{
         height: 300px;
     }
 }
+.cart{
+    cursor: pointer;
+}
+#cartNum{
+    font-size: small;
+    padding: 0 5px;
+    border:1px solid rgb(0, 0, 0);
+    background-color: red;
+    border-radius: 30%;
+    color: white;
+    display: none;
+}
+.garbageButton{
+    cursor: pointer;
+}

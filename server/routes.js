@@ -12,6 +12,43 @@ function getHomepage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/index.html"));
 }
 
+function getOrderPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/order/order.html"));
+}
+async function postOrder(req,res){
+    //get the order informations
+    let {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs} = req.body;
+    //verify the order informations
+    let condition = FirstName === ""||
+                    typeof FirstName === "undefined"||
+                    LastName === ""||
+                    typeof LastName === "undefined"||
+                    TelNumber === ""||
+                    typeof TelNumber === "undefined"||
+                    Address === ""||
+                    typeof Address === "undefined"||
+                    City === ""||
+                    typeof City === "undefined"||
+                    GameIDs === ""||
+                    typeof GameIDs === "undefined"||
+                    PostalCode === ""||
+                    typeof PostalCode === "undefined";
+    if (condition){
+        res.sendStatus(400);
+        return;
+    }
+    try{
+        GameIDs = JSON.parse(GameIDs);
+    }catch (err){
+        res.sendStatus(400);
+        return;
+    }
+    //when everything is fine then add the order to the database
+    let statusCode = await database.createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs);
+    //send back the status code to the client
+    res.sendStatus(statusCode);
+}
+
 function getAdminLogin(req,res){
     //get the jwt token (stored in a cookie)
     let allCookies = cookie.parse(req.headers.cookie || "");
@@ -73,7 +110,9 @@ function adminLogout(req,res){
 
 
 
+
 module.exports = {getHomepage,
+                getOrderPage,postOrder,
                 getAdminLogin,
                 postAdminLogin,
                 getAdminPanel,

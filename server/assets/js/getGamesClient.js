@@ -1,6 +1,7 @@
 const searchButton = document.getElementById("search");
 const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
+const spinner = document.getElementById("spinner");
 
 titleInput.addEventListener("keypress",(ev)=>{
     if (ev.key === "Enter"){
@@ -41,11 +42,10 @@ function showGames(gamesData){
 }
 
 function spinnerStatus(hide = true){
-    const button = document.getElementById("spinner");
     if (hide){
-        button.style.display = "none";
+        spinner.style.display = "none";
     }else{
-        button.style.display = "block";
+        spinner.style.display = "block";
     }
 }
 
@@ -54,6 +54,7 @@ function renderGame(div,data){
     div.dataset.type = data.type;
     div.dataset.stock = data.stock;
     div.dataset.price = data.price;
+    div.dataset.allData = JSON.stringify(data);
     div.innerHTML = `
     <div class="gameImage" style="background-image:url('../images/${data.imageName}');"></div>
     <div class="title">
@@ -62,6 +63,7 @@ function renderGame(div,data){
     <div class="info" >
         <h3 class="price"><b> ${data.price}DT </b></h3>
         <h5 style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></h5>
+        <button type="button" class="btn btn-warning" onclick="storeGameInCart(this.parentElement.parentElement.dataset.allData)">add to cart</button>
     </div>
     `;
 }
