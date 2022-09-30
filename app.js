@@ -45,12 +45,15 @@ app.post("/order",server_routes.postOrder);
 app.get("/adminLogin",server_routes.getAdminLogin);
 app.post("/adminLogin",server_routes.postAdminLogin);
 
-app.get("/adminPanel",server_middleware.webpage_verifyAdmin_middleware,
-                    server_routes.getAdminPanel)
-app.get("/adminPanel/add",server_middleware.webpage_verifyAdmin_middleware,
-                    server_routes.getAdminPanelAddGame)
+app.get("/adminpanel",server_middleware.webpage_verifyAdmin_middleware,
+                    server_routes.getadminpanel);
+app.get("/adminpanel/add",server_middleware.webpage_verifyAdmin_middleware,
+                    server_routes.getadminpanelAddGame);
 
-app.post("/adminPanel/logout",server_middleware.webpage_verifyAdmin_middleware,
+app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
+                            server_routes.getadminpanelOrder);
+
+app.post("/adminpanel/logout",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.adminLogout);
 
 app.listen(PORT, ()=>console.log("server is on 127.0.0.1:" + PORT))

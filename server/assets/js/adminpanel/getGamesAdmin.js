@@ -48,11 +48,11 @@ function showGames(gamesData){
     let itemContainerTBody = itemContainer.getElementsByTagName("tbody")[0];
     gamesData.forEach(data => {
         let tr = document.createElement("tr");
-        adminPanel_renderGame(tr,data);
+        adminpanel_renderGame(tr,data);
         itemContainerTBody.appendChild(tr);
     });
 }
-function adminPanel_renderGame(tr,data){
+function adminpanel_renderGame(tr,data){
     tr.dataset.objectId = data["_id"];
     tr.dataset.title = data.title;
     tr.dataset.type = data.type;

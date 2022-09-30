@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand" href="#">Admin panel</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href = "/adminpanel">Manage Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminpanel/add">Add New Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" >Orders</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <form action="/adminpanel/logout" method="post">
+                        <button id = "submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container-xxl my-md-4 bd-layout">
+        <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
+            <button type="button" class="btn btn-outline-secondary mx-3">Unverified orders</button>
+            <button type="button" class="btn btn-outline-success mx-3">Verified orders</button>
+            <button type="button" class="btn btn-outline-danger mx-3">Declined orders</button>
+        </div>
+        <hr>
+        <div class="d-flex flex-column bd-highlight mb-3 mx-5 border">
+            <!--order prototype starts here-->
+
+
+            <div class="px-2 bd-highlight">
+                <div class="row">
+                    <div class = "py-2 col d-flex flex-column bd-highlight border-end border-bottom">
+                        <div class="bd-highlight"><b>name:</b> joe</div>
+                        <div class="bd-highlight"><b>address:</b> 25t street</div>
+                        <div class="bd-highlight"><b>phone number:</b> 53215642</div>
+                        <div class="bd-highlight"><b>postal code:</b> 1203</div>
+                    </div>
+                    <div class = "py-2 col d-flex flex-column bd-highlight border-end border-bottom">
+                        <div class="bd-highlight">Red dead redemption (20dt)</div>
+                        <div class="bd-highlight">cyberpunk (10dt)</div>
+                    </div>
+                    <div class = "py-2 col border-bottom">
+                        <b>total money:</b> 30dt
+                    </div>
+                </div>
+            </div>
+            <div class="p-2 bd-highlight d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-success mx-3">Verify</button>
+                <button type="button" class="btn btn-outline-danger mx-3">Decline</button>
+            </div>
+
+            <!--order prototype ends here-->
+        </div>
+    </main>
+    
+
+    <footer></footer>
+
+    
+    <script defer src="/js/bootstrap.min.js"></script>
+</body>
+</html>

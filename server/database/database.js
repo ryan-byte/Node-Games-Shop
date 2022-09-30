@@ -156,7 +156,7 @@ async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCo
                         typeof GameIDs === "object" && 
                         typeof Address === "string";
     if (validInputs){
-        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs};
+        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs,verificationStatus:0};
         try{
             await ordersCollection.insertOne(newOrder)
             return 201;

@@ -50,7 +50,7 @@ function updateGame_statusCode(statusCode,title,type,stock,price,objectId){
                     type,
                     stock:parseInt(stock),
                     price:parseInt(price)};
-        adminPanel_renderGame(gameElem,data);
+        adminpanel_renderGame(gameElem,data);
         //close the form
         updateFormClose.click();
     }else if (statusCode === 400){
