@@ -6,6 +6,7 @@ const client = new MongoClient(URL);
 const gameShopDB = client.db("GameShop");
 const gamesCollection = gameShopDB.collection("Games");
 const adminCollection = gameShopDB.collection("admin");
+const ordersCollection = gameShopDB.collection("orders");
 const logsCollection = gameShopDB.collection("logs");
 
 const getAllgames = async ()=>{
@@ -146,6 +147,29 @@ async function logUserAction(username,action){
     }
 }
 
+async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs){
+    const validInputs = typeof FirstName === "string" && 
+                        typeof LastName === "string" && 
+                        typeof City === "string" && 
+                        typeof PostalCode === "string" && 
+                        typeof TelNumber === "string" && 
+                        typeof GameIDs === "object" && 
+                        typeof Address === "string";
+    if (validInputs){
+        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs};
+        try{
+            await ordersCollection.insertOne(newOrder)
+            return 201;
+        }catch (err){
+            console.log(err);
+            return 500;
+        }
+    }else{
+        return 400;
+    }
+}
+
 module.exports = {getAllgames,getGamesByTitle,
                 addNewGame,removeGame,updateGame,
-                createAdmin,getAdmin,verifyAdmin,logUserAction};
+                createAdmin,getAdmin,verifyAdmin,logUserAction,
+                createNewOrder};

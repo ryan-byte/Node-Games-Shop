@@ -1,6 +1,7 @@
 const searchButton = document.getElementById("search");
 const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
+const spinner = document.getElementById("spinner");
 
 titleInput.addEventListener("keypress",(ev)=>{
     if (ev.key === "Enter"){
@@ -41,11 +42,10 @@ function showGames(gamesData){
 }
 
 function spinnerStatus(hide = true){
-    const button = document.getElementById("spinner");
     if (hide){
-        button.style.display = "none";
+        spinner.style.display = "none";
     }else{
-        button.style.display = "block";
+        spinner.style.display = "block";
     }
 }
 
