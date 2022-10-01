@@ -169,7 +169,17 @@ async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCo
     }
 }
 
+async function getOrders(verificationStatus){
+    try{
+        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
+        return allOrders;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
+    }
+}
+
 module.exports = {getAllgames,getGamesByTitle,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder};
+                createNewOrder,getOrders};

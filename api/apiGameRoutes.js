@@ -115,9 +115,25 @@ async function api_updateGame(req,res){
 
 }
 
+async function api_getOrder(req,res){
+    let verificationStatus = parseInt(req.params.verificationStatus);
+    if (isNaN(verificationStatus)){
+        res.sendStatus(400);
+        return;
+    }
+    let data = await database.getOrders(verificationStatus);
+    if (data["error"]){
+        res.sendStatus(502)
+    }else{
+        res.status(200);
+        res.json(data);
+    }
+}
+
 module.exports = {
                     api_getAllgames,
                     api_getGameByTitle,
                     api_addGame,
                     api_removeGame,
-                    api_updateGame}
+                    api_updateGame,
+                    api_getOrder}

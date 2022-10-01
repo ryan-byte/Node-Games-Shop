@@ -32,7 +32,9 @@ app.put("/api/games/:id",rateLimiter_Middleware(),
                     server_middleware.api_verifyAdmin_middleware,
                     server_middleware.image_upload_middleware,
                     api_routes.api_updateGame);
-
+app.get("/api/orders/:verificationStatus",rateLimiter_Middleware(),
+                    server_middleware.api_verifyAdmin_middleware,
+                    api_routes.api_getOrder);
 
 //website routes
 app.get("/",(req,res)=>{
