@@ -18,6 +18,8 @@ app.use(express.static('./server/assets'));
 //public api
 app.get("/api/games",rateLimiter_Middleware(),
                     api_routes.api_getAllgames);
+app.get("/api/games/id/:ids",rateLimiter_Middleware(),
+                    api_routes.api_getMultipleGamesByID);
 app.get("/api/games/:title",rateLimiter_Middleware(),
                     api_routes.api_getGameByTitle);
 //admins api

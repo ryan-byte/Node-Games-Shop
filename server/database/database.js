@@ -20,11 +20,23 @@ const getAllgames = async ()=>{
 }
 const getGamesByTitle = async (title)=>{
     try{
-        const query = {title:{$regex:title}};
+        const query = {title:{$regex:`${title}`,$options:"i"}};
         let getGames = await gamesCollection.find(query).toArray()
         return getGames;
     }catch (err){
         console.error(err)
+        return {error:"db error"}
+    }
+}
+async function getGamesByIDs(gamesIDsArray){
+    try{
+        for (let i = 0;i<gamesIDsArray.length; i++){
+            gamesIDsArray[i] = new ObjectId(gamesIDsArray[i]);
+        }
+        let query = {"_id": {$in: gamesIDsArray}};
+        let allGames = await gamesCollection.find(query).toArray();
+        return allGames;
+    }catch (err){
         return {error:"db error"}
     }
 }
@@ -179,7 +191,7 @@ async function getOrders(verificationStatus){
     }
 }
 
-module.exports = {getAllgames,getGamesByTitle,
+module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
                 createNewOrder,getOrders};

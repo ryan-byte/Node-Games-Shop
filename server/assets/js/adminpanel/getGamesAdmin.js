@@ -2,29 +2,30 @@ const searchButton = document.getElementById("search");
 const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
 
-//update form inputs
-
-titleInput.addEventListener("keypress",(ev)=>{
-    if (ev.key === "Enter"){
-        searchButton.click();
-    }
-})
-searchButton.addEventListener("click",(ev)=>{
-    spinnerStatus(false);
-    getAllgames(titleInput.value);
-})
-
+//main function
 async function getAllgames(title = ""){
-    const request = await fetch(`/api/games/${title}`);
-    getGames_statusCodeOutput(request.status);
-    const jsonData = await request.json();
-    showGames(jsonData);
+    try{
+        disableSearchButton(true);
+        const request = await fetch(`/api/games/${title}`);
+        getGames_statusCodeOutput(request.status);
+        const jsonData = await request.json();
+        showGames(jsonData);
+    }catch (err){
+        if (! err instanceof SyntaxError){
+            alert("unknown error");
+            console.error(err);
+        }
+    }
+    disableSearchButton(false);
 }
 
+//show games functions
 function getGames_statusCodeOutput(statusCode){
     if (statusCode === 502){
         spinnerStatus(true);
         itemContainer.innerHTML = "Bad Gateway";
+    }else if (statusCode === 429){
+        alert("Too Many Requests")
     }else if (statusCode === 204){
         spinnerStatus(true);
         itemContainer.innerHTML = "No Content";
@@ -83,3 +84,19 @@ function spinnerStatus(hide = true){
         button.style.display = "block";
     }
 }
+
+//utils functions
+function disableSearchButton (bool){
+    searchButton.disabled = bool;
+}
+
+//events
+titleInput.addEventListener("keypress",(ev)=>{
+    if (ev.key === "Enter"){
+        searchButton.click();
+    }
+})
+searchButton.addEventListener("click",(ev)=>{
+    spinnerStatus(false);
+    getAllgames(titleInput.value);
+})

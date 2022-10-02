@@ -3,22 +3,25 @@ const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
 const spinner = document.getElementById("spinner");
 
-titleInput.addEventListener("keypress",(ev)=>{
-    if (ev.key === "Enter"){
-        searchButton.click();
-    }
-})
-searchButton.addEventListener("click",(ev)=>{
-    spinnerStatus(false);
-    getAllgames(titleInput.value);
-})
 
+//main function
 async function getAllgames(title = ""){
-    const request = await fetch(`/api/games/${title}`);
-    getGames_statusCodeOutput(request.status);
-    const jsonData = await request.json();
-    showGames(jsonData);
+    try{
+        disableSearchButton(true);
+        const request = await fetch(`/api/games/${title}`);
+        getGames_statusCodeOutput(request.status);
+        const jsonData = await request.json();
+        showGames(jsonData);
+    }catch (err){
+        if (! err instanceof SyntaxError){
+            alert("unknown error");
+            console.error(err);
+        }
+    }
+    disableSearchButton(false);
 }
+
+//show games functions
 function getGames_statusCodeOutput(statusCode){
     if (statusCode === 502){
         spinnerStatus(true);
@@ -28,7 +31,6 @@ function getGames_statusCodeOutput(statusCode){
         itemContainer.innerHTML = "No Content";
     }
 }
-
 function showGames(gamesData){
     spinnerStatus(true);
     itemContainer.innerHTML = "";
@@ -40,15 +42,6 @@ function showGames(gamesData){
         itemContainer.appendChild(div)
     });
 }
-
-function spinnerStatus(hide = true){
-    if (hide){
-        spinner.style.display = "none";
-    }else{
-        spinner.style.display = "block";
-    }
-}
-
 function renderGame(div,data){
     div.dataset.title = data.title;
     div.dataset.type = data.type;
@@ -67,3 +60,28 @@ function renderGame(div,data){
     </div>
     `;
 }
+
+
+//utils functions
+function disableSearchButton (bool){
+    searchButton.disabled = bool;
+}
+function spinnerStatus(hide = true){
+    if (hide){
+        spinner.style.display = "none";
+    }else{
+        spinner.style.display = "block";
+    }
+}
+
+
+//events
+titleInput.addEventListener("keypress",(ev)=>{
+    if (ev.key === "Enter"){
+        searchButton.click();
+    }
+})
+searchButton.addEventListener("click",(ev)=>{
+    spinnerStatus(false);
+    getAllgames(titleInput.value);
+})
