@@ -53,7 +53,7 @@ app.get("/adminpanel/add",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.getadminpanelAddGame);
 
 app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
-                            server_routes.getadminpanelOrder);
+                            server_routes.getadminpanelOrderList);
 
 app.post("/adminpanel/logout",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.adminLogout);

@@ -7,6 +7,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/spinner.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -42,45 +43,23 @@
 
     <main class="container-xxl my-md-4 bd-layout">
         <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
-            <button type="button" class="btn btn-outline-secondary mx-3">Unverified orders</button>
-            <button type="button" class="btn btn-outline-success mx-3">Verified orders</button>
-            <button type="button" class="btn btn-outline-danger mx-3">Declined orders</button>
+            <button id = "unverified" type="button" class="btn btn-outline-secondary mx-3" onclick="getAllOrders(0)">Unverified orders</button>
+            <button id = "verified" type="button" class="btn btn-outline-success mx-3" onclick="getAllOrders(1)">Verified orders</button>
+            <button id = "declined" type="button" class="btn btn-outline-danger mx-3" onclick="getAllOrders(2)">Declined orders</button>
         </div>
-        <hr>
-        <div class="d-flex flex-column bd-highlight mb-3 mx-5 border">
-            <!--order prototype starts here-->
+        <div id = "spinner" class="spinner-border" role="status">
+            <span  class="visually-hidden">Loading...</span>
+        </div>
+        <br>
+        <div id = "orderList" class="d-flex flex-column bd-highlight mb-3 mx-5">
 
-
-            <div class="px-2 bd-highlight">
-                <div class="row">
-                    <div class = "py-2 col d-flex flex-column bd-highlight border-end border-bottom">
-                        <div class="bd-highlight"><b>name:</b> joe</div>
-                        <div class="bd-highlight"><b>address:</b> 25t street</div>
-                        <div class="bd-highlight"><b>phone number:</b> 53215642</div>
-                        <div class="bd-highlight"><b>postal code:</b> 1203</div>
-                    </div>
-                    <div class = "py-2 col d-flex flex-column bd-highlight border-end border-bottom">
-                        <div class="bd-highlight">Red dead redemption (20dt)</div>
-                        <div class="bd-highlight">cyberpunk (10dt)</div>
-                    </div>
-                    <div class = "py-2 col border-bottom">
-                        <b>total money:</b> 30dt
-                    </div>
-                </div>
-            </div>
-            <div class="p-2 bd-highlight d-flex justify-content-center">
-                <button type="button" class="btn btn-outline-success mx-3">Verify</button>
-                <button type="button" class="btn btn-outline-danger mx-3">Decline</button>
-            </div>
-
-            <!--order prototype ends here-->
         </div>
     </main>
     
 
     <footer></footer>
 
-    
+    <script defer src="/js/adminpanel/adminOrdersList.js"></script>
     <script defer src="/js/bootstrap.min.js"></script>
 </body>
 </html>

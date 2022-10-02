@@ -103,8 +103,8 @@ function getadminpanelAddGame(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/addGame.html"));
 }
 
-function getadminpanelOrder(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/order.html"));
+function getadminpanelOrderList(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/ordersList.html"));
 }
 
 function adminLogout(req,res){
@@ -121,5 +121,5 @@ module.exports = {getHomepage,
                 postAdminLogin,
                 getadminpanel,
                 getadminpanelAddGame,
-                getadminpanelOrder,
+                getadminpanelOrderList,
                 adminLogout,};
