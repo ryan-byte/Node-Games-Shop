@@ -1,10 +1,20 @@
 # Games-Shop
+### Overview:
+
+### Built With:
+-nodejs
+-express
+-html/css/js
+-bootstrap
+-mongodb
+-dotenv
+
 ### How to Setup the Project:
 - Install nodejs from https://nodejs.org/en/download/
 
 - Open the terminal or cmd at the project directory then run:
 ```
-npm i
+$ npm i
 ```
 - Add config.env file to the project folder, then add the following:
 
@@ -36,5 +46,67 @@ Max size of the image file for a game (default 5000000 in bytes = 5mb)
 ### How to Run the Project:
 - Open the terminal or cmd at the project directory then run:
 ```
-npm run start
+$ npm run start
 ```
+
+### How to create an admin user:
+- Open the terminal or cmd at the project directory then run:
+```
+$ node createAdmin.js
+```
+- Input the username 
+- Input the password 
+- Input the confirm password
+
+### Roadmap:
+#### Foundation
+
+- [x] public get api for games
+- [x] limit the get api requests to 60 per min (use bucket token algorithm) note: make sure to store bucket token in Redis in production
+- [x] save games in mongodb
+- [x] admin register script that cannot be accessed which will create an admin user (must use password hashing)
+- [x] create games post/update/delete api (can only be accessed by admins)
+- [x] create admin login page
+- [x] add admin authorization token to the games post/update/delete api (secure cookies)
+- [x] admin panel frontend (search games/ update game/ delete game/ add new game)
+- [x] admin panel logout
+- [x] admin login verification
+- [x] log admin actions
+- [x] secure the backend code for admin login
+- [x] use dotenv code to seperate secret informations from the source code
+- [x] rendering games (frontend)
+- [x] make the admin panel simpler for development
+- [x] orders cart (client)
+- [x] order (client) 
+- [x] verify order (backend)
+- [x] admin verification of the order (admin panel) 
+- [ ] update the README file
+
+
+#### Features
+- [ ] game description
+- [ ] frontend overhaul
+- [ ] can add quantity in the cart
+- [ ] blacklist ip if the admin password is wrong for few times
+- [ ] make the api requests limiter store in Redis instead of memory
+- [ ] make the game type selectable + verification
+- [ ] request timeout security
+- [ ] user register
+- [ ] login page for users/admin
+- [ ] limit the number of games loaded and more will be loaded when scrolling down
+
+
+#### Production
+- [ ] polish the frontend
+- [ ] clean the backend code
+- [ ] secure the backend code
+- [ ] change the api request limiter to work in redis cache instead of memory
+- [ ] after adding SSL certificate for encrypted connection make sure to set every cookie flag to secure
+- [ ] store the images in a cloud storage
+
+#### Notes:
+
+- **dont use localStorage and sessionStorage to store jwt they are vulnerable to XSS attack**
+- **cookies are a possibility to store tokens but to protect from XSS attack use `httponly` option in cookies**
+- **cookies are vulnerable to CSRF attack to prevent this set the following option  `sameSite` to `Strict`**
+- **cookies security blog:** https://tkacz.pro/how-to-securely-store-jwt-tokens/

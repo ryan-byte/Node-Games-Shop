@@ -118,8 +118,10 @@ const updateGame = async (id,title,price,stock,type,imageName = undefined)=>{
 const createAdmin = async (username,hashedPassword,hashKey)=>{
     try{
         await adminCollection.insertOne({username,hashedPassword,hashKey});
+        return true;
     }catch(err){
         console.error(err);
+        return false;
     }
 }
 const getAdmin = async (username)=>{
