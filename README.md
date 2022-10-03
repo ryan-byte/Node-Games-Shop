@@ -1,12 +1,12 @@
 # Games-Shop
 
 ##### Table of Contents  
-[Overview](#overview)  
-[Features](#features)
-[Setup Project](#setup)
-[Run Project](#run)
-[Create Admin](#createAdmin)
-[Roadmap](#roadmap)
+[Overview](#overview) <br>
+[Features](#features) <br>
+[Setup Project](#setup) <br>
+[Run Project](#run) <br>
+[Create Admin](#createAdmin) <br>
+[Roadmap](#roadmap) <br>
 
 
 <a name="overview"/>
@@ -17,11 +17,11 @@
 <a name="features"/>
 
 ### Features:
--Users can view games
--Users can order games
--Admins can create, update and delete games
--Admins can view all orders
--Admins can verify or decline orders
+-Users can view games <br>
+-Users can order games <br>
+-Admins can create, update and delete games  <br>
+-Admins can view all orders <br>
+-Admins can verify or decline orders <br>
 
 <a name="setup"/>
 
