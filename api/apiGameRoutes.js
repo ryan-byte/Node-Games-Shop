@@ -22,6 +22,26 @@ async function api_getGameByTitle(req,res){
         res.status(200).json(data);
     }
 }
+async function api_getMultipleGamesByID(req,res){
+    try{
+        let gamesIDs = req.params.ids;
+        gamesIDs = JSON.parse(gamesIDs);
+        let data = await database.getGamesByIDs(gamesIDs);
+        if (data["error"]){
+            res.sendStatus(502);
+        }else{
+            res.status(200);
+            res.json(data);
+        }
+    }
+    catch(err){
+        if (err instanceof SyntaxError){
+            res.sendStatus(400);
+        }else{
+            res.sendStatus(500);
+        }
+    }
+}
 
 async function api_addGame(req,res){
     let {title,price,stock,type} = req.query;
@@ -39,7 +59,6 @@ async function api_addGame(req,res){
                         stock === "";
     if (invalid) res.sendStatus(400);
     else{
-        //when there is no image uploaded make the imageName -> default.jpg
         let dataStatus = await database.addNewGame(title,price,stock,type,res.locals.imageName);
         if (dataStatus["error"]){
             res.sendStatus(502)
@@ -115,9 +134,51 @@ async function api_updateGame(req,res){
 
 }
 
+async function api_getOrder(req,res){
+    let verificationStatus = parseInt(req.params.verificationStatus);
+    if (isNaN(verificationStatus)){
+        res.sendStatus(400);
+        return;
+    }
+    let data = await database.getOrders(verificationStatus);
+    if (data["error"]){
+        res.sendStatus(502)
+    }else{
+        res.status(200);
+        res.json(data);
+    }
+}
+async function api_declineOrder(req,res){
+    const username = res.locals.username;
+
+    const orderID = req.params.orderID;
+    const statusCode = await database.declineOrder(orderID);
+    //log admin action
+    if (statusCode === 200){
+        database.logUserAction(username,`Declined ${orderID}`);
+    }
+    //send a status code back
+    res.sendStatus(statusCode);
+}
+async function api_verifyOrder(req,res){
+    const username = res.locals.username;
+    
+    const orderID = req.params.orderID;
+    let statusCode = await database.verifyOrder(orderID);
+
+    //log admin action
+    if (statusCode === 200){
+        database.logUserAction(username,`Verified ${orderID}`);
+    }
+    //send a status code back
+    res.sendStatus(statusCode);
+}
+
 module.exports = {
                     api_getAllgames,
-                    api_getGameByTitle,
+                    api_getGameByTitle,api_getMultipleGamesByID,
                     api_addGame,
                     api_removeGame,
-                    api_updateGame}
+                    api_updateGame,
+                    api_getOrder,
+                    api_verifyOrder,api_declineOrder}

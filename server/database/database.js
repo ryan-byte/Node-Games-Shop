@@ -1,4 +1,5 @@
 const {MongoClient,ObjectId} = require("mongodb");
+const {BSONTypeError} = require("bson");
 const hashPassword = require("../utils/hashPassword");
 
 const URL = process.env.mongoURL;
@@ -20,11 +21,23 @@ const getAllgames = async ()=>{
 }
 const getGamesByTitle = async (title)=>{
     try{
-        const query = {title:{$regex:title}};
+        const query = {title:{$regex:`${title}`,$options:"i"}};
         let getGames = await gamesCollection.find(query).toArray()
         return getGames;
     }catch (err){
         console.error(err)
+        return {error:"db error"}
+    }
+}
+async function getGamesByIDs(gamesIDsArray){
+    try{
+        for (let i = 0;i<gamesIDsArray.length; i++){
+            gamesIDsArray[i] = new ObjectId(gamesIDsArray[i]);
+        }
+        let query = {"_id": {$in: gamesIDsArray}};
+        let allGames = await gamesCollection.find(query).toArray();
+        return allGames;
+    }catch (err){
         return {error:"db error"}
     }
 }
@@ -105,8 +118,10 @@ const updateGame = async (id,title,price,stock,type,imageName = undefined)=>{
 const createAdmin = async (username,hashedPassword,hashKey)=>{
     try{
         await adminCollection.insertOne({username,hashedPassword,hashKey});
+        return true;
     }catch(err){
         console.error(err);
+        return false;
     }
 }
 const getAdmin = async (username)=>{
@@ -156,7 +171,7 @@ async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCo
                         typeof GameIDs === "object" && 
                         typeof Address === "string";
     if (validInputs){
-        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs};
+        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs,verificationStatus:0};
         try{
             await ordersCollection.insertOne(newOrder)
             return 201;
@@ -169,7 +184,62 @@ async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCo
     }
 }
 
-module.exports = {getAllgames,getGamesByTitle,
+async function getOrders(verificationStatus){
+    try{
+        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
+        return allOrders;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
+    }
+}
+async function verifyOrder(orderID){
+    try{
+        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let updateDoc = {
+            $set:{
+                "verificationStatus":1
+            }
+        };
+        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
+        if (output.value === null){
+            return 404;
+        }
+        return 200;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return 400;
+        }else{
+            console.error(err);
+            return 502;
+        }
+    }
+}
+async function declineOrder(orderID){
+    try{
+        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let updateDoc = {
+            $set:{
+                "verificationStatus":2
+            }
+        };
+        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
+        if (output.value === null){
+            return 404;
+        }
+        return 200;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return 400;
+        }else{
+            console.error(err);
+            return 502;
+        }
+    }
+}
+
+module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder};
+                createNewOrder,getOrders,
+                verifyOrder,declineOrder};

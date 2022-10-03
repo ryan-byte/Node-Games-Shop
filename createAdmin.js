@@ -24,9 +24,15 @@ async function main(){
             rl.question("confirm password:",async confirmPassword=>{
                 if (password === confirmPassword){
                     let hashedPassword = hashPassword(password,hashKey);
-                    await createAdmin(username,hashedPassword,hashKey);
+                    let dbResponse = await createAdmin(username,hashedPassword,hashKey);
+                    if (dbResponse){
+                        console.log("admin created");
+                    }else{
+                        console.log("something went wrong");
+                    }
+                }else{
+                    console.log("Password and confirm password does not match");
                 }
-                console.log("done saved");
                 rl.close();
             })
         })

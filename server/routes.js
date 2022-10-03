@@ -57,7 +57,7 @@ function getAdminLogin(req,res){
         try{
             //verify the token if it is valid then redirect
             jwt.verify(jwtToken,secretKey);
-            res.status(302).redirect("/adminPanel");
+            res.status(302).redirect("/adminpanel");
         }catch (err){
             //when the token is invalid then the admin login page
             res.status(200).sendFile(path.join(__dirname + "/assets/html/adminLogin.html"));
@@ -85,7 +85,7 @@ async function postAdminLogin(req,res){
                 sameSite:"strict",
                 maxAge: tokenExpire //1 day
             }));
-            res.redirect("/adminPanel");
+            res.redirect("/adminpanel");
             //save logs
             database.logUserAction(username,`User logged in`);
         }catch (err){
@@ -96,11 +96,15 @@ async function postAdminLogin(req,res){
     }
 }
 
-function getAdminPanel(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminPanel/adminPanel.html"));
+function getadminpanel(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/adminpanel.html"));
 }
-function getAdminPanelAddGame(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminPanel/addGame.html"));
+function getadminpanelAddGame(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/addGame.html"));
+}
+
+function getadminpanelOrderList(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/ordersList.html"));
 }
 
 function adminLogout(req,res){
@@ -115,6 +119,7 @@ module.exports = {getHomepage,
                 getOrderPage,postOrder,
                 getAdminLogin,
                 postAdminLogin,
-                getAdminPanel,
-                getAdminPanelAddGame,
+                getadminpanel,
+                getadminpanelAddGame,
+                getadminpanelOrderList,
                 adminLogout,};

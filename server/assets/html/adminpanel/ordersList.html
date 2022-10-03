@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/spinner.css">
+    <link rel="stylesheet" href="/css/orderList.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand" href="#">Admin panel</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href = "/adminpanel">Manage Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminpanel/add">Add New Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" >Orders</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <form action="/adminpanel/logout" method="post">
+                        <button id = "submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container-xxl my-md-4 bd-layout">
+        <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
+            <button id = "unverified" type="button" class="btn btn-outline-secondary mx-3" onclick="getAllOrders(0)">Unverified orders</button>
+            <button id = "verified" type="button" class="btn btn-outline-success mx-3" onclick="getAllOrders(1)">Verified orders</button>
+            <button id = "declined" type="button" class="btn btn-outline-danger mx-3" onclick="getAllOrders(2)">Declined orders</button>
+        </div>
+        <div id = "spinner" class="spinner-border" role="status">
+            <span  class="visually-hidden">Loading...</span>
+        </div>
+        <br>
+        <div id = "orderList" class="d-flex flex-column bd-highlight mb-3 mx-5">
+
+        </div>
+    </main>
+    
+
+    <footer></footer>
+
+
+    <div class="modal fade " id="orderInfo" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Order info</h5>
+                <button id = "closeModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id = "orderInfoBody" class="modal-body container-fluid">
+                
+                
+
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+
+
+    <script defer src="/js/adminpanel/adminOrdersList.js"></script>
+    <script defer src="/js/bootstrap.min.js"></script>
+</body>
+</html>
