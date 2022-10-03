@@ -1,23 +1,37 @@
 # Games-Shop
+
+##### Table of Contents  
+[Overview](#overview)  
+[Features](#features)
+[Setup Project](#setup)
+[Run Project](#run)
+[Create Admin](#createAdmin)
+[Roadmap](#roadmap)
+
+
+<a name="overview"/>
+
 ### Overview:
+-This web application is a personnal project that is used to order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap.
 
-### Built With:
--nodejs
--express
--html/css/js
--bootstrap
--mongodb
--dotenv
+<a name="features"/>
 
-### How to Setup the Project:
+### Features:
+-Users can view games
+-Users can order games
+-Admins can create, update and delete games
+-Admins can view all orders
+-Admins can verify or decline orders
+
+<a name="setup"/>
+
+### Setup:
 - Install nodejs from https://nodejs.org/en/download/
-
 - Open the terminal or cmd at the project directory then run:
 ```
 $ npm i
 ```
 - Add config.env file to the project folder, then add the following:
-
 ```
 PORT = <integer>
 jwtSecretKey = <string>
@@ -26,7 +40,6 @@ digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
 maxImgUploadSize = <integer>
 ```
-
 #### config.env variables
 ###### PORT (OPTIONAL)
 Port used by the server (default value 3000)
@@ -43,11 +56,20 @@ Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
 
+
+<a name="run"/>
+
 ### How to Run the Project:
-- Open the terminal or cmd at the project directory then run:
+- To start the server open the terminal or cmd at the project directory then run:
 ```
-$ npm run start
+$ npm start
 ```
+- Visit the app at (if the PORT = 3000):
+```
+127.0.0.1:3000
+```
+
+<a name="createAdmin"/>
 
 ### How to create an admin user:
 - Open the terminal or cmd at the project directory then run:
@@ -57,6 +79,9 @@ $ node createAdmin.js
 - Input the username 
 - Input the password 
 - Input the confirm password
+
+
+<a name="roadmap"/>
 
 ### Roadmap:
 #### Foundation
