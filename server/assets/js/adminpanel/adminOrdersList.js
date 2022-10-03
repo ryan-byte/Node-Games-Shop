@@ -140,6 +140,7 @@ async function updateShowOrderModal(elem){
             <b>Name: </b> ${data.FirstName} ${data.LastName}<br>
             <b>Phone Number: </b>+216 ${data.TelNumber} <br>
             <b>Address: </b> ${data.Address} <br>
+            <b>City: </b> ${data.City} <br>
             <b>Postal Code: </b> ${data.PostalCode} <br>
         </div>
         <br>

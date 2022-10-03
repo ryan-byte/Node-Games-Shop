@@ -22,6 +22,7 @@
 -Admins can create, update and delete games  <br>
 -Admins can view all orders <br>
 -Admins can verify or decline orders <br>
+-Log admin action <br>
 
 <a name="setup"/>
 
