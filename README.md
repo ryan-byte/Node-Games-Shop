@@ -12,7 +12,7 @@
 <a name="overview"/>
 
 ### Overview:
--This web application is a personnal project that is used to order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap.
+-This web application is a <b> personnal project </b> that is used to order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap.
 
 <a name="features"/>
 
@@ -48,7 +48,8 @@ A secret key that is used to sign jwt tokens this key should never be exposed (r
 ###### mongoURL (REQUIRED)
 1. Create a Database in mongodb atlas
 2. Press on connect > connect your application > copy the connection string
-3. Paste the connection string in the `mongoURL` variable then change the `<password>` to your database user password
+3. Paste the connection string in the `mongoURL` variable
+4. Replace `<password>` with the Database Access user password.
 ###### digestAlgorithm (OPTIONAL)
 Change the digest algorithm that is used for hashing password (default value sha256)
 ###### apiRequestsPerMin (OPTIONAL)
@@ -105,7 +106,7 @@ $ node createAdmin.js
 - [x] order (client) 
 - [x] verify order (backend)
 - [x] admin verification of the order (admin panel) 
-- [ ] update the README file
+- [x] update the README file
 
 
 #### Features
