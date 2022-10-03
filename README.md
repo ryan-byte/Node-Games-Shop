@@ -45,7 +45,7 @@ maxImgUploadSize = <integer>
 ###### PORT (OPTIONAL)
 Port used by the server (default value 3000)
 ###### jwtSecretKey (REQUIRED)
-A secret key that is used to sign jwt tokens this key should never be exposed (required)
+A secret key that is used to sign jwt tokens this key should never be exposed (no default value)
 ###### mongoURL (REQUIRED)
 1. Create a Database in mongodb atlas
 2. Press on connect > connect your application > copy the connection string
