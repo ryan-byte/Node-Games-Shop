@@ -1,4 +1,5 @@
 const {MongoClient,ObjectId} = require("mongodb");
+const {BSONTypeError} = require("bson");
 const hashPassword = require("../utils/hashPassword");
 
 const URL = process.env.mongoURL;
@@ -190,8 +191,53 @@ async function getOrders(verificationStatus){
         return {error:"db error"};
     }
 }
+async function verifyOrder(orderID){
+    try{
+        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let updateDoc = {
+            $set:{
+                "verificationStatus":1
+            }
+        };
+        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
+        if (output.value === null){
+            return 404;
+        }
+        return 200;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return 400;
+        }else{
+            console.error(err);
+            return 502;
+        }
+    }
+}
+async function declineOrder(orderID){
+    try{
+        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let updateDoc = {
+            $set:{
+                "verificationStatus":2
+            }
+        };
+        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
+        if (output.value === null){
+            return 404;
+        }
+        return 200;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return 400;
+        }else{
+            console.error(err);
+            return 502;
+        }
+    }
+}
 
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder,getOrders};
+                createNewOrder,getOrders,
+                verifyOrder,declineOrder};

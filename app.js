@@ -37,6 +37,13 @@ app.put("/api/games/:id",rateLimiter_Middleware(),
 app.get("/api/orders/:verificationStatus",rateLimiter_Middleware(),
                     server_middleware.api_verifyAdmin_middleware,
                     api_routes.api_getOrder);
+app.put("/api/verifyOrder/:orderID",rateLimiter_Middleware(),
+                    server_middleware.api_verifyAdmin_middleware,
+                    api_routes.api_verifyOrder);
+app.put("/api/declineOrder/:orderID",rateLimiter_Middleware(),
+                    server_middleware.api_verifyAdmin_middleware,
+                    api_routes.api_declineOrder);
+
 
 //website routes
 app.get("/",(req,res)=>{

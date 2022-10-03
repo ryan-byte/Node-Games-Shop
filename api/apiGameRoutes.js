@@ -148,6 +148,31 @@ async function api_getOrder(req,res){
         res.json(data);
     }
 }
+async function api_declineOrder(req,res){
+    const username = res.locals.username;
+
+    const orderID = req.params.orderID;
+    const statusCode = await database.declineOrder(orderID);
+    //log admin action
+    if (statusCode === 200){
+        database.logUserAction(username,`Declined ${orderID}`);
+    }
+    //send a status code back
+    res.sendStatus(statusCode);
+}
+async function api_verifyOrder(req,res){
+    const username = res.locals.username;
+    
+    const orderID = req.params.orderID;
+    let statusCode = await database.verifyOrder(orderID);
+
+    //log admin action
+    if (statusCode === 200){
+        database.logUserAction(username,`Verified ${orderID}`);
+    }
+    //send a status code back
+    res.sendStatus(statusCode);
+}
 
 module.exports = {
                     api_getAllgames,
@@ -155,4 +180,5 @@ module.exports = {
                     api_addGame,
                     api_removeGame,
                     api_updateGame,
-                    api_getOrder}
+                    api_getOrder,
+                    api_verifyOrder,api_declineOrder}

@@ -5,6 +5,7 @@ const declined = document.getElementById("declined")
 const orderInfoBody = document.getElementById("orderInfoBody");
 const bootstrap_borderSize = 3;
 
+
 //main function
 async function getAllOrders(verificationStatus = 0){
     disableAllApiRequestButtons(true);
@@ -50,13 +51,7 @@ function showOrders(verificationStatus,data){
     }
 }
 function showUnverifiedOrders(data){
-    let viewOrderButton = document.createElement("button");
-    viewOrderButton.classList.add("btn","btn-outline-primary","mx-3","orderButton");
-    viewOrderButton.innerHTML = "View Order";
-    viewOrderButton.dataset.data = JSON.stringify(data);
-    viewOrderButton.setAttribute("onclick","updateShowOrderModal(this);");
-    viewOrderButton.setAttribute("data-bs-toggle","modal");
-    viewOrderButton.setAttribute("data-bs-target","#orderInfo");
+    const viewOrderButton = createViewOrderButton(data);
     const orderHTML = `
     <div class="px-2 bd-highlight border border-secondary border-${bootstrap_borderSize} rounded mb-2">
         <div class="row">
@@ -67,9 +62,9 @@ function showUnverifiedOrders(data){
                 <div class="bd-highlight"><b>postal code:</b> ${data.PostalCode} </div>
             </div>
             <div class="p-2 col bd-highlight d-flex justify-content-center align-items-center">
-                <button type="button" class="btn btn-outline-success mx-3 orderButton">Verify</button>
+                <button type="button" class="btn btn-outline-success mx-3 orderButton" data-id = "${data["_id"]}" onclick = "verifyOrder(this)">Verify</button>
                 ${viewOrderButton.outerHTML}
-                <button type="button" class="btn btn-outline-danger mx-3 orderButton">Decline</button>
+                <button type="button" class="btn btn-outline-danger mx-3 orderButton" data-id = "${data["_id"]}" onclick = "declineOrder(this)">Decline</button>
             </div>
         </div>
     </div>`;
@@ -77,8 +72,9 @@ function showUnverifiedOrders(data){
     orderList.insertAdjacentHTML("beforeend",orderHTML);
 }
 function showVerifiedOrders(data){
+    const viewOrderButton = createViewOrderButton(data);
     const orderHTML = `
-    <div class="px-2 bd-highlight border-bottom border border-success border-${bootstrap_borderSize} rounded mb-2">
+    <div class="px-2 bd-highlight border border-success border-${bootstrap_borderSize} rounded mb-2">
         <div class="row">
             <div class = "py-2 col d-flex flex-column bd-highlight">
                 <div class="bd-highlight"><b>name:</b> ${data.FirstName} ${data.LastName}</div>
@@ -86,12 +82,8 @@ function showVerifiedOrders(data){
                 <div class="bd-highlight"><b>phone number:</b> ${data.TelNumber} </div>
                 <div class="bd-highlight"><b>postal code:</b> ${data.PostalCode} </div>
             </div>
-            <div class = "py-2 col d-flex flex-column bd-highlight">
-                <div class="bd-highlight">Red dead redemption (20dt)</div>
-                <div class="bd-highlight">cyberpunk (10dt)</div>
-            </div>
-            <div class = "py-2 col ">
-                <b>total money:</b> 30dt
+            <div class="p-2 col bd-highlight d-flex justify-content-center align-items-center">
+                ${viewOrderButton.outerHTML}
             </div>
         </div>
     </div>`;
@@ -99,8 +91,9 @@ function showVerifiedOrders(data){
     orderList.insertAdjacentHTML("beforeend",orderHTML);
 }
 function showDeclinedOrders(data){
+    const viewOrderButton = createViewOrderButton(data);
     const orderHTML = `
-    <div class="px-2 bd-highlight border-bottom border border-danger border-${bootstrap_borderSize} rounded mb-2">
+    <div class="px-2 bd-highlight border border-danger border-${bootstrap_borderSize} rounded mb-2">
         <div class="row">
             <div class = "py-2 col d-flex flex-column bd-highlight">
                 <div class="bd-highlight"><b>name:</b> ${data.FirstName} ${data.LastName}</div>
@@ -108,17 +101,23 @@ function showDeclinedOrders(data){
                 <div class="bd-highlight"><b>phone number:</b> ${data.TelNumber} </div>
                 <div class="bd-highlight"><b>postal code:</b> ${data.PostalCode} </div>
             </div>
-            <div class = "py-2 col d-flex flex-column bd-highlight">
-                <div class="bd-highlight">Red dead redemption (20dt)</div>
-                <div class="bd-highlight">cyberpunk (10dt)</div>
-            </div>
-            <div class = "py-2 col ">
-                <b>total money:</b> 30dt
+            <div class="p-2 col bd-highlight d-flex justify-content-center align-items-center">
+                ${viewOrderButton.outerHTML}
             </div>
         </div>
     </div>`;
 
     orderList.insertAdjacentHTML("beforeend",orderHTML);
+}
+function createViewOrderButton(data){
+    let viewOrderButton = document.createElement("button");
+    viewOrderButton.classList.add("btn","btn-outline-primary","mx-3","orderButton");
+    viewOrderButton.innerHTML = "View Order";
+    viewOrderButton.dataset.data = JSON.stringify(data);
+    viewOrderButton.setAttribute("onclick","updateShowOrderModal(this);");
+    viewOrderButton.setAttribute("data-bs-toggle","modal");
+    viewOrderButton.setAttribute("data-bs-target","#orderInfo");
+    return viewOrderButton;
 }
 
 //show order functions
@@ -201,6 +200,61 @@ function getTotalMoney(gamesDataArray){
         total += gameData.price;
     });
     return total;
+}
+
+//verify |decline functions
+async function verifyOrder(elem){
+
+    let confirmation = confirm("are you sure ?");
+    if (!confirmation){
+        return;
+    }
+
+    //verify order api
+    const orderID = elem.dataset.id;
+    let request = await fetch(`/api/verifyOrder/${orderID}`,{
+        method:"put"
+    })
+    let status = request.status; 
+    if (status === 200){
+        //remove order
+        elem.parentElement.parentElement.parentElement.remove();
+        alert("order has been verified");
+    }else if (status === 400){
+        alert("bad parameters cannot verify order");
+    }else if (status === 404){
+        alert("order Not Found");        
+    }else if (status === 502){
+        alert("internal server error cannot verify order");        
+    }else{
+        alert("unknown error cannot verify order");        
+    }
+}
+async function declineOrder(elem){
+    let confirmation = confirm("are you sure ?");
+    if (!confirmation){
+        return;
+    }
+
+    //decline order api
+    const orderID = elem.dataset.id;
+    let request = await fetch(`/api/declineOrder/${orderID}`,{
+        method:"put"
+    })
+    let status = request.status; 
+    if (status === 200){
+        //remove order
+        elem.parentElement.parentElement.parentElement.remove();
+        alert("order has been verified");
+    }else if (status === 400){
+        alert("bad parameters cannot verify order");
+    }else if (status === 404){
+        alert("order Not Found");        
+    }else if (status === 502){
+        alert("internal server error cannot verify order");        
+    }else{
+        alert("unknown error cannot verify order");        
+    }
 }
 
 //user feedback functions
