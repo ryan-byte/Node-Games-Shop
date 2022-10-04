@@ -111,7 +111,7 @@ $ node createAdmin.js
 
 
 #### Features
-- [ ] frontend overhaul
+- [ ] make it responsive
 - [ ] can add quantity in the cart
 - [ ] blacklist ip if the admin password is wrong for few times
 - [ ] make the api requests limiter store in Redis instead of memory
