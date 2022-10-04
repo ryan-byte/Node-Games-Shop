@@ -18,7 +18,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page">Manage Games</a>
                     </li>
@@ -29,34 +29,30 @@
                         <a class="nav-link" href="/adminpanel/order">Orders</a>
                     </li>
                 </ul>
+                <form action="/adminpanel/logout" method="post">
+                    <button id = "submit" class="btn btn-danger form-control" style="max-width: 100px;">Logout</button>
+                </form>
             </div>
-        </div>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <form action="/adminpanel/logout" method="post">
-                        <button id = "submit" class="btn btn-danger">Logout</button>
-                    </form>
-                </li>
-            </ul>
         </div>
     </nav>
 
     <main class="container-xxl my-md-4 bd-layout">
         <div class="bd-main order-1">
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col"></div>
-                    <div class="col d-flex">
+                <div class="d-flex justify-content-center">
+                    <div class="search-container">
                         <input id ="title" class="form-control me-2" type="search" placeholder="Title" aria-label="Search">
                         <button id = "search" class="btn btn-outline-success">Search</button>
                     </div>
-                    <div class="col"></div>
                 </div>
             </div>
-            <table id = "itemContainer" class="table table-bordered table-hover">
-                
-            </table>
+            
+            <div class="table-responsive">
+                <table id = "itemContainer" class="table table-bordered table-hover">
+                    
+                </table>
+            </div>
+
             <div id = "spinner" class="spinner-border" role="status">
                 <span  class="visually-hidden">Loading...</span>
             </div>
