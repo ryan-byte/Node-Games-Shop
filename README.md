@@ -111,7 +111,6 @@ $ node createAdmin.js
 
 
 #### Features
-- [ ] game description
 - [ ] frontend overhaul
 - [ ] can add quantity in the cart
 - [ ] blacklist ip if the admin password is wrong for few times
