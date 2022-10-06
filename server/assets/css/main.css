@@ -65,6 +65,19 @@ main{
     width: 80%;
     height: 200px;
 }
+.search-container{
+    display: flex;
+    max-width: 500px;
+}
+.addGameForm{
+    max-width: 1000px;
+}
+@media only screen and (max-width: 500px) {
+    .search-container{
+        display: block;
+
+    }
+}
 @media only screen and (min-width: 500px) {
     .gameItem{
         width: 30%;

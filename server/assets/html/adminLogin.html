@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
     <form id="loginForm" action="" method="post">
@@ -19,6 +20,10 @@
         <input type="password" name="password" id="password" placeholder="Password">    
         <br><br>    
         <input type="submit" name="submit" id="submit" value="Log In Here">       
+        <br>
+        <div style="display:none;" id = "spinner" class="spinner-border" role="status">
+            <span  class="visually-hidden">Loading...</span>
+        </div>
         <br><br>    
         <input type="checkbox" id="check">    
         <span>Remember me</span>    

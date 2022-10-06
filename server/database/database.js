@@ -162,16 +162,17 @@ async function logUserAction(username,action){
     }
 }
 
-async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs){
+async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,Games){
     const validInputs = typeof FirstName === "string" && 
                         typeof LastName === "string" && 
                         typeof City === "string" && 
                         typeof PostalCode === "string" && 
                         typeof TelNumber === "string" && 
-                        typeof GameIDs === "object" && 
+                        typeof Games === "object" && 
                         typeof Address === "string";
     if (validInputs){
-        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs,verificationStatus:0};
+        let timeStamp = Math.floor(Date.now() / 1000);
+        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
         try{
             await ordersCollection.insertOne(newOrder)
             return 201;

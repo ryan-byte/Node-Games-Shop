@@ -12,7 +12,24 @@ window.addEventListener("storage",(ev)=>{
         updateCartUI();
     }
 })
-
+function quantityChanged(elem){
+    if (elem.value <0){
+        elem.value = 0;
+    }
+    let quantity = localStorage.getItem("quantity"); 
+    if (quantity === null){
+        let newQuantity = {};
+        newQuantity[elem.dataset.id] = parseInt(elem.value);
+        localStorage.setItem("quantity",JSON.stringify(newQuantity));
+    }else{
+        let currentQuantity = JSON.parse(quantity);
+        currentQuantity[elem.dataset.id] = parseInt(elem.value);
+        localStorage.setItem("quantity",JSON.stringify(currentQuantity));
+    }
+    let cart = localStorage.getItem("cart");
+    cart = JSON.parse(cart);
+    showCartMoney(cart);
+}
 
 //cart functions
 updateCartNumberOnLoadup();
@@ -50,14 +67,25 @@ function showCartGames(cart){
     for (let i = 0;i<cart.length; i++){
         let newDiv = document.createElement("div");
         newDiv.classList.add("d-flex","flex-row","bd-highlight","mb-3","position-relative","border","border-secondary","rounded");
+        
+        //get game quantity
+        let quantity = localStorage.getItem("quantity");
+        let currentGameQuantity = 1;
+        if (quantity !== null){
+            currentGameQuantity = JSON.parse(quantity)[cart[i]["_id"]];
+            currentGameQuantity = currentGameQuantity === undefined ? 1: currentGameQuantity;
+        }
+        
+        
         newDiv.innerHTML = `
         <div class = "pe-2">
             <img src="/images/${cart[i].imageName}" alt="">
         </div>
         <div>
-            <b>title:</b> ${cart[i].title} <br>
-            <b>price:</b> ${cart[i].price} DT <br>
-            <b>type:</b> ${cart[i].stock} <br>
+            <b>Title: </b> ${cart[i].title} <br>
+            <b>Price: </b> ${cart[i].price} DT <br>
+            <b>Type: </b> ${cart[i].stock} <br>
+            <b>Quantity: </b> <input data-id="${cart[i]["_id"]}" style="max-width:50px" min = "0" class = "quantity" type="number" onchange="quantityChanged(this)" value = "${currentGameQuantity}"><br>
         </div>
         <div class = "garbageButton position-absolute top-0 end-0" data-id = "${cart[i]["_id"]}" onclick = "deleteGameFromCart(this)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="100%">
@@ -108,37 +136,58 @@ function deleteGameFromCart(elem){
     let cart = localStorage.getItem("cart");
     if (cart){
         cart = JSON.parse(cart);
-        for (let i = 0; i<cart.length;i++){
-            let game = cart[i];
-            if (game["_id"] === id){
-                //remove the game from the cart
-                cart.splice(i,1);
-                let len = cart.length;
-                //update the UI
-                showCartMoney(cart);
-                changeCartNumber(len);
-                if (len === 0){
-                    displayCartNumber(false);    
-                    gamesSide.innerHTML = "EMPTY";
-                    totalMoney.innerHTML = "0";    
-                    cartButtons.style.display = "none";
-                }else{
-                    cartButtons.style.display = "block";
-                }
-                //store the cart new values
-                cart = JSON.stringify(cart);
-                localStorage.setItem("cart",cart);
-                //remove the game element
-                elem.parentElement.remove();
-            }
-        }
+        removeGameFromCart(id,elem,cart);
+        removeGameFromQuantity(id);
     }else{
         elem.parentElement.remove();
     }
 }
+function removeGameFromCart(id,elem,cart){
+    for (let i = 0; i<cart.length;i++){
+        let game = cart[i];
+        if (game["_id"] === id){
+            //remove the game from the cart
+            cart.splice(i,1);
+            let len = cart.length;
+            //update the UI
+            showCartMoney(cart);
+            changeCartNumber(len);
+            if (len === 0){
+                displayCartNumber(false);    
+                gamesSide.innerHTML = "EMPTY";
+                totalMoney.innerHTML = "0";    
+                cartButtons.style.display = "none";
+            }else{
+                cartButtons.style.display = "block";
+            }
+            //store the cart new values
+            cart = JSON.stringify(cart);
+            localStorage.setItem("cart",cart);
+            //remove the game element
+            elem.parentElement.remove();
+        }
+    }
+}
+function removeGameFromQuantity(id){
+    let quantity = localStorage.getItem("quantity");
+    if (quantity !== null){
+        quantity = JSON.parse(quantity);
+        if (quantity.hasOwnProperty(id)){
+            delete quantity[id];
+            localStorage.setItem("quantity",JSON.stringify(quantity));
+        }
+    }
+}
+
 
 function showCartMoney(cart){
-    let total = calculateTotalMoneyInCart(cart);
+    let quantity = localStorage.getItem("quantity");
+    let total = 0;
+    if (quantity === null){
+        total = calculateTotalMoneyInCart(cart);
+    }else{
+        total = calculateTotalMoneyInCart(cart,JSON.parse(quantity));
+    }
     totalMoney.innerHTML = total;
 }
 
@@ -151,6 +200,7 @@ function clearCartButton(){
 }
 function clearCart(){
     localStorage.removeItem("cart");
+    localStorage.removeItem("quantity");
     changeCartNumber(0);
     displayCartNumber(false);
 }
@@ -165,10 +215,12 @@ function checkIfGameExistInCart(data,cart){
     }
     return false;
 }
-function calculateTotalMoneyInCart(cart){
+function calculateTotalMoneyInCart(cart,quantity = {}){
     let total = 0;
     for (let i = 0; i<cart.length; i++){
-        let price = cart[i].price;
+        let currentQuantity = quantity[cart[i]["_id"]];
+        currentQuantity = currentQuantity === undefined ? 1 : currentQuantity;
+        let price = cart[i].price * currentQuantity;
         total += price;
     }
     return total;
