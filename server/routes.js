@@ -18,7 +18,6 @@ function getOrderPage(req,res){
 async function postOrder(req,res){
     //get the order informations
     let {FirstName,LastName,TelNumber,Address,City,PostalCode,games} = req.body;
-    console.log(games);
     //verify the order informations
     let condition = FirstName === ""||
                     typeof FirstName === "undefined"||
@@ -34,18 +33,25 @@ async function postOrder(req,res){
                     typeof games === "undefined"||
                     PostalCode === ""||
                     typeof PostalCode === "undefined";
-    if (condition){
-        res.sendStatus(400);
-        return;
-    }
     try{
         games = JSON.parse(games);
+        //verify the games quantity
+        Object.values(games).forEach(quantity =>{
+            if (isNaN(quantity)){
+                condition = true;
+            }
+        })
     }catch (err){
         res.sendStatus(400);
         return;
     }
+    if (condition){
+        res.sendStatus(400);
+        return;
+    }
+
     //when everything is fine then add the order to the database
-    let statusCode = await database.createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,Object.keys(games));
+    let statusCode = await database.createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,games);
     //send back the status code to the client
     res.sendStatus(statusCode);
 }
