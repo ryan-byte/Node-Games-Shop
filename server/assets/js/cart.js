@@ -26,6 +26,9 @@ function quantityChanged(elem){
         currentQuantity[elem.dataset.id] = parseInt(elem.value);
         localStorage.setItem("quantity",JSON.stringify(currentQuantity));
     }
+    let cart = localStorage.getItem("cart");
+    cart = JSON.parse(cart);
+    showCartMoney(cart);
 }
 
 //cart functions
@@ -133,37 +136,58 @@ function deleteGameFromCart(elem){
     let cart = localStorage.getItem("cart");
     if (cart){
         cart = JSON.parse(cart);
-        for (let i = 0; i<cart.length;i++){
-            let game = cart[i];
-            if (game["_id"] === id){
-                //remove the game from the cart
-                cart.splice(i,1);
-                let len = cart.length;
-                //update the UI
-                showCartMoney(cart);
-                changeCartNumber(len);
-                if (len === 0){
-                    displayCartNumber(false);    
-                    gamesSide.innerHTML = "EMPTY";
-                    totalMoney.innerHTML = "0";    
-                    cartButtons.style.display = "none";
-                }else{
-                    cartButtons.style.display = "block";
-                }
-                //store the cart new values
-                cart = JSON.stringify(cart);
-                localStorage.setItem("cart",cart);
-                //remove the game element
-                elem.parentElement.remove();
-            }
-        }
+        removeGameFromCart(id,elem,cart);
+        removeGameFromQuantity(id);
     }else{
         elem.parentElement.remove();
     }
 }
+function removeGameFromCart(id,elem,cart){
+    for (let i = 0; i<cart.length;i++){
+        let game = cart[i];
+        if (game["_id"] === id){
+            //remove the game from the cart
+            cart.splice(i,1);
+            let len = cart.length;
+            //update the UI
+            showCartMoney(cart);
+            changeCartNumber(len);
+            if (len === 0){
+                displayCartNumber(false);    
+                gamesSide.innerHTML = "EMPTY";
+                totalMoney.innerHTML = "0";    
+                cartButtons.style.display = "none";
+            }else{
+                cartButtons.style.display = "block";
+            }
+            //store the cart new values
+            cart = JSON.stringify(cart);
+            localStorage.setItem("cart",cart);
+            //remove the game element
+            elem.parentElement.remove();
+        }
+    }
+}
+function removeGameFromQuantity(id){
+    let quantity = localStorage.getItem("quantity");
+    if (quantity !== null){
+        quantity = JSON.parse(quantity);
+        if (quantity.hasOwnProperty(id)){
+            delete quantity[id];
+            localStorage.setItem("quantity",JSON.stringify(quantity));
+        }
+    }
+}
+
 
 function showCartMoney(cart){
-    let total = calculateTotalMoneyInCart(cart);
+    let quantity = localStorage.getItem("quantity");
+    let total = 0;
+    if (quantity === null){
+        total = calculateTotalMoneyInCart(cart);
+    }else{
+        total = calculateTotalMoneyInCart(cart,JSON.parse(quantity));
+    }
     totalMoney.innerHTML = total;
 }
 
@@ -176,6 +200,7 @@ function clearCartButton(){
 }
 function clearCart(){
     localStorage.removeItem("cart");
+    localStorage.removeItem("quantity");
     changeCartNumber(0);
     displayCartNumber(false);
 }
@@ -190,10 +215,12 @@ function checkIfGameExistInCart(data,cart){
     }
     return false;
 }
-function calculateTotalMoneyInCart(cart){
+function calculateTotalMoneyInCart(cart,quantity = {}){
     let total = 0;
     for (let i = 0; i<cart.length; i++){
-        let price = cart[i].price;
+        let currentQuantity = quantity[cart[i]["_id"]];
+        currentQuantity = currentQuantity === undefined ? 1 : currentQuantity;
+        let price = cart[i].price * currentQuantity;
         total += price;
     }
     return total;

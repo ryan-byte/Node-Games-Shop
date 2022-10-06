@@ -3,6 +3,7 @@ const unverified = document.getElementById("unverified")
 const verified = document.getElementById("verified")
 const declined = document.getElementById("declined")
 const orderInfoBody = document.getElementById("orderInfoBody");
+const orderModalSpinner = document.getElementById("orderModalSpinner");
 const bootstrap_borderSize = 3;
 
 
@@ -120,20 +121,26 @@ function createViewOrderButton(data){
     return viewOrderButton;
 }
 
-//show order functions
+//show order modal functions
 async function updateShowOrderModal(elem){
+    
+    //add user feedback
+    orderInfoBody.innerHTML = "";
+    orderModal_hideSpinner(false);
+    
     //get the order infos from the dataset
     let data = elem.dataset.data;
     data = JSON.parse(data);
-    
-    let gamesData = await getAllOrderGamesData(data.GameIDs);
+
+    let gamesIDs = Object.keys(data.Games);
+    let gamesData = await getAllOrderGamesData(gamesIDs);
     if (gamesData === -1){
         alert("an error occured");
         return;
     }
     
-    let totalMoney = getTotalMoney(gamesData);
-    let gamesDataContainer = transfromGamesToDiv(gamesData)
+    let totalMoney = getTotalMoney(gamesData,data.Games);
+    let gamesDataContainer = transfromGamesToDiv(gamesData,data.Games);
     orderInfoBody.innerHTML = `
     <div>
         <div>
@@ -152,7 +159,8 @@ async function updateShowOrderModal(elem){
         <div>
             <b>Total:</b> ${totalMoney}dt
         </div>
-    </div>`
+    </div>`;
+    orderModal_hideSpinner(true);
 }
 async function getAllOrderGamesData(gamesIDs){
     let gameIDsString = JSON.stringify(gamesIDs);
@@ -184,22 +192,29 @@ async function getAllOrderGamesData(gamesIDs){
     }
     return -1;
 }
-function transfromGamesToDiv(gamesDataArray){
+function transfromGamesToDiv(gamesData,gamesQuantity){
     let gamesContainer = document.createElement("div");
     gamesContainer.classList.add("d-flex","flex-column","bd-highlight");
-    gamesDataArray.forEach(gameData => {
+    for (let i = 0; i<gamesData.length;i++){
+        //get quantity
+        let gameID = gamesData[i]["_id"]
+        let quantity = gamesQuantity[gameID] === undefined ? 1 : gamesQuantity[gameID];
+        //add the html
         let gameDiv = document.createElement("div");
         gameDiv.classList.add("bd-highlight");
-        gameDiv.innerHTML = `${gameData.title} (${gameData.price}dt)`;
+        gameDiv.innerHTML = `${gamesData[i].title} (x${quantity}) (${gamesData[i].price * quantity}dt)`;
         gamesContainer.appendChild(gameDiv);
-    });
+    }
     return gamesContainer;
 }
-function getTotalMoney(gamesDataArray){
+function getTotalMoney(gamesData,gamesQuantity){
     let total = 0;
-    gamesDataArray.forEach(gameData => {
-        total += gameData.price;
-    });
+    for (let i =0; i<gamesData.length; i++){
+        //get quantity
+        let gameID = gamesData[i]["_id"]
+        let quantity = gamesQuantity[gameID] === undefined ? 1 : gamesQuantity[gameID];
+        total += gamesData[i].price * quantity;
+    }
     return total;
 }
 
@@ -269,5 +284,12 @@ function hideSpinner(hide = true){
         spinner.style.display = "none";
     }else{
         spinner.style.display = "block";
+    }
+}
+function orderModal_hideSpinner(hide = true){
+    if (hide){
+        orderModalSpinner.style.display = "none";
+    }else{
+        orderModalSpinner.style.display = "block";
     }
 }

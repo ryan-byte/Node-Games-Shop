@@ -23,10 +23,10 @@ orderForm.addEventListener("submit",async (ev)=>{
         cart = JSON.parse(cart);
         if (cart.length === 0){
             alert("cart is empty");
-            return;
+        }else{
+            let status = await sendFormRequest(cart);
+            statusCodeFeedBack(status);
         }
-        let status = await sendFormRequest(cart);
-        statusCodeFeedBack(status);
     }else{
         alert("cart is empty");
     }
