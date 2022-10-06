@@ -17,7 +17,7 @@ function getOrderPage(req,res){
 }
 async function postOrder(req,res){
     //get the order informations
-    let {FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs} = req.body;
+    let {FirstName,LastName,TelNumber,Address,City,PostalCode,games} = req.body;
     //verify the order informations
     let condition = FirstName === ""||
                     typeof FirstName === "undefined"||
@@ -29,8 +29,8 @@ async function postOrder(req,res){
                     typeof Address === "undefined"||
                     City === ""||
                     typeof City === "undefined"||
-                    GameIDs === ""||
-                    typeof GameIDs === "undefined"||
+                    games === ""||
+                    typeof games === "undefined"||
                     PostalCode === ""||
                     typeof PostalCode === "undefined";
     if (condition){
@@ -38,13 +38,14 @@ async function postOrder(req,res){
         return;
     }
     try{
-        GameIDs = JSON.parse(GameIDs);
+        games = JSON.parse(games);
     }catch (err){
         res.sendStatus(400);
         return;
     }
+    console.log(Object.keys(games));
     //when everything is fine then add the order to the database
-    let statusCode = await database.createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,GameIDs);
+    let statusCode = await database.createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,Object.keys(games));
     //send back the status code to the client
     res.sendStatus(statusCode);
 }

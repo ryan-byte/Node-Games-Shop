@@ -79,17 +79,17 @@ function getTotalMoney(cart){
     return total;
 }
 function getAllGamesID(cart){
-    let IDs = [];
+    let games = {};
     for (let i =0; i<cart.length; i++){
-        IDs.push(cart[i]["_id"]);
+        games[cart[i]["_id"]] = 1;
     }
-    return IDs;
+    return games;
 }
 async function sendFormRequest(cart){
     //add the games ID to the form
-    let GameIDs = JSON.stringify(getAllGamesID(cart));
+    let games = JSON.stringify(getAllGamesID(cart));
     let orderFormData = new FormData(orderForm);
-    orderFormData.append("GameIDs",GameIDs);
+    orderFormData.append("games",games);
     //send the form with the fetch api
     let URI = "/order";
     const data = new URLSearchParams(orderFormData);
