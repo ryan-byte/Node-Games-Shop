@@ -16,12 +16,13 @@ function quantityChanged(elem){
     if (elem.value <0){
         elem.value = 0;
     }
-    if (localStorage.getItem("quantity") === null){
+    let quantity = localStorage.getItem("quantity"); 
+    if (quantity === null){
         let newQuantity = {};
         newQuantity[elem.dataset.id] = parseInt(elem.value);
         localStorage.setItem("quantity",JSON.stringify(newQuantity));
     }else{
-        let currentQuantity = JSON.parse(localStorage.getItem("quantity"));
+        let currentQuantity = JSON.parse(quantity);
         currentQuantity[elem.dataset.id] = parseInt(elem.value);
         localStorage.setItem("quantity",JSON.stringify(currentQuantity));
     }
@@ -63,8 +64,16 @@ function showCartGames(cart){
     for (let i = 0;i<cart.length; i++){
         let newDiv = document.createElement("div");
         newDiv.classList.add("d-flex","flex-row","bd-highlight","mb-3","position-relative","border","border-secondary","rounded");
-        let gameQuantity = JSON.parse(localStorage.getItem("quantity"))[cart[i]["_id"]];
-        gameQuantity = gameQuantity === undefined ? 1: gameQuantity;
+        
+        //get game quantity
+        let quantity = localStorage.getItem("quantity");
+        let currentGameQuantity = 1;
+        if (quantity !== null){
+            currentGameQuantity = JSON.parse(quantity)[cart[i]["_id"]];
+            currentGameQuantity = currentGameQuantity === undefined ? 1: currentGameQuantity;
+        }
+        
+        
         newDiv.innerHTML = `
         <div class = "pe-2">
             <img src="/images/${cart[i].imageName}" alt="">
@@ -73,7 +82,7 @@ function showCartGames(cart){
             <b>Title: </b> ${cart[i].title} <br>
             <b>Price: </b> ${cart[i].price} DT <br>
             <b>Type: </b> ${cart[i].stock} <br>
-            <b>Quantity: </b> <input data-id="${cart[i]["_id"]}" style="max-width:50px" min = "0" class = "quantity" type="number" onchange="quantityChanged(this)" value = "${gameQuantity}"><br>
+            <b>Quantity: </b> <input data-id="${cart[i]["_id"]}" style="max-width:50px" min = "0" class = "quantity" type="number" onchange="quantityChanged(this)" value = "${currentGameQuantity}"><br>
         </div>
         <div class = "garbageButton position-absolute top-0 end-0" data-id = "${cart[i]["_id"]}" onclick = "deleteGameFromCart(this)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="100%">

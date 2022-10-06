@@ -18,6 +18,7 @@ function getOrderPage(req,res){
 async function postOrder(req,res){
     //get the order informations
     let {FirstName,LastName,TelNumber,Address,City,PostalCode,games} = req.body;
+    console.log(games);
     //verify the order informations
     let condition = FirstName === ""||
                     typeof FirstName === "undefined"||
@@ -43,7 +44,6 @@ async function postOrder(req,res){
         res.sendStatus(400);
         return;
     }
-    console.log(Object.keys(games));
     //when everything is fine then add the order to the database
     let statusCode = await database.createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,Object.keys(games));
     //send back the status code to the client
