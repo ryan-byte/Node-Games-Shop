@@ -67,4 +67,4 @@ app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
 app.post("/adminpanel/logout",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.adminLogout);
 
-app.listen(PORT, ()=>console.log("server is on 127.0.0.1:" + PORT))
+app.listen(PORT, ()=>console.log("server is on port " + PORT))
