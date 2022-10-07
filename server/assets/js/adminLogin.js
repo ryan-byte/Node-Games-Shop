@@ -6,8 +6,11 @@ const spinner = document.getElementById("spinner");
 
 loginForm.addEventListener("submit",async (ev)=>{
     ev.preventDefault();
+    //user feedback
     disableButtons(true);
     spinnerStatus(false);
+    
+    //admin login request
     let postURL = window.location.pathname;
 
     const data = {username:username.value,password:password.value}

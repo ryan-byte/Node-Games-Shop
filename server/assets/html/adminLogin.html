@@ -6,30 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>admin login</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-    <form id="loginForm" action="" method="post">
-        <label><b>Admin Name     
-        </b>    
-        </label>    
-        <input type="text" name="username" id="username" placeholder="Username">    
-        <br><br>    
-        <label><b>Password     
-        </b>    
-        </label>    
-        <input type="password" name="password" id="password" placeholder="Password">    
-        <br><br>    
-        <input type="submit" name="submit" id="submit" value="Log In Here">       
-        <br>
-        <div style="display:none;" id = "spinner" class="spinner-border" role="status">
-            <span  class="visually-hidden">Loading...</span>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            
+            
+            <a class="navbar-brand" href="/">Game Shop</a>
+            
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
-        <br><br>    
-        <input type="checkbox" id="check">    
-        <span>Remember me</span>    
-        <br><br>    
-        Forgot <a href="#">Password</a> 
-    </form>
+    </nav>
+
+    <main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col-8">
+                    <form class="my-3" id="loginForm" action="" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label"><b>Admin Name</b></label>    
+                            <input class="form-control" type="text" name="username" id="username" placeholder="Username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label"><b>Password</b></label>    
+                            <input class="form-control" type="password" name="password" id="password" placeholder="Password">    
+                        </div>
+                        <div style="display:none;" id = "spinner" class="spinner-border" role="status">
+                            <span  class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remeberMe">
+                            <label class="form-check-label" for="remeberMe">Remember me</label>
+                        </div>
+                        <button type="submit" id="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+                <div class="col"></div>
+            </div>
+        </div>
+    </main>
+
+    
     <script defer src="/js/adminLogin.js"></script>
 </body>
 </html>
