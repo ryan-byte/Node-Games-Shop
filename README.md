@@ -111,8 +111,8 @@ $ node createAdmin.js
 
 
 #### Features
-- [ ] make it responsive
-- [ ] can add quantity in the cart
+- [x] make it responsive
+- [x] can add quantity in the cart
 - [ ] blacklist ip if the admin password is wrong for few times
 - [ ] make the api requests limiter store in Redis instead of memory
 - [ ] make the game type selectable + verification
