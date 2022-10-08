@@ -87,8 +87,9 @@ measurementId = <replace it with the right value>
 Then replace each variable with the right value from `const firebaseConfig` that we copied in the previous step
 
 <br>
-🛑By default the server uses firebase storage for storing images in the cloud (free no credit card required). if you'd like to use local storage instead of a cloud storage you can use the `main-v1.0-(local-storage)` branch `(Note: main-v1.0-(local-storage) branch will no longer be updated)`<br>
-🟠If you want to use a different cloud storage you should modify the script `server/utils//firebaseStorage.js` <br>
+🛑By default the server uses firebase storage for storing images in the cloud (free no credit card required). if you'd like to use local storage instead of a cloud storage you can use the <b> main-v1.0-(local-storage) </b>branch <b> (Note: main-v1.0-(local-storage) branch will no longer be updated) </b> <br>
+
+🟠If you want to use a different cloud storage you should modify the script `server/utils/firebaseStorage.js` <br>
 
 <a name="run"/>
 
