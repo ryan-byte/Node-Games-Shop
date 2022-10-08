@@ -1,6 +1,5 @@
 //now all the env variables can be used in all scripts
 require('dotenv').config({path:__dirname+'/config.env'});
-require('dotenv').config({path:__dirname+'/firebaseConfig.env'});
 
 //upload the required packages
 const express = require("express");
@@ -25,16 +24,20 @@ app.get("/api/games/:title",rateLimiter_Middleware(),
                     api_routes.api_getGameByTitle);
 //admins api
 app.post("/api/games",rateLimiter_Middleware(),
+                    server_middleware.verifyGameInputs,
                     server_middleware.api_verifyAdmin_middleware,
                     server_middleware.image_upload_middleware,
                     api_routes.api_addGame);
-app.delete("/api/games/:id",rateLimiter_Middleware(),
-                    server_middleware.api_verifyAdmin_middleware,
-                    api_routes.api_removeGame);
 app.put("/api/games/:id",rateLimiter_Middleware(),
+                    server_middleware.verifyGameInputs,
                     server_middleware.api_verifyAdmin_middleware,
                     server_middleware.image_upload_middleware,
                     api_routes.api_updateGame);
+                    
+app.delete("/api/games/:id",rateLimiter_Middleware(),
+                    server_middleware.api_verifyAdmin_middleware,
+                    api_routes.api_removeGame);
+
 app.get("/api/orders/:verificationStatus",rateLimiter_Middleware(),
                     server_middleware.api_verifyAdmin_middleware,
                     api_routes.api_getOrder);

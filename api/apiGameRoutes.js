@@ -44,36 +44,27 @@ async function api_getMultipleGamesByID(req,res){
 }
 
 async function api_addGame(req,res){
+    //note: variables verification is done in a middleware
+    //get required variables for the database query
     let {title,price,stock,type} = req.query;
     price = parseInt(price);
     stock = parseInt(stock);
-    const invalid =    typeof title === "undefined" ||
-                        typeof price === "undefined" ||
-                        isNaN(price) ||
-                        typeof stock === "undefined" ||
-                        isNaN(stock) ||
-                        typeof type === "undefined"||
-                        title === ""||
-                        type === ""||
-                        price === ""||
-                        stock === "";
-    if (invalid) res.sendStatus(400);
-    else{
-        let imageName = res.locals.imageName;
-        let imageURL = res.locals.imageURL;
-        let dataStatus = await database.addNewGame(title,price,stock,type,imageURL,imageName);
-        if (dataStatus["error"]){
-            res.sendStatus(502)
-        }else{
-            res.sendStatus(dataStatus);
-            if (dataStatus === 201){
-                //log the username action
-                let username = res.locals.username;
-                if (res.locals.imageName === undefined){
-                    database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
-                }else{
-                    database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
-                }
+    let imageName = res.locals.imageName;
+    let imageURL = res.locals.imageURL;
+
+    //add new game
+    let dataStatus = await database.addNewGame(title,price,stock,type,imageURL,imageName);
+    if (dataStatus["error"]){
+        res.sendStatus(502)
+    }else{
+        res.sendStatus(dataStatus);
+        if (dataStatus === 201){
+            //log the username action
+            let username = res.locals.username;
+            if (res.locals.imageName === undefined){
+                database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
+            }else{
+                database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
             }
         }
     }
@@ -87,7 +78,11 @@ async function api_removeGame(req,res){
     if (status === 200){
         //delete the image file
         if (gameRemoved.imageName){
-            fireBaseStorage.deleteImage(gameRemoved.imageName);
+            let output = await fireBaseStorage.deleteImage(gameRemoved.imageName);
+            //error handling
+            if (output["error"]){
+                console.log("error while deleting an image from firebase");
+            }
         }
         //log the username action
         let username = res.locals.username;
@@ -97,43 +92,35 @@ async function api_removeGame(req,res){
 }
 
 async function api_updateGame(req,res){
-
+    //note: variables verification is done in a middleware
+    //get required variables for the database query
     let id = req.params.id;
     let {title,price,stock,type} = req.query;
     price = parseInt(price);
     stock = parseInt(stock);
-    const invalid =    typeof title === "undefined" ||
-                        typeof price === "undefined" ||
-                        isNaN(price) ||
-                        typeof stock === "undefined" ||
-                        isNaN(stock) ||
-                        typeof type === "undefined"||
-                        title === ""||
-                        type === ""||
-                        price === ""||
-                        stock === "";
-                        
-    if (invalid) res.sendStatus(400);
-    else{
-        let imageName = res.locals.imageName;
-        let imageURL = res.locals.imageURL;
-        //update data
-        const updateGame = await database.updateGame(id,title,price,stock,type,imageURL,imageName);
-        let updateGameStatus = updateGame.status;
-        let oldValues = updateGame.oldValues;
-        if (updateGameStatus === 200){
-            //delete the old image
-            if (imageName){
-                //only delete if we have updated the image
-                fireBaseStorage.deleteImage(oldValues.imageName);
+    let imageName = res.locals.imageName;
+    let imageURL = res.locals.imageURL;
+
+    //update data
+    const updateGame = await database.updateGame(id,title,price,stock,type,imageURL,imageName);
+    let updateGameStatus = updateGame.status;
+    let oldValues = updateGame.oldValues;
+    if (updateGameStatus === 200){
+        //delete the old image
+        if (imageName){
+            //only delete if we have updated the image
+            let output = await fireBaseStorage.deleteImage(oldValues.imageName);
+            //error handling
+            if (output["error"]){
+                console.log("error while deleting an image from firebase");
             }
-            //log the username action
-            let username = res.locals.username;
-            database.logUserAction(username,`Updated old values(title: ${oldValues.title} /type: ${oldValues.type} /price: ${oldValues.price}/ stock: ${oldValues.stock}) new values (title: ${title} /type: ${type} /price: ${price}/ stock: ${stock})`);
         }
-        //send the response
-        res.sendStatus(updateGameStatus);
+        //log the username action
+        let username = res.locals.username;
+        database.logUserAction(username,`Updated old values(title: ${oldValues.title} /type: ${oldValues.type} /price: ${oldValues.price}/ stock: ${oldValues.stock}) new values (title: ${title} /type: ${type} /price: ${price}/ stock: ${stock})`);
     }
+    //send the response
+    res.sendStatus(updateGameStatus);
 
 }
 

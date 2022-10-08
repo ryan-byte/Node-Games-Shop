@@ -89,10 +89,21 @@ function image_upload_middleware(req,res,next){
     bb.on("close", async ()=>{
         if (bb.status === 200){
             //proceed to the next function if everything is fine
-            let imageURL = await fireBaseStorage.uploadImage(bb.fileBase64,bb.fileName);
-            res.locals.imageName = bb.fileName;
-            res.locals.imageURL = imageURL;
-            next();
+            if (bb.fileName !== undefined){
+                let imageURL = await fireBaseStorage.uploadImage(bb.fileBase64,bb.fileName);
+                if (imageURL["error"]){
+                    //when an error occure then stop the request
+                    res.sendStatus(500);
+                }else{
+                    //when there is no error keep the request going
+                    res.locals.imageURL = imageURL;
+                    res.locals.imageName = bb.fileName;
+                    next();
+                }
+            }else{
+                res.locals.imageName = undefined;
+                next();
+            }
         }else{
             //sending an error status code
             res.sendStatus(bb.status);
@@ -101,5 +112,25 @@ function image_upload_middleware(req,res,next){
     req.pipe(bb);
 }
 
+function verifyGameInputs(req,res,next){
+    let {title,price,stock,type} = req.query;
+    price = parseInt(price);
+    stock = parseInt(stock);
+    const invalid =     typeof title === "undefined" ||
+                        typeof price === "undefined" ||
+                        isNaN(price) ||
+                        typeof stock === "undefined" ||
+                        isNaN(stock) ||
+                        typeof type === "undefined"||
+                        title === ""||
+                        type === ""||
+                        price === ""||
+                        stock === "";
+                        
+    if (invalid) res.sendStatus(400);
+    else next();
+}
+
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
-                image_upload_middleware};
+                image_upload_middleware,
+                verifyGameInputs};

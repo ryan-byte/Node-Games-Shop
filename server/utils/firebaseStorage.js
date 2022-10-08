@@ -1,5 +1,7 @@
+const path = require("path");
 const {initializeApp} = require("firebase/app");
 const {getStorage,ref,uploadString,deleteObject,getDownloadURL} = require("firebase/storage");
+require('dotenv').config({path:path.resolve(__dirname,"..","..","firebaseConfig.env")});
 
 const imageDir = "images";
 
@@ -19,17 +21,30 @@ const storage = getStorage();
 
 async function uploadImage(fileBase64,fileName){
     const storageImagesRef = ref(storage,`${imageDir}/${fileName}`);
-    await uploadString(storageImagesRef,fileBase64,"base64",{contentType:"image/jpeg"});
-    //return the image url after uploading
-    return await getImageUrl(fileName);
+    try{
+        await uploadString(storageImagesRef,fileBase64,"base64",{contentType:"image/jpeg"});
+        //return the image url after uploading
+        return await getImageUrl(fileName);
+    }catch(err){
+        return {error:"uploadFile error"};
+    }
 }
 async function deleteImage(fileName){
     const storageImagesRef = ref(storage,`${imageDir}/${fileName}`);
-    await deleteObject(storageImagesRef);
+    try{
+        await deleteObject(storageImagesRef);
+        return "file deleted";
+    }catch (err){
+        return {error:"deleteFile error"};
+    }
 }
 async function getImageUrl(fileName){
     const storageImagesRef = ref(storage,`${imageDir}/${fileName}`);
-    return await getDownloadURL(storageImagesRef);
+    try{
+        return await getDownloadURL(storageImagesRef);
+    }catch (err){
+        return {error:"getImageURl error"};
+    }
 }
 
 module.exports = {uploadImage,deleteImage,getImageUrl};
