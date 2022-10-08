@@ -28,11 +28,11 @@
 
 ### Setup:
 - Install nodejs from https://nodejs.org/en/download/
-- Step 1: Open the terminal or cmd at the project directory then run:
+- <b>Step 1</b>: Open the terminal or cmd at the project directory then run:
 ```
 $ npm i
 ```
-- Step 2: Add config.env file to the project folder, then add the following:
+- <b>Step 2</b>: Add config.env file to the project folder, then add the following:
 ```
 PORT = <integer>
 jwtSecretKey = <string>
@@ -61,7 +61,7 @@ Max size of the image file for a game (default 5000000 in bytes = 5mb)
 
 by default the server uses firebase storage for storing images in the cloud (free no credit card required).
 if you like to use local storage instead of a cloud storage you can use the `main-v1.0-(local-storage)` branch (note: this branch is no longer supported)
-- Step 3: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this
+- <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this
 ```
 const firebaseConfig = {
   apiKey: "AsdqzdSDzaqsd468",
@@ -74,7 +74,7 @@ const firebaseConfig = {
 };
 ```
 
-- Step 4: Create `firebaseConfig.env` in the app root directory, then add the following:
+- <b>Step 4</b>: Create `firebaseConfig.env` in the app root directory, then add the following:
 ```
 apiKey = <replace it with the right value>
 authDomain = <replace it with the right value>
