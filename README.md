@@ -28,11 +28,11 @@
 
 ### Setup:
 - Install nodejs from https://nodejs.org/en/download/
-- Open the terminal or cmd at the project directory then run:
+- Step 1: Open the terminal or cmd at the project directory then run:
 ```
 $ npm i
 ```
-- Add config.env file to the project folder, then add the following:
+- Step 2: Add config.env file to the project folder, then add the following:
 ```
 PORT = <integer>
 jwtSecretKey = <string>
@@ -57,6 +57,34 @@ Change the digest algorithm that is used for hashing password (default value sha
 Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
+
+
+by default the server uses firebase storage for storing images in the cloud (free no credit card required).
+if you like to use local storage instead of a cloud storage you can use the `main-v1.0-(local-storage)` branch (note: this branch is no longer supported)
+- Step 3: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this
+```
+const firebaseConfig = {
+  apiKey: "AsdqzdSDzaqsd468",
+  authDomain: "myProjectID.firebaseapp.com",
+  projectId: "myProjectID",
+  storageBucket: "myProjectID.appspot.com",
+  messagingSenderId: "6511211234525",
+  appId: "8:213514:61qsd54zqd321:4984365467",
+  measurementId: "QZ-SQDZQSDZ651"
+};
+```
+
+- Step 4: Create `firebaseConfig.env` in the app root directory, then add the following:
+```
+apiKey = <replace it with the right value>
+authDomain = <replace it with the right value>
+projectId = <replace it with the right value>
+storageBucket = <replace it with the right value>
+messagingSenderId = <replace it with the right value>
+appId = <replace it with the right value>
+measurementId = <replace it with the right value>
+```
+Then replace each variable with the right value from `const firebaseConfig` that we copied in the previous step
 
 
 <a name="run"/>
