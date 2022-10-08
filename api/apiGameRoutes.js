@@ -81,6 +81,7 @@ async function api_removeGame(req,res){
             let output = await fireBaseStorage.deleteImage(gameRemoved.imageName);
             //error handling
             if (output["error"]){
+                console.log(output["error"]);
                 console.log("error while deleting an image from firebase");
             }
         }
@@ -112,6 +113,7 @@ async function api_updateGame(req,res){
             let output = await fireBaseStorage.deleteImage(oldValues.imageName);
             //error handling
             if (output["error"]){
+                console.log(output["error"]);
                 console.log("error while deleting an image from firebase");
             }
         }

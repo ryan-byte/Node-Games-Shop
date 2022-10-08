@@ -92,6 +92,8 @@ function image_upload_middleware(req,res,next){
                 let imageURL = await fireBaseStorage.uploadImage(bb.fileBase64,bb.fileName);
                 if (imageURL["error"]){
                     //when an error occure then stop the request
+                    console.log(imageURL["error"]);
+                    console.log("error while uploading the image to the firebase storage");
                     res.sendStatus(500);
                 }else{
                     //when there is no error keep the request going

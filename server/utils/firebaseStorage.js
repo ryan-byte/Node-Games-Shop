@@ -26,7 +26,7 @@ async function uploadImage(fileBase64,fileName){
         //return the image url after uploading
         return await getImageUrl(fileName);
     }catch(err){
-        return {error:"uploadFile error"};
+        return {error:err};
     }
 }
 async function deleteImage(fileName){
@@ -35,7 +35,7 @@ async function deleteImage(fileName){
         await deleteObject(storageImagesRef);
         return "file deleted";
     }catch (err){
-        return {error:"deleteFile error"};
+        return {error:err};
     }
 }
 async function getImageUrl(fileName){
@@ -43,7 +43,7 @@ async function getImageUrl(fileName){
     try{
         return await getDownloadURL(storageImagesRef);
     }catch (err){
-        return {error:"getImageURl error"};
+        return {error:err};
     }
 }
 
