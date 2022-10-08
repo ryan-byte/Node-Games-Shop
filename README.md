@@ -12,7 +12,7 @@
 <a name="overview"/>
 
 ### Overview:
--This web application is a <b> personnal project </b> that is used to order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap.
+-This web application is a <b> personnal project </b> that is used to order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images)
 
 <a name="features"/>
 
