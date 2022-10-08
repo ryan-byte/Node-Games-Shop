@@ -1,5 +1,5 @@
 const database = require("../server/database/database");
-const deleteImageFile = require("../server/utils/deleteImageFile");
+const fireBaseStorage = require("../server/utils/firebaseStorage");
 
 async function api_getAllgames(req,res){
     let data = await database.getAllgames();
@@ -59,7 +59,9 @@ async function api_addGame(req,res){
                         stock === "";
     if (invalid) res.sendStatus(400);
     else{
-        let dataStatus = await database.addNewGame(title,price,stock,type,res.locals.imageName);
+        let imageName = res.locals.imageName;
+        let imageURL = res.locals.imageURL;
+        let dataStatus = await database.addNewGame(title,price,stock,type,imageURL,imageName);
         if (dataStatus["error"]){
             res.sendStatus(502)
         }else{
@@ -85,7 +87,7 @@ async function api_removeGame(req,res){
     if (status === 200){
         //delete the image file
         if (gameRemoved.imageName){
-            deleteImageFile(gameRemoved.imageName);
+            fireBaseStorage.deleteImage(gameRemoved.imageName);
         }
         //log the username action
         let username = res.locals.username;
@@ -95,7 +97,6 @@ async function api_removeGame(req,res){
 }
 
 async function api_updateGame(req,res){
-    let imageName = res.locals.imageName;
 
     let id = req.params.id;
     let {title,price,stock,type} = req.query;
@@ -114,15 +115,17 @@ async function api_updateGame(req,res){
                         
     if (invalid) res.sendStatus(400);
     else{
+        let imageName = res.locals.imageName;
+        let imageURL = res.locals.imageURL;
         //update data
-        const updateGame = await database.updateGame(id,title,price,stock,type,imageName);
+        const updateGame = await database.updateGame(id,title,price,stock,type,imageURL,imageName);
         let updateGameStatus = updateGame.status;
         let oldValues = updateGame.oldValues;
         if (updateGameStatus === 200){
             //delete the old image
             if (imageName){
                 //only delete if we have updated the image
-                deleteImageFile(oldValues.imageName);
+                fireBaseStorage.deleteImage(oldValues.imageName);
             }
             //log the username action
             let username = res.locals.username;

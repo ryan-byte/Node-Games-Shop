@@ -49,7 +49,7 @@ function renderGame(div,data){
     div.dataset.price = data.price;
     div.dataset.allData = JSON.stringify(data);
     div.innerHTML = `
-    <div class="gameImage" style="background-image:url('${data.imageName}');"></div>
+    <div class="gameImage" style="background-image:url('${data.imageURL}');"></div>
     <div class="title">
         <b> ${data.title} </b>
     </div>
