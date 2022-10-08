@@ -12,7 +12,7 @@
 <a name="overview"/>
 
 ### Overview:
--This web application is a <b> personnal project </b> that is used to order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images)
+-This web application is a <b> personnal project </b> that is used to server and order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images)
 
 <a name="features"/>
 
@@ -23,6 +23,7 @@
 -Admins can view all orders <br>
 -Admins can verify or decline orders <br>
 -Log admin action <br>
+-Created games images are stored in the cloud <br>
 
 <a name="setup"/>
 
@@ -59,10 +60,8 @@ Max number of API requests a user can make per minute (default value 60)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
 
 
-- <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br><br>
-![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) Note: by default the server uses firebase storage for storing images in the cloud (free no credit card required).
-if you like to use local storage instead of a cloud storage you can use the `main-v1.0-(local-storage)` branch 
-(the main-v1.0-(local-storage) branch will not longer be updated)
+- <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br>
+
 ```
 const firebaseConfig = {
   apiKey: "AsdqzdSDzaqsd468",
@@ -87,6 +86,9 @@ measurementId = <replace it with the right value>
 ```
 Then replace each variable with the right value from `const firebaseConfig` that we copied in the previous step
 
+<br>
+🛑By default the server uses firebase storage for storing images in the cloud (free no credit card required). if you'd like to use local storage instead of a cloud storage you can use the `main-v1.0-(local-storage)` branch `(Note: main-v1.0-(local-storage) branch will no longer be updated)`<br>
+🟠If you want to use a different cloud storage you should modify the script `server/utils//firebaseStorage.js` <br>
 
 <a name="run"/>
 
@@ -95,10 +97,7 @@ Then replace each variable with the right value from `const firebaseConfig` that
 ```
 $ npm start
 ```
-- Visit the app at (if the PORT = 3000):
-```
-127.0.0.1:3000
-```
+- Visit the app at `127.0.0.1:3000` (if the PORT = 3000)
 
 <a name="createAdmin"/>
 
