@@ -59,9 +59,10 @@ Max number of API requests a user can make per minute (default value 60)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
 
 
-by default the server uses firebase storage for storing images in the cloud (free no credit card required).
-if you like to use local storage instead of a cloud storage you can use the `main-v1.0-(local-storage)` branch (note: this branch is no longer supported)
-- <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this
+- <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br><br>
+![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) Note: by default the server uses firebase storage for storing images in the cloud (free no credit card required).
+if you like to use local storage instead of a cloud storage you can use the `main-v1.0-(local-storage)` branch 
+(the main-v1.0-(local-storage) branch will not longer be updated)
 ```
 const firebaseConfig = {
   apiKey: "AsdqzdSDzaqsd468",
