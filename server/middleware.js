@@ -4,8 +4,8 @@ const Busboy = require("busboy");
 const fs = require("fs");
 const path = require("path");
 const randomName = require("./utils/randomName");
+const fireBaseStorage = require("./utils/firebaseStorage");
 
-const imageFolder = path.join(__dirname,"assets","images");
 const secretKey = process.env.jwtSecretKey;
 const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
@@ -48,9 +48,13 @@ function webpage_verifyAdmin_middleware(req,res,next){
 
 function image_upload_middleware(req,res,next){
     const bb = Busboy({headers:req.headers,limits:{fileSize:maxImgUploadSize}});
+    //setup bb vars
+    bb.fileBase64 = "";
     bb.totalSize = 0;
     bb.status = 200;
+
     bb.on("file",(name,file,info)=>{
+        
         const {mimeType} = info;
         let ext = "";
         if (mimeType === "image/jpeg"){
@@ -61,27 +65,18 @@ function image_upload_middleware(req,res,next){
             //a client error status code that indicates that his file mimetype is unaccepted
             bb.status = 415;
         }
-        
+        //setup the file meta data
         bb.fileName = randomName() + ext;
-        const filePath = path.join(imageFolder,bb.fileName);
-        let fileStream = fs.createWriteStream(filePath);
+        file.setEncoding("base64");
 
         file.on("data",(chunk)=>{
-            //only write in the file if the extention is for images
             if (ext === ".png" || ext === ".jpg"){
-                fileStream.write(chunk);
-                fileStream.bytesWritten+=chunk.length;
+                //store all the file base64 in a variable
+                bb.fileBase64 += chunk;
             }
         })
 
         file.on("close",()=>{
-            fileStream.close();
-            if (fileStream.bytesWritten === 0){
-                //if the file is empty then remove it 
-                fs.unlink(filePath,(err)=>{
-                    if (err) throw err;
-                });
-            }
             if (file.truncated){
                 bb.emit("filesLimit");
             }
@@ -90,11 +85,26 @@ function image_upload_middleware(req,res,next){
     bb.on("filesLimit",()=>{
         bb.status = 413;
     })
-    bb.on("close",()=>{
+    bb.on("close", async ()=>{
         if (bb.status === 200){
             //proceed to the next function if everything is fine
-            res.locals.imageName = bb.fileName;
-            next();
+            if (bb.fileName !== undefined){
+                let imageURL = await fireBaseStorage.uploadImage(bb.fileBase64,bb.fileName);
+                if (imageURL["error"]){
+                    //when an error occure then stop the request
+                    console.log(imageURL["error"]);
+                    console.log("error while uploading the image to the firebase storage");
+                    res.sendStatus(500);
+                }else{
+                    //when there is no error keep the request going
+                    res.locals.imageURL = imageURL;
+                    res.locals.imageName = bb.fileName;
+                    next();
+                }
+            }else{
+                res.locals.imageName = undefined;
+                next();
+            }
         }else{
             //sending an error status code
             res.sendStatus(bb.status);
@@ -103,5 +113,25 @@ function image_upload_middleware(req,res,next){
     req.pipe(bb);
 }
 
+function verifyGameInputs(req,res,next){
+    let {title,price,stock,type} = req.query;
+    price = parseInt(price);
+    stock = parseInt(stock);
+    const invalid =     typeof title === "undefined" ||
+                        typeof price === "undefined" ||
+                        isNaN(price) ||
+                        typeof stock === "undefined" ||
+                        isNaN(stock) ||
+                        typeof type === "undefined"||
+                        title === ""||
+                        type === ""||
+                        price === ""||
+                        stock === "";
+                        
+    if (invalid) res.sendStatus(400);
+    else next();
+}
+
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
-                image_upload_middleware};
+                image_upload_middleware,
+                verifyGameInputs};

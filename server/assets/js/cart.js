@@ -79,7 +79,7 @@ function showCartGames(cart){
         
         newDiv.innerHTML = `
         <div class = "pe-2">
-            <img src="${cart[i].imageName}" alt="">
+            <img src="${cart[i].imageURL}" alt="">
         </div>
         <div>
             <b>Title: </b> ${cart[i].title} <br>
