@@ -128,7 +128,7 @@ $ node createAdmin.js
 - [ ] secure the backend code
 - [ ] change the api request limiter to work in redis cache instead of memory
 - [ ] after adding SSL certificate for encrypted connection make sure to set every cookie flag to secure
-- [ ] store the images in a cloud storage
+- [x] store the images in a cloud storage
 
 #### Notes:
 

@@ -6,7 +6,6 @@ const path = require("path");
 const randomName = require("./utils/randomName");
 const fireBaseStorage = require("./utils/firebaseStorage");
 
-const imageFolder = path.join(__dirname,"assets","images");
 const secretKey = process.env.jwtSecretKey;
 const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
