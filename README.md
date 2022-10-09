@@ -60,7 +60,7 @@ Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
 ###### accessCookieName (OPTIONAL)
-Name of the cookie used to Authentication (default "login")
+Name of the cookie used in Authentication (default "login")
 
 
 - <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br>
@@ -150,6 +150,7 @@ $ node createAdmin.js
 - [ ] make the game type selectable + verification
 - [ ] request timeout security
 - [ ] user register
+- [ ] user register verification by sending email
 - [x] login page for users/admin
 - [x] users can track their orders
 - [ ] limit the number of games loaded and more will be loaded when scrolling down
