@@ -6,12 +6,97 @@ const database = require("./database/database");
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
 
-const adminLoginCookieName = "jwt"
+const accessCookieName = process.env.accessCookieName;
 
+//public routes
 function getHomepage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/index.html"));
 }
 
+//not logged users only
+function getAdminLogin(req,res){
+    //must be called after a middleware that verify if the user is already logged in
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminLogin.html"));
+}
+async function postAdminLogin(req,res){
+    //verify login
+    //username and password must be sent from urlencoded form
+    let {username,password} = req.body;
+    let verification = await database.verifyAdmin(username,password);
+    if (verification["error"]){
+        res.sendStatus(502);
+    }else if (verification === false){
+        res.sendStatus(404);
+    }else if (verification === true){
+        //sign a jwt token
+        try{
+            let token = jwt.sign({username,admin:true},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+            
+            res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
+                httpOnly: true,
+                sameSite:"strict",
+                maxAge: tokenExpire //1 day
+            }));
+            res.redirect("/adminpanel");
+            //save logs
+            database.logUserAction(username,`Admin logged in`);
+        }catch (err){
+            res.sendStatus(400);
+        }
+    }else{
+        res.sendStatus(500);
+    }
+}
+
+function getUserLogin(req,res){
+    //must be called after a middleware that verify if the user is already logged in
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/userLogin.html"));
+}
+async function postUserLogin(req,res){
+    //verify login
+    //username and password must be sent from urlencoded form
+    let {username,password} = req.body;
+    let verification = await database.verifyUser(username,password);
+    if (verification["error"]){
+        res.sendStatus(502);
+    }else if (verification === false){
+        res.sendStatus(404);
+    }else if (verification === true){
+        //sign a jwt token
+        try{
+            let token = jwt.sign({username,admin:false},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+            
+            res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
+                httpOnly: true,
+                sameSite:"strict",
+                maxAge: tokenExpire //1 day
+            }));
+            res.redirect("/");
+            //save logs
+            database.logUserAction(username,`User logged in`);
+        }catch (err){
+            res.sendStatus(400);
+        }
+    }else{
+        res.sendStatus(500);
+    }
+}
+
+//any logged user
+function logout(req,res){
+    res.clearCookie(accessCookieName);
+    res.redirect("/");
+}
+function getUserDataFromCookie(req,res){
+    //get the jwt token (stored in a cookie)
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    //accesstoken already verified in the middleware so just decode now
+    let userData = jwt.decode(accessToken);
+    res.send(userData);
+}
+
+//only normal users routes
 function getOrderPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/order/order.html"));
 }
@@ -56,53 +141,7 @@ async function postOrder(req,res){
     res.sendStatus(statusCode);
 }
 
-function getAdminLogin(req,res){
-    //get the jwt token (stored in a cookie)
-    let allCookies = cookie.parse(req.headers.cookie || "");
-    let jwtToken = allCookies[adminLoginCookieName];
-    if (jwtToken){
-        try{
-            //verify the token if it is valid then redirect
-            jwt.verify(jwtToken,secretKey);
-            res.status(302).redirect("/adminpanel");
-        }catch (err){
-            //when the token is invalid then the admin login page
-            res.status(200).sendFile(path.join(__dirname + "/assets/html/adminLogin.html"));
-        }
-    }else{
-        res.status(200).sendFile(path.join(__dirname + "/assets/html/adminLogin.html"));
-    }
-}
-async function postAdminLogin(req,res){
-    //verify login
-    //username and password must be sent from urlencoded form
-    let {username,password} = req.body;
-    let verification = await database.verifyAdmin(username,password);
-    if (verification["error"]){
-        res.sendStatus(502);
-    }else if (verification === false){
-        res.sendStatus(404);
-    }else if (verification === true){
-        //sign a jwt token
-        try{
-            let token = jwt.sign({username},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
-            
-            res.setHeader('Set-Cookie', cookie.serialize(adminLoginCookieName, token, {
-                httpOnly: true,
-                sameSite:"strict",
-                maxAge: tokenExpire //1 day
-            }));
-            res.redirect("/adminpanel");
-            //save logs
-            database.logUserAction(username,`User logged in`);
-        }catch (err){
-            res.sendStatus(400);
-        }
-    }else{
-        res.sendStatus(500);
-    }
-}
-
+//admin users only
 function getadminpanel(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/adminpanel.html"));
 }
@@ -114,10 +153,6 @@ function getadminpanelOrderList(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/ordersList.html"));
 }
 
-function adminLogout(req,res){
-    res.clearCookie(adminLoginCookieName);
-    res.redirect("/");
-}
 
 
 
@@ -129,4 +164,5 @@ module.exports = {getHomepage,
                 getadminpanel,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
-                adminLogout,};
+                logout,getUserDataFromCookie,
+                getUserLogin,postUserLogin};

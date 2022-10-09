@@ -7,6 +7,7 @@ const client = new MongoClient(URL);
 const gameShopDB = client.db("GameShop");
 const gamesCollection = gameShopDB.collection("Games");
 const adminCollection = gameShopDB.collection("admin");
+const userCollection = gameShopDB.collection("user");
 const ordersCollection = gameShopDB.collection("orders");
 const logsCollection = gameShopDB.collection("logs");
 
@@ -154,6 +155,35 @@ const verifyAdmin = async (username,password)=>{
     }
 }
 
+async function getUser(username){
+    try{
+        let data = await userCollection.findOne({username: {$regex : new RegExp("^"+username+"$","i")}});
+        return data;
+    }catch(err){
+        return {"error":err};
+    }
+}
+async function verifyUser(username,password){
+    try{
+        //get the admin data
+        let userData = await getUser(username);
+        if (userData === null){
+            return false;
+        }else if (userData["error"]){
+            return userData;
+        }
+        //hash the given password with the hashKey that is stored in the admin data
+        let hashedPassword = hashPassword(password,userData.hashKey);
+        //verify if the hashedpassword is the same as the stored one
+        if (hashedPassword === userData.hashedPassword){
+            return true;
+        }
+        return false;
+    }catch (err){
+        return {"error":err};
+    }
+}
+
 async function logUserAction(username,action){
     try{
         let timeStamp = Math.floor(Date.now() / 1000)
@@ -244,4 +274,5 @@ module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
                 createNewOrder,getOrders,
-                verifyOrder,declineOrder};
+                verifyOrder,declineOrder,
+                verifyUser};

@@ -20,21 +20,21 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href = "/adminpanel">Manage Games</a>
+                        <a class="nav-link"  href="/adminpanel" >Manage Games</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/adminpanel/add">Add New Game</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" >Orders</a>
+                        <a class="nav-link active" aria-current="page">Orders</a>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <form action="/adminpanel/logout" method="post">
+                <li class="nav-item" id = "loginOrLogoutButtonContainer">
+                    <form action="/logout" method="post">
                         <button id = "submit" class="btn btn-danger">Logout</button>
                     </form>
                 </li>
@@ -87,5 +87,6 @@
 
     <script defer src="/js/adminpanel/adminOrdersList.js"></script>
     <script defer src="/js/bootstrap.min.js"></script>
+    <script defer src="/js/changeUiOnLoggedUsers.js"></script>
 </body>
 </html>

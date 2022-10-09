@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.urlencoded({ extended: true }));
 
-//make the assets folder public
+//make the public assets folder public
 app.use(express.static('./server/assets'));
 
 //public api
@@ -49,17 +49,29 @@ app.put("/api/declineOrder/:orderID",rateLimiter_Middleware(),
                     api_routes.api_declineOrder);
 
 
-//website routes
+//public pages
 app.get("/",(req,res)=>{
     server_routes.getHomepage(req,res);
-})
+});
 
-app.get("/order",server_routes.getOrderPage);
-app.post("/order",server_routes.postOrder);
+//no logged user allowed
+app.get("/adminLogin",server_middleware.noLoggedUserAllowed,server_routes.getAdminLogin);
+app.post("/adminLogin",server_middleware.noLoggedUserAllowed,server_routes.postAdminLogin);
 
-app.get("/adminLogin",server_routes.getAdminLogin);
-app.post("/adminLogin",server_routes.postAdminLogin);
+app.get("/userLogin",server_middleware.noLoggedUserAllowed,server_routes.getUserLogin);
+app.post("/userLogin",server_middleware.noLoggedUserAllowed,server_routes.postUserLogin);
 
+//any logged user
+app.post("/logout",server_middleware.anyLoggedUser,
+                    server_routes.logout);
+app.get("/user/data",server_middleware.anyLoggedUser,
+                    server_routes.getUserDataFromCookie);
+
+//normal allowed users pages
+app.get("/order",server_middleware.onlyNormalUsersAllowed,server_routes.getOrderPage);
+app.post("/order",server_middleware.onlyNormalUsersAllowed,server_routes.postOrder);
+
+//admin allowed pages
 app.get("/adminpanel",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.getadminpanel);
 app.get("/adminpanel/add",server_middleware.webpage_verifyAdmin_middleware,
@@ -68,7 +80,5 @@ app.get("/adminpanel/add",server_middleware.webpage_verifyAdmin_middleware,
 app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
                             server_routes.getadminpanelOrderList);
 
-app.post("/adminpanel/logout",server_middleware.webpage_verifyAdmin_middleware,
-                    server_routes.adminLogout);
 
 app.listen(PORT, ()=>console.log("server is on port " + PORT))
