@@ -6,7 +6,7 @@ const database = require("./database/database");
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
 
-const accessCookieName = process.env.accessCookieName;
+const accessCookieName = process.env.accessCookieName || "login";
 
 //public routes
 function getHomepage(req,res){

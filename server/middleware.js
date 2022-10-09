@@ -4,7 +4,7 @@ const Busboy = require("busboy");
 const randomName = require("./utils/randomName");
 const fireBaseStorage = require("./utils/firebaseStorage");
 
-const accessCookieName = process.env.accessCookieName;
+const accessCookieName = process.env.accessCookieName || "login";
 const secretKey = process.env.jwtSecretKey;
 const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
