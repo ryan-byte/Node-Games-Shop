@@ -1,6 +1,11 @@
+const jwt = require("jsonwebtoken");
 const database = require("../server/database/database");
 const fireBaseStorage = require("../server/utils/firebaseStorage");
+const cookie = require("cookie");
 
+const accessCookieName = process.env.accessCookieName;
+
+//public api
 async function api_getAllgames(req,res){
     let data = await database.getAllgames();
     if (data["error"]){
@@ -43,6 +48,7 @@ async function api_getMultipleGamesByID(req,res){
     }
 }
 
+//admins api
 async function api_addGame(req,res){
     //note: variables verification is done in a middleware
     //get required variables for the database query
@@ -166,11 +172,28 @@ async function api_verifyOrder(req,res){
     res.sendStatus(statusCode);
 }
 
-module.exports = {
-                    api_getAllgames,
+//normal users api
+async function api_getLatestOrders(req,res){
+    //get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+
+    let data = await database.getUserLatestOrders(userID);
+    if (data["error"]){
+        res.sendStatus(502)
+    }else{
+        res.status(200).json(data);
+    }
+}
+
+
+module.exports = {  api_getAllgames,
                     api_getGameByTitle,api_getMultipleGamesByID,
                     api_addGame,
                     api_removeGame,
                     api_updateGame,
                     api_getOrder,
-                    api_verifyOrder,api_declineOrder}
+                    api_verifyOrder,api_declineOrder,
+                    api_getLatestOrders}

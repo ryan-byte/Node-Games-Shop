@@ -48,6 +48,13 @@ app.put("/api/declineOrder/:orderID",rateLimiter_Middleware(),
                     server_middleware.api_verifyAdmin_middleware,
                     api_routes.api_declineOrder);
 
+//normal users api
+app.get("/api/user/getOrders",rateLimiter_Middleware(),
+                    server_middleware.onlyNormalUsersAllowed,
+                    api_routes.api_getLatestOrders);
+
+
+
 
 //public pages
 app.get("/",(req,res)=>{
@@ -70,6 +77,8 @@ app.get("/user/data",server_middleware.anyLoggedUser,
 //normal allowed users pages
 app.get("/order",server_middleware.onlyNormalUsersAllowed,server_routes.getOrderPage);
 app.post("/order",server_middleware.onlyNormalUsersAllowed,server_routes.postOrder);
+
+app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,server_routes.getUserOrdersPage);
 
 //admin allowed pages
 app.get("/adminpanel",server_middleware.webpage_verifyAdmin_middleware,

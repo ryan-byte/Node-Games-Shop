@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const Busboy = require("busboy");
-const fs = require("fs");
-const path = require("path");
 const randomName = require("./utils/randomName");
 const fireBaseStorage = require("./utils/firebaseStorage");
 

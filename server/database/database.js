@@ -147,7 +147,7 @@ const verifyAdmin = async (username,password)=>{
         let hashedPassword = hashPassword(password,adminData.hashKey);
         //verify if the hashedpassword is the same as the stored one
         if (hashedPassword === adminData.hashedPassword){
-            return true;
+            return {"userID":adminData._id.toString()};
         }
         return false;
     }catch (err){
@@ -176,7 +176,7 @@ async function verifyUser(username,password){
         let hashedPassword = hashPassword(password,userData.hashKey);
         //verify if the hashedpassword is the same as the stored one
         if (hashedPassword === userData.hashedPassword){
-            return true;
+            return {"userID":userData._id.toString()};
         }
         return false;
     }catch (err){
@@ -193,8 +193,9 @@ async function logUserAction(username,action){
     }
 }
 
-async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,Games){
-    const validInputs = typeof FirstName === "string" && 
+async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,Games){
+    const validInputs = typeof userID === "string" && 
+                        typeof FirstName === "string" && 
                         typeof LastName === "string" && 
                         typeof City === "string" && 
                         typeof PostalCode === "string" && 
@@ -203,7 +204,7 @@ async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCo
                         typeof Address === "string";
     if (validInputs){
         let timeStamp = Math.floor(Date.now() / 1000);
-        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
+        const newOrder = {userID,FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
         try{
             await ordersCollection.insertOne(newOrder)
             return 201;
@@ -270,9 +271,21 @@ async function declineOrder(orderID){
     }
 }
 
+
+async function getUserLatestOrders(userID){
+    try{
+        let latestOrders = await ordersCollection.find({userID}).toArray();
+        return latestOrders;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
+    }
+}
+
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
                 createNewOrder,getOrders,
                 verifyOrder,declineOrder,
-                verifyUser};
+                verifyUser,
+                getUserLatestOrders};

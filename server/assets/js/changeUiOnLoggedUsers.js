@@ -23,7 +23,7 @@ function normalUser_changeLoginButtonToUsername(username){
         </button>
         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
             <li><a class="dropdown-item" href="/">Homepage</a></li>
-            <li><a class="dropdown-item" href="/myOrders">Track My Orders</a></li>
+            <li><a class="dropdown-item" href="/userOrders">Track My Orders</a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
                 <form action="/logout" method="post">

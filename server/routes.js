@@ -27,10 +27,11 @@ async function postAdminLogin(req,res){
         res.sendStatus(502);
     }else if (verification === false){
         res.sendStatus(404);
-    }else if (verification === true){
+    }else if (verification["userID"]){
         //sign a jwt token
         try{
-            let token = jwt.sign({username,admin:true},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+            let userID = verification["userID"];
+            let token = jwt.sign({username,admin:true,userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
             
             res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
                 httpOnly: true,
@@ -61,10 +62,11 @@ async function postUserLogin(req,res){
         res.sendStatus(502);
     }else if (verification === false){
         res.sendStatus(404);
-    }else if (verification === true){
+    }else if (verification["userID"]){
         //sign a jwt token
         try{
-            let token = jwt.sign({username,admin:false},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+            let userID = verification["userID"];
+            let token = jwt.sign({username,admin:false,userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
             
             res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
                 httpOnly: true,
@@ -134,11 +136,19 @@ async function postOrder(req,res){
         res.sendStatus(400);
         return;
     }
-
+    //last thing is to get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
     //when everything is fine then add the order to the database
-    let statusCode = await database.createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,games);
+    let statusCode = await database.createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,games);
     //send back the status code to the client
     res.sendStatus(statusCode);
+}
+
+function getUserOrdersPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/order/userOrders.html"));
 }
 
 //admin users only
@@ -165,4 +175,4 @@ module.exports = {getHomepage,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
                 logout,getUserDataFromCookie,
-                getUserLogin,postUserLogin};
+                getUserLogin,postUserLogin,getUserOrdersPage};

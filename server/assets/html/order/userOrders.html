@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Orders</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Game Shop</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item" id = "loginOrLogoutButtonContainer">
+                    <a href="/userLogin" class="btn btn-secondary">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main><br>
+        <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
+            <button id = "getLatestOrders" type="button" class="btn btn-outline-primary mx-3">My Latest Orders</button>
+        </div>
+        <div id = "spinner" class="spinner-border" style="display:none;" role="status">
+            <span  class="visually-hidden">Loading...</span>
+        </div>
+        <br>
+        <div id = "orderList" class="d-flex flex-column bd-highlight mb-3 mx-5">
+
+        </div>
+    </main>
+
+    <script defer src="/js/bootstrap.min.js"></script>
+    <script defer src="/js/changeUiOnLoggedUsers.js"></script>
+    <script defer src="/js/order/getUserOrders.js"></script>
+</body>
+</html>
