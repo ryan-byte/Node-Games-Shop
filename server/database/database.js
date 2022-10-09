@@ -274,7 +274,8 @@ async function declineOrder(orderID){
 
 async function getUserLatestOrders(userID){
     try{
-        let latestOrders = await ordersCollection.find({userID}).toArray();
+        const latestTimestamp = { timeStamp: -1 };
+        let latestOrders = await ordersCollection.find({userID}).sort(latestTimestamp).toArray();
         return latestOrders;
     }catch (err){
         console.error(err)
