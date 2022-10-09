@@ -2,6 +2,8 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const database = require("./database/database");
+const crypto = require("crypto");
+const hashPassword = require("./utils/hashPassword");
 
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
@@ -46,6 +48,39 @@ async function postAdminLogin(req,res){
         }
     }else{
         res.sendStatus(500);
+    }
+}
+
+function getUserSignup(req,res){
+    //must be called after a middleware that verify if the user is not logged in
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userSignup.html"));
+}
+
+async function postUserSignup(req,res){
+    //must be called after a middleware that verify if the user is not logged in
+    //username and password must be sent from urlencoded form
+    let {username,email,password} = req.body;
+    let condition = username === ""||
+                    typeof username === "undefined"||
+                    email === ""||
+                    typeof email === "undefined"||
+                    password === ""||
+                    password.length < 8||
+                    typeof password === "undefined";
+    if (condition){
+        res.sendStatus(400);
+        return;
+    }
+    let hashKey = crypto.randomBytes(16).toString("hex");
+    let hashedPassword = hashPassword(password,hashKey);
+    let output = await database.createUser(username,email,hashedPassword,hashKey);
+    if (output["error"]){
+        res.sendStatus(502);
+        return;
+    }else if (output === false){
+        res.sendStatus(409);
+    }else{
+        res.redirect("/userLogin");
     }
 }
 
@@ -175,4 +210,5 @@ module.exports = {getHomepage,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
                 logout,getUserDataFromCookie,
-                getUserLogin,postUserLogin,getUserOrdersPage};
+                getUserLogin,postUserLogin,getUserOrdersPage,
+                getUserSignup,postUserSignup};

@@ -155,6 +155,29 @@ const verifyAdmin = async (username,password)=>{
     }
 }
 
+async function userExist(username,email){
+    try{
+        let userExistData =await userCollection.findOne({$or:[{username},{email},]});
+        if (userExistData === null) return false;
+        else return true;
+    }catch(error){
+        return {error};
+    }
+}
+async function createUser(username,email,hashedPassword,hashKey){
+    try{
+        let checkIfUserExists= await userExist(username,email);
+        if (!checkIfUserExists){
+            await userCollection.insertOne({username,email,hashedPassword,hashKey});
+            return true;
+        }else {
+            return false;
+        }
+    }catch(err){
+        console.error(err);
+        return {error:"db error"};
+    }
+}
 async function getUser(username){
     try{
         let data = await userCollection.findOne({username: {$regex : new RegExp("^"+username+"$","i")}});
@@ -288,5 +311,5 @@ module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
                 createNewOrder,getOrders,
                 verifyOrder,declineOrder,
-                verifyUser,
+                verifyUser,createUser,
                 getUserLatestOrders};

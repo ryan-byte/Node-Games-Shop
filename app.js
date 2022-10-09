@@ -68,6 +68,9 @@ app.post("/adminLogin",server_middleware.noLoggedUserAllowed,server_routes.postA
 app.get("/userLogin",server_middleware.noLoggedUserAllowed,server_routes.getUserLogin);
 app.post("/userLogin",server_middleware.noLoggedUserAllowed,server_routes.postUserLogin);
 
+app.get("/userSignup",server_middleware.noLoggedUserAllowed,server_routes.getUserSignup);
+app.post("/userSignup",server_middleware.noLoggedUserAllowed,server_routes.postUserSignup);
+
 //any logged user
 app.post("/logout",server_middleware.anyLoggedUser,
                     server_routes.logout);
