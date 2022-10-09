@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             
             
@@ -29,11 +29,11 @@
                 <div class="col"></div>
                 <div class="col-8">
                     <div class="position-relative">
-                        <a href="/userLogin" class="position-absolute top-0 end-0">
-                            <button class="btn btn-secondary">User Login</button>
+                        <a href="/adminLogin" class="position-absolute top-0 end-0">
+                            <button class="btn btn-secondary">Admin Login</button>
                         </a>
                     </div>
-                    <h3 class = "my3" style="text-align: center;">Admin Login</h3>
+                    <h3 class = "my3" style="text-align: center;">User Login</h3>
                     <form class="my-3" id="loginForm" action="" method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label"><b>Username</b></label>    
@@ -52,6 +52,11 @@
                         </div>
                         <button type="submit" id="submit" class="btn btn-primary" style="width: 100%;">Login</button>
                     </form>
+                    <hr>
+                    <form action="/userSignup" method="get">
+                        <button class="btn btn-warning" style="width: 100%;">Signup</button>
+                    </form>
+                    <br>
                 </div>
                 <div class="col"></div>
             </div>

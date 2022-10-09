@@ -51,7 +51,7 @@ async function postAdminLogin(req,res){
 
 function getUserLogin(req,res){
     //must be called after a middleware that verify if the user is already logged in
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/userLogin.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin.html"));
 }
 async function postUserLogin(req,res){
     //verify login
@@ -148,7 +148,7 @@ async function postOrder(req,res){
 }
 
 function getUserOrdersPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/order/userOrders.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrders.html"));
 }
 
 //admin users only
