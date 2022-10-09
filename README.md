@@ -150,6 +150,7 @@ $ node createAdmin.js
 - [ ] make the game type selectable + verification
 - [ ] request timeout security
 - [ ] user register
+- [ ] user register verification by sending email
 - [x] login page for users/admin
 - [x] users can track their orders
 - [ ] limit the number of games loaded and more will be loaded when scrolling down
