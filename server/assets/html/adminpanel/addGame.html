@@ -32,8 +32,8 @@
         </div>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <form action="/adminpanel/logout" method="post">
+                <li class="nav-item" id = "loginOrLogoutButtonContainer">
+                    <form action="/logout" method="post">
                         <button id = "submit" class="btn btn-danger">Logout</button>
                     </form>
                 </li>
@@ -82,5 +82,6 @@
     <footer></footer>
     <script defer src="/js/adminpanel/addGame.js"></script>
     <script defer src="/js/bootstrap.min.js"></script>
+    <script defer src="/js/changeUiOnLoggedUsers.js"></script>
 </body>
 </html>

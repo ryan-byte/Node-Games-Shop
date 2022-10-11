@@ -23,7 +23,7 @@ loginForm.addEventListener("submit",async (ev)=>{
     if (request.redirected){
         window.location.replace(request.url);
     }else if (request.status === 404){
-        alert("not found");
+        alert("Wrong credentials");
     }else{
         alert("server error");
     }

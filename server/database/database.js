@@ -7,8 +7,32 @@ const client = new MongoClient(URL);
 const gameShopDB = client.db("GameShop");
 const gamesCollection = gameShopDB.collection("Games");
 const adminCollection = gameShopDB.collection("admin");
+const userCollection = gameShopDB.collection("users");
 const ordersCollection = gameShopDB.collection("orders");
 const logsCollection = gameShopDB.collection("logs");
+const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers")
+
+const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
+
+setupIndexes()
+async function setupIndexes(){
+    let indexExist = await unverifiedUsersCollection.indexExists("createdAt_1");
+    console.log("Setting up unverified users expiration index");
+    if (!indexExist){
+        //creating a ttl index that will delete the unverified user data after some seconds
+        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:unverifiedUserDataExpirationTimeInSec});
+        console.log(`Index has been created, unverified users data will expire after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
+    }else{
+        console.log("Index already exists");
+        unverifiedUsersCollection.dropIndex("createdAt_1");
+        console.log("Index has been dropped");
+        console.log("Creating expiration index");
+        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:unverifiedUserDataExpirationTimeInSec});
+        console.log(`Index has been created, unverified users data will be deleted after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
+    }
+    console.log("\x1b[33m" + "Database is ready" + "\x1b[0m");
+}
+
 
 const getAllgames = async ()=>{
     try{
@@ -146,7 +170,95 @@ const verifyAdmin = async (username,password)=>{
         let hashedPassword = hashPassword(password,adminData.hashKey);
         //verify if the hashedpassword is the same as the stored one
         if (hashedPassword === adminData.hashedPassword){
-            return true;
+            return {"userID":adminData._id.toString()};
+        }
+        return false;
+    }catch (err){
+        return {"error":err};
+    }
+}
+
+async function userExist(username,email){
+    try{
+        let userExistData =await userCollection.findOne({$or:[{username},{email}]});
+        if (userExistData === null) return false;
+        else return true;
+    }catch(error){
+        return {error};
+    }
+}
+async function createUnverifiedUser(username,email,hashedPassword,hashKey,verificationCode){
+    try{
+        let checkIfUserExists= await userExist(username,email);
+        if (!checkIfUserExists){
+            //createdAt is used as an index so the data will be deleted after some time
+            let createdAt = new Date();
+            let output = await unverifiedUsersCollection.insertOne({username,email,hashedPassword,hashKey,verificationCode,createdAt});
+            return {status:true,userID:output.insertedId.toString()};
+        }else {
+            return {status:false};
+        }
+    }catch(err){
+        console.error(err);
+        return {error:"db error"};
+    }
+}
+async function deleteUnverifiedUser(userID){
+    try{
+        const query = {"_id": new ObjectId(userID)};
+        await unverifiedUsersCollection.deleteOne(query);
+    }catch(err){
+        return {"error":err};
+    }
+}
+async function createVerifiedUser(username,email,hashedPassword,hashKey){
+    try{
+        let output = await userCollection.insertOne({username,email,hashedPassword,hashKey});
+        return {userID:output.insertedId.toString()};
+    }catch(err){
+        console.error(err);
+        return {error:"db error"};
+    }
+}
+async function verifyUserSignup(userID,code){
+    try{
+        let userObjectID = new ObjectId(userID);
+        let query = {"_id": userObjectID};
+        let user = await unverifiedUsersCollection.findOne(query);
+
+        let verifiedCode = user.verificationCode.toString();
+        if (code === verifiedCode){
+            return {status:true,userID,data:user};
+        }else{
+            return {status:false};
+        }
+    }catch(err){
+        console.error(err);
+        return {error:"db error"};
+    }
+}
+async function getUser(username){
+    try{
+        let data = await userCollection.findOne({username: {$regex : new RegExp("^"+username+"$","i")}});
+        return data;
+    }catch(err){
+        return {"error":err};
+    }
+}
+async function verifyUserCredentials(username,password){
+    try{
+        //get the admin data
+        let userData = await getUser(username);
+        if (userData === null){
+            return false;
+        }else if (userData["error"]){
+            return userData;
+        }
+        //hash the given password with the hashKey that is stored in the admin data
+        let hashedPassword = hashPassword(password,userData.hashKey);
+        //verify if the hashedpassword is the same as the stored one
+        if (hashedPassword === userData.hashedPassword){
+            return {"userID":userData._id.toString()};
         }
         return false;
     }catch (err){
@@ -163,8 +275,9 @@ async function logUserAction(username,action){
     }
 }
 
-async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCode,Games){
-    const validInputs = typeof FirstName === "string" && 
+async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,Games){
+    const validInputs = typeof userID === "string" && 
+                        typeof FirstName === "string" && 
                         typeof LastName === "string" && 
                         typeof City === "string" && 
                         typeof PostalCode === "string" && 
@@ -173,7 +286,7 @@ async function createNewOrder(FirstName,LastName,TelNumber,Address,City,PostalCo
                         typeof Address === "string";
     if (validInputs){
         let timeStamp = Math.floor(Date.now() / 1000);
-        const newOrder = {FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
+        const newOrder = {userID,FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
         try{
             await ordersCollection.insertOne(newOrder)
             return 201;
@@ -240,8 +353,23 @@ async function declineOrder(orderID){
     }
 }
 
+
+async function getUserLatestOrders(userID){
+    try{
+        const latestTimestamp = { timeStamp: -1 };
+        let latestOrders = await ordersCollection.find({userID}).sort(latestTimestamp).toArray();
+        return latestOrders;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
+    }
+}
+
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
                 createNewOrder,getOrders,
-                verifyOrder,declineOrder};
+                verifyOrder,declineOrder,
+                verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
+                getUserLatestOrders,
+                verifyUserSignup,createVerifiedUser};

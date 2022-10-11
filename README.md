@@ -4,6 +4,7 @@
 [Overview](#overview) <br>
 [Features](#features) <br>
 [Setup Project](#setup) <br>
+[Setup gmail app password](#setupgmailapp) <br>
 [Run Project](#run) <br>
 [Create Admin](#createAdmin) <br>
 [Roadmap](#roadmap) <br>
@@ -12,13 +13,16 @@
 <a name="overview"/>
 
 ### Overview:
--This web application is a <b> personnal project </b> that is used to server and order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images)
+-This web application is a <b> personnal project </b> that is used to server and order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images), gmail (for sending mails to verify users signup)
 
 <a name="features"/>
 
 ### Features:
 -Users can view games <br>
 -Users can order games <br>
+-Users can signup/login <br>
+-Users must verify their account by sending an email that contains a verification code <br>
+-Users can track their own orders <br>
 -Admins can create, update and delete games  <br>
 -Admins can view all orders <br>
 -Admins can verify or decline orders <br>
@@ -41,6 +45,9 @@ mongoURL = <mongodb atlas connect url>
 digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
 maxImgUploadSize = <integer>
+accessCookieName = <string>
+userVerificationCookieName = <string>
+unverifiedUserDataExpirationTimeInSec = <integer>
 ```
 #### config.env variables
 ###### PORT (OPTIONAL)
@@ -58,6 +65,12 @@ Change the digest algorithm that is used for hashing password (default value sha
 Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
+###### accessCookieName (OPTIONAL)
+Name of the cookie used in Authentication (default "login")
+###### userVerificationCookieName (OPTIONAL)
+The cookie name that will let the user access the verification endpoint (default "verification")
+###### unverifiedUserDataExpirationTimeInSec (OPTIONAL)
+Time for the unverified user to be deleted from the database, also used as an expiration time for verification cookie (default 1800)
 
 
 - <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br>
@@ -90,6 +103,28 @@ Then replace each variable with the right value from `const firebaseConfig` that
 🛑By default the server uses firebase storage for storing images in the cloud (free no credit card required). if you'd like to use local storage instead of a cloud storage you can use the <b> main-v1.0-(local-storage) </b>branch <b> (Note: main-v1.0-(local-storage) branch will no longer be updated) </b> <br>
 
 🟠If you want to use a different cloud storage you should modify the script `server/utils/firebaseStorage.js` <br>
+
+
+- <b>Step 5</b>: Create `emailAuth.env` in the app root directory, then add the following:
+```
+service = <string>
+mail = <string>
+appPassword = <string>
+```
+###### service (OPTIONAL)
+The service used as an email provider (default "gmail")
+###### mail (REQUIRED)
+The Address mail used for sending the validation code for validating user signup
+###### appPassword (REQUIRED)
+For gmail service you should setup an app password (follow these [steps](#setupgmailapp))
+
+
+
+<a name = "setupgmailapp"/>
+
+### Setup gmail app password:
+- First we have to  <a href = "https://myaccount.google.com/signinoptions/two-step-verification/enroll-welcome">enable 2-Step Verification.</a>
+- Now select the <a href = "https://myaccount.google.com/u/2/apppasswords"> App passwords </a> option and generate a password, that's it.  
 
 <a name="run"/>
 
@@ -143,11 +178,11 @@ $ node createAdmin.js
 - [x] make it responsive
 - [x] can add quantity in the cart
 - [ ] blacklist ip if the admin password is wrong for few times
-- [ ] make the api requests limiter store in Redis instead of memory
 - [ ] make the game type selectable + verification
-- [ ] request timeout security
-- [ ] user register
-- [ ] login page for users/admin
+- [x] user register
+- [x] user register verification by sending email
+- [x] login page for users/admin
+- [x] users can track their orders
 - [ ] limit the number of games loaded and more will be loaded when scrolling down
 
 

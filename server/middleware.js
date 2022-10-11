@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const Busboy = require("busboy");
-const fs = require("fs");
-const path = require("path");
 const randomName = require("./utils/randomName");
 const fireBaseStorage = require("./utils/firebaseStorage");
 
+const accessCookieName = process.env.accessCookieName || "login";
+const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
 const secretKey = process.env.jwtSecretKey;
 const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
@@ -16,12 +16,14 @@ const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 function api_verifyAdmin_middleware(req,res,next){
     //get jwt token
     let jwtCookie = cookie.parse(req.headers.cookie || "");
-    let token = jwtCookie.jwt;
+    let token = jwtCookie[accessCookieName];
     if (token){
         try{
             let decode = jwt.verify(token,secretKey);
+            let admin = decode.admin;
             res.locals.username = decode.username;
-            next();
+            if (admin) next();
+            else res.sendStatus(403);
         }catch (err){
             res.sendStatus(401);
         }
@@ -33,16 +35,93 @@ function api_verifyAdmin_middleware(req,res,next){
 function webpage_verifyAdmin_middleware(req,res,next){
     //get jwt token
     let jwtCookie = cookie.parse(req.headers.cookie || "");
-    let token = jwtCookie.jwt;
+    let token = jwtCookie[accessCookieName];
     if (token){
         try{
-            jwt.verify(token,secretKey);
-            next();
+            let decode = jwt.verify(token,secretKey);
+            let admin = decode.admin;
+            if (admin) next();
+            else res.sendStatus(403);
+
         }catch (err){
             res.status(302).redirect("/adminLogin")
         }
     }else{
         res.status(302).redirect("/adminLogin");
+    }
+}
+
+function noLoggedUserAllowed(req,res,next){
+    //get the jwt token (stored in a cookie)
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    if (accessToken){
+        try{
+            //verify the token if it is valid then redirect
+            let decode = jwt.verify(accessToken,secretKey);
+            let admin = decode.admin;
+            if (admin) res.status(302).redirect("/adminpanel");
+            else res.status(302).redirect("/");
+        }catch (err){
+            //when the token is invalid then the admin login page
+            next();
+        }
+    }else{
+        next();
+    }
+}
+
+function anyLoggedUser(req,res,next){
+    //get the jwt token (stored in a cookie)
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    if (accessToken){
+        try{
+            //verify the token if it is valid then redirect
+            jwt.verify(accessToken,secretKey);
+            next();
+        }catch (err){
+            //when the token is invalid then the admin login page
+            res.status(302).redirect("/userLogin");
+        }
+    }else{
+        res.status(302).redirect("/userLogin");
+    }
+}
+
+function onlyNormalUsersAllowed(req,res,next){
+    //get the jwt token (stored in a cookie)
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    if (accessToken){
+        try{
+            let decode = jwt.verify(accessToken,secretKey);
+            let admin = decode.admin;
+            if (admin) res.sendStatus(403);
+            else next();
+        }catch (err){
+            res.status(302).redirect("/userLogin");
+        }
+    }else{
+        res.status(302).redirect("/userLogin");
+    }
+}
+
+function unverifiedUsers(req,res,next){
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let verificationCookie = allCookies[userVerificationCookieName];
+    if (verificationCookie){
+        try{
+            //verify the token if it is valid then next
+            jwt.verify(verificationCookie,secretKey);
+            next();
+        }catch (err){
+            //when the token is invalid then send a forbiddent status code
+            res.sendStatus(403);
+            console.log(err);
+        }
+    }else{
+        res.sendStatus(403);
     }
 }
 
@@ -134,4 +213,6 @@ function verifyGameInputs(req,res,next){
 
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
                 image_upload_middleware,
-                verifyGameInputs};
+                verifyGameInputs,
+                noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
+                unverifiedUsers};

@@ -4,6 +4,7 @@ const verified = document.getElementById("verified")
 const declined = document.getElementById("declined")
 const orderInfoBody = document.getElementById("orderInfoBody");
 const orderModalSpinner = document.getElementById("orderModalSpinner");
+const spinner = document.getElementById("spinner");
 const bootstrap_borderSize = 3;
 
 
@@ -34,7 +35,7 @@ async function getAllOrders(verificationStatus = 0){
     disableAllApiRequestButtons(false);
 }
 
-//get orders functions
+//show orders functions
 function showOrders(verificationStatus,data){
     orderList.innerHTML = "";
     if (verificationStatus === 0){
