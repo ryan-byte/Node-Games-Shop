@@ -42,6 +42,8 @@ digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
 maxImgUploadSize = <integer>
 accessCookieName = <string>
+userVerificationCookieName = <string>
+unverifiedUserDataExpirationTimeInSec = <integer>
 ```
 #### config.env variables
 ###### PORT (OPTIONAL)
@@ -61,6 +63,10 @@ Max number of API requests a user can make per minute (default value 60)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
 ###### accessCookieName (OPTIONAL)
 Name of the cookie used in Authentication (default "login")
+###### userVerificationCookieName (OPTIONAL)
+The cookie name that will let the user access the verification endpoint (default "verification")
+###### unverifiedUserDataExpirationTimeInSec (OPTIONAL)
+Time for the unverified user to be deleted from the database, also used as an expiration time for verification cookie (default 1800)
 
 
 - <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br>
@@ -93,6 +99,26 @@ Then replace each variable with the right value from `const firebaseConfig` that
 🛑By default the server uses firebase storage for storing images in the cloud (free no credit card required). if you'd like to use local storage instead of a cloud storage you can use the <b> main-v1.0-(local-storage) </b>branch <b> (Note: main-v1.0-(local-storage) branch will no longer be updated) </b> <br>
 
 🟠If you want to use a different cloud storage you should modify the script `server/utils/firebaseStorage.js` <br>
+
+
+- <b>Step 5</b>: Create `emailAuth.env` in the app root directory, then add the following:
+```
+service = <string>
+mail = <string>
+appPassword = <string>
+```
+###### service (OPTIONAL)
+The service used as an email provider (default "gmail")
+###### mail (REQUIRED)
+The Address mail used for sending the validation code for validating user signup
+###### appPassword (REQUIRED)
+For gmail service you should setup an app password (follow these [setup gmail app password](#steps))
+
+<a name = "setup gmail app password"/>
+
+### Setup gmail app password:
+- First we have to  <a href = "https://myaccount.google.com/signinoptions/two-step-verification/enroll-welcome">enable 2-Step Verification.</a>
+- Now select the <a href = "https://myaccount.google.com/u/2/apppasswords"> App passwords </a> option and generate a password, that's it.  
 
 <a name="run"/>
 
