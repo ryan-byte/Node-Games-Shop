@@ -112,9 +112,11 @@ The service used as an email provider (default "gmail")
 ###### mail (REQUIRED)
 The Address mail used for sending the validation code for validating user signup
 ###### appPassword (REQUIRED)
-For gmail service you should setup an app password (follow these [setup gmail app password](#steps))
+For gmail service you should setup an app password (follow these [setupGmailApp](#steps))
 
-<a name = "setup gmail app password"/>
+
+
+<a name = "setupGmailApp"/>
 
 ### Setup gmail app password:
 - First we have to  <a href = "https://myaccount.google.com/signinoptions/two-step-verification/enroll-welcome">enable 2-Step Verification.</a>
