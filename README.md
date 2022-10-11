@@ -4,6 +4,7 @@
 [Overview](#overview) <br>
 [Features](#features) <br>
 [Setup Project](#setup) <br>
+[Setup gmail app password](#setupgmailapp) <br>
 [Run Project](#run) <br>
 [Create Admin](#createAdmin) <br>
 [Roadmap](#roadmap) <br>
