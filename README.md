@@ -4,6 +4,7 @@
 [Overview](#overview) <br>
 [Features](#features) <br>
 [Setup Project](#setup) <br>
+[Setup gmail app password](#setupgmailapp) <br>
 [Run Project](#run) <br>
 [Create Admin](#createAdmin) <br>
 [Roadmap](#roadmap) <br>
@@ -12,13 +13,16 @@
 <a name="overview"/>
 
 ### Overview:
--This web application is a <b> personnal project </b> that is used to server and order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images)
+-This web application is a <b> personnal project </b> that is used to server and order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images), gmail (for sending mails to verify users signup)
 
 <a name="features"/>
 
 ### Features:
 -Users can view games <br>
 -Users can order games <br>
+-Users can signup/login <br>
+-Users must verify their account by sending an email that contains a verification code <br>
+-Users can track their own orders <br>
 -Admins can create, update and delete games  <br>
 -Admins can view all orders <br>
 -Admins can verify or decline orders <br>
@@ -112,11 +116,11 @@ The service used as an email provider (default "gmail")
 ###### mail (REQUIRED)
 The Address mail used for sending the validation code for validating user signup
 ###### appPassword (REQUIRED)
-For gmail service you should setup an app password (follow these [setupGmailApp](#steps))
+For gmail service you should setup an app password (follow these [steps](#setupgmailapp))
 
 
 
-<a name = "setupGmailApp"/>
+<a name = "setupgmailapp"/>
 
 ### Setup gmail app password:
 - First we have to  <a href = "https://myaccount.google.com/signinoptions/two-step-verification/enroll-welcome">enable 2-Step Verification.</a>
@@ -174,11 +178,9 @@ $ node createAdmin.js
 - [x] make it responsive
 - [x] can add quantity in the cart
 - [ ] blacklist ip if the admin password is wrong for few times
-- [ ] make the api requests limiter store in Redis instead of memory
 - [ ] make the game type selectable + verification
-- [ ] request timeout security
-- [ ] user register
-- [ ] user register verification by sending email
+- [x] user register
+- [x] user register verification by sending email
 - [x] login page for users/admin
 - [x] users can track their orders
 - [ ] limit the number of games loaded and more will be loaded when scrolling down
