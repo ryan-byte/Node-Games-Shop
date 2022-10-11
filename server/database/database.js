@@ -205,9 +205,8 @@ async function createUnverifiedUser(username,email,hashedPassword,hashKey,verifi
 }
 async function deleteUnverifiedUser(userID){
     try{
-        console.log(userID);
         const query = {"_id": new ObjectId(userID)};
-        let test = await unverifiedUsersCollection.deleteOne(query);
+        await unverifiedUsersCollection.deleteOne(query);
     }catch(err){
         return {"error":err};
     }
