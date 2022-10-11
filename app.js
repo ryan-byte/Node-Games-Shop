@@ -53,13 +53,11 @@ app.get("/api/user/getOrders",rateLimiter_Middleware(),
                     server_middleware.onlyNormalUsersAllowed,
                     api_routes.api_getLatestOrders);
 
-
-
-
 //public pages
 app.get("/",(req,res)=>{
     server_routes.getHomepage(req,res);
 });
+app.get("/removeVerificationCookie",server_routes.removeVerificationCookie);
 
 //no logged user allowed 
 app.get("/adminLogin",server_middleware.noLoggedUserAllowed,server_routes.getAdminLogin);

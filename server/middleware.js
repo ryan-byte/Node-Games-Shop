@@ -118,6 +118,7 @@ function unverifiedUsers(req,res,next){
         }catch (err){
             //when the token is invalid then send a forbiddent status code
             res.sendStatus(403);
+            console.log(err);
         }
     }else{
         res.sendStatus(403);

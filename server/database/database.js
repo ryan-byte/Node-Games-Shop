@@ -12,23 +12,23 @@ const ordersCollection = gameShopDB.collection("orders");
 const logsCollection = gameShopDB.collection("logs");
 const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers")
 
+const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
 
 setupIndexes()
 async function setupIndexes(){
-    const deleteDataAfterSeconds = 1800;
     let indexExist = await unverifiedUsersCollection.indexExists("createdAt_1");
     console.log("Setting up unverified users expiration index");
     if (!indexExist){
         //creating a ttl index that will delete the unverified user data after some seconds
-        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:deleteDataAfterSeconds});
-        console.log(`Index has been created, unverified users data will expire after its creation by ${deleteDataAfterSeconds} sec.`);
+        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:unverifiedUserDataExpirationTimeInSec});
+        console.log(`Index has been created, unverified users data will expire after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
     }else{
         console.log("Index already exists");
         unverifiedUsersCollection.dropIndex("createdAt_1");
         console.log("Index has been dropped");
         console.log("Creating expiration index");
-        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:deleteDataAfterSeconds});
-        console.log(`Index has been created, unverified users data will be deleted after its creation by ${deleteDataAfterSeconds} sec.`);
+        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:unverifiedUserDataExpirationTimeInSec});
+        console.log(`Index has been created, unverified users data will be deleted after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
     }
     console.log("\x1b[33m" + "Database is ready" + "\x1b[0m");
 }
@@ -180,14 +180,14 @@ const verifyAdmin = async (username,password)=>{
 
 async function userExist(username,email){
     try{
-        let userExistData =await userCollection.findOne({$or:[{username},{email},]});
+        let userExistData =await userCollection.findOne({$or:[{username},{email}]});
         if (userExistData === null) return false;
         else return true;
     }catch(error){
         return {error};
     }
 }
-async function createUser(username,email,hashedPassword,hashKey,verificationCode){
+async function createUnverifiedUser(username,email,hashedPassword,hashKey,verificationCode){
     try{
         let checkIfUserExists= await userExist(username,email);
         if (!checkIfUserExists){
@@ -203,6 +203,41 @@ async function createUser(username,email,hashedPassword,hashKey,verificationCode
         return {error:"db error"};
     }
 }
+async function deleteUnverifiedUser(userID){
+    try{
+        const query = {"_id": new ObjectId(userID)};
+        await unverifiedUsersCollection.deleteOne(query);
+    }catch(err){
+        console.log(err);
+        return {"error":err};
+    }
+}
+async function createVerifiedUser(username,email,hashedPassword,hashKey){
+    try{
+        let output = await userCollection.insertOne({username,email,hashedPassword,hashKey});
+        return {userID:output.insertedId.toString()};
+    }catch(err){
+        console.error(err);
+        return {error:"db error"};
+    }
+}
+async function verifyUserSignup(userID,code){
+    try{
+        let userObjectID = new ObjectId(userID);
+        let query = {"_id": userObjectID};
+        let user = await unverifiedUsersCollection.findOne(query);
+
+        let verifiedCode = user.verificationCode.toString();
+        if (code === verifiedCode){
+            return {status:true,userID,data:user};
+        }else{
+            return {status:false};
+        }
+    }catch(err){
+        console.error(err);
+        return {error:"db error"};
+    }
+}
 async function getUser(username){
     try{
         let data = await userCollection.findOne({username: {$regex : new RegExp("^"+username+"$","i")}});
@@ -211,7 +246,7 @@ async function getUser(username){
         return {"error":err};
     }
 }
-async function verifyUser(username,password){
+async function verifyUserCredentials(username,password){
     try{
         //get the admin data
         let userData = await getUser(username);
@@ -336,5 +371,6 @@ module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
                 createNewOrder,getOrders,
                 verifyOrder,declineOrder,
-                verifyUser,createUser,
-                getUserLatestOrders};
+                verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
+                getUserLatestOrders,
+                verifyUserSignup,createVerifiedUser};

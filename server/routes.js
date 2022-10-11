@@ -11,10 +11,15 @@ const tokenExpire = 60 * 60 * 24;
 
 const accessCookieName = process.env.accessCookieName || "login";
 const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
-
+const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
 //public routes
 function getHomepage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/index.html"));
+}
+function removeVerificationCookie(req,res){
+        //remove the verification cookie
+        res.clearCookie(userVerificationCookieName);
+        res.redirect("/");
 }
 
 //not logged users only
@@ -80,7 +85,7 @@ async function postUserSignup(req,res){
     let verificationCode = randomNumber(100000,999999);
 
     
-    let output = await database.createUser(username,email,hashedPassword,hashKey,verificationCode);
+    let output = await database.createUnverifiedUser(username,email,hashedPassword,hashKey,verificationCode);
     if (output["error"]){
         res.sendStatus(502);
         return;
@@ -89,11 +94,11 @@ async function postUserSignup(req,res){
     }else{
         let userID = output.userID;
         //give the user a cookie that contains the user_id so that he get access to the verification page
-        let token = jwt.sign({userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+        let token = jwt.sign({userID},secretKey,{expiresIn:unverifiedUserDataExpirationTimeInSec});
         res.setHeader('Set-Cookie', cookie.serialize(userVerificationCookieName, token, {
             httpOnly: true,
             sameSite:"strict",
-            maxAge: tokenExpire //1 day
+            maxAge: unverifiedUserDataExpirationTimeInSec
         }));
         res.redirect("/userVerification");
     }
@@ -107,7 +112,7 @@ async function postUserLogin(req,res){
     //verify login
     //username and password must be sent from urlencoded form
     let {username,password} = req.body;
-    let verification = await database.verifyUser(username,password);
+    let verification = await database.verifyUserCredentials(username,password);
     if (verification["error"]){
         res.sendStatus(502);
     }else if (verification === false){
@@ -154,10 +159,44 @@ function getVerificationPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userVerification.html"));
 }
 async function postVerificationPage(req,res){
-    //get the user_id value inside the unverified cookie
+    /must call a middleware that check if the jwt inside the verification cookie is valid/
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let verificationCookie = allCookies[userVerificationCookieName];
+    let userID = jwt.decode(verificationCookie).userID;
     let {code} = req.body;
-    console.log(code);
-    res.sendStatus(200);
+    
+    let output = await database.verifyUserSignup(userID,code);
+    if (output["error"]){
+        res.sendStatus(502);
+        return;
+    }else if (output.status === false){
+        res.sendStatus(404);
+    }else{
+        let data = output.data;
+        let username = data.username;
+        let email = data.email;
+        let hashedPassword = data.hashedPassword;
+        let hashKey = data.hashKey;
+        //save user data to the db and get the userID
+        let createdUser = await database.createVerifiedUser(username,email,hashedPassword,hashKey);
+        if (createdUser["error"]){
+            res.sendStatus(500);
+            return;
+        }
+        let verifiedUserID = createdUser.userID;
+        //delete the unverified user from the db
+        let unverifiedUserID = output.userID;
+        await database.deleteUnverifiedUser(unverifiedUserID);
+        //give the user a login cookie
+        let token = jwt.sign({username,admin:false,verifiedUserID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+        res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
+            httpOnly: true,
+            sameSite:"strict",
+            maxAge: tokenExpire //1 day
+        }));
+        //redirect
+        res.redirect("/removeVerificationCookie");
+    }
 }
 
 //only normal users routes
@@ -239,4 +278,5 @@ module.exports = {getHomepage,
                 logout,getUserDataFromCookie,
                 getUserLogin,postUserLogin,getUserOrdersPage,
                 getUserSignup,postUserSignup,
-                getVerificationPage,postVerificationPage};
+                getVerificationPage,postVerificationPage,
+                removeVerificationCookie};

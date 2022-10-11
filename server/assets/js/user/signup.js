@@ -18,7 +18,7 @@ signupForm.addEventListener("submit",async (ev)=>{
         spinnerStatus(true);
         return;
     }
-    //admin login request
+    //signup request
     let postURL = window.location.pathname;
 
     const data = {username:username.value,email:email.value,password:password.value}
@@ -26,8 +26,7 @@ signupForm.addEventListener("submit",async (ev)=>{
                                 method: 'post',
                                 mode:"no-cors",
                                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                                body: new URLSearchParams(data),
-                            })
+                                body: new URLSearchParams(data)});
     if (request.redirected){
         window.location.replace(request.url);
     }else if (request.status === 404){

@@ -4,9 +4,47 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Verification</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-    verifcation
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Game Shop</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col-8">
+                    <h3 class = "my3" style="text-align: center;">Verification</h3>
+                    <div class="alert alert-success my-3" role="alert">
+                        the verification code has been successfully sent
+                    </div>
+                    <form class="my-3" id="verificationForm" action="" method="post">
+                        <div class="mb-3">
+                            <label for="verificationCode" class="form-label"><b>Verification Code</b></label>    
+                            <input maxlength="6" required class="form-control" type="text" name="verificationCode" id="verificationCode" placeholder="xxxxxx">
+                        </div>
+                        <div style="display:none;" id = "spinner" class="spinner-border" role="status">
+                            <span  class="visually-hidden">Loading...</span>
+                        </div>
+                        <button type="submit" id="submit" class="btn btn-primary" style="width: 100%;">Verify</button>
+                    </form>
+                </div>
+                <div class="col"></div>
+            </div>
+        </div>
+    </main>
+
+    
+    <script defer src="/js/user/userVerification.js"></script>
 </body>
 </html>
