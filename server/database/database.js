@@ -205,10 +205,10 @@ async function createUnverifiedUser(username,email,hashedPassword,hashKey,verifi
 }
 async function deleteUnverifiedUser(userID){
     try{
+        console.log(userID);
         const query = {"_id": new ObjectId(userID)};
-        await unverifiedUsersCollection.deleteOne(query);
+        let test = await unverifiedUsersCollection.deleteOne(query);
     }catch(err){
-        console.log(err);
         return {"error":err};
     }
 }
@@ -229,7 +229,7 @@ async function verifyUserSignup(userID,code){
 
         let verifiedCode = user.verificationCode.toString();
         if (code === verifiedCode){
-            return {status:true,data:user};
+            return {status:true,userID,data:user};
         }else{
             return {status:false};
         }
