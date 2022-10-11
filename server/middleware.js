@@ -5,6 +5,7 @@ const randomName = require("./utils/randomName");
 const fireBaseStorage = require("./utils/firebaseStorage");
 
 const accessCookieName = process.env.accessCookieName || "login";
+const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
 const secretKey = process.env.jwtSecretKey;
 const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
@@ -106,6 +107,23 @@ function onlyNormalUsersAllowed(req,res,next){
     }
 }
 
+function unverifiedUsers(req,res,next){
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let verificationCookie = allCookies[userVerificationCookieName];
+    if (verificationCookie){
+        try{
+            //verify the token if it is valid then next
+            jwt.verify(verificationCookie,secretKey);
+            next();
+        }catch (err){
+            //when the token is invalid then send a forbiddent status code
+            res.sendStatus(403);
+        }
+    }else{
+        res.sendStatus(403);
+    }
+}
+
 function image_upload_middleware(req,res,next){
     const bb = Busboy({headers:req.headers,limits:{fileSize:maxImgUploadSize}});
     //setup bb vars
@@ -195,4 +213,5 @@ function verifyGameInputs(req,res,next){
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
                 image_upload_middleware,
                 verifyGameInputs,
-                noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser};
+                noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
+                unverifiedUsers};

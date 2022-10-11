@@ -4,11 +4,13 @@ const cookie = require("cookie");
 const database = require("./database/database");
 const crypto = require("crypto");
 const hashPassword = require("./utils/hashPassword");
+const randomNumber = require("./utils/randomNumber");
 
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
 
 const accessCookieName = process.env.accessCookieName || "login";
+const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
 
 //public routes
 function getHomepage(req,res){
@@ -71,16 +73,29 @@ async function postUserSignup(req,res){
         res.sendStatus(400);
         return;
     }
+    //prepare the user data
     let hashKey = crypto.randomBytes(16).toString("hex");
     let hashedPassword = hashPassword(password,hashKey);
-    let output = await database.createUser(username,email,hashedPassword,hashKey);
+    //random integer that will be sent in an email to the user for verification
+    let verificationCode = randomNumber(100000,999999);
+
+    
+    let output = await database.createUser(username,email,hashedPassword,hashKey,verificationCode);
     if (output["error"]){
         res.sendStatus(502);
         return;
-    }else if (output === false){
+    }else if (output.status === false){
         res.sendStatus(409);
     }else{
-        res.redirect("/userLogin");
+        let userID = output.userID;
+        //give the user a cookie that contains the user_id so that he get access to the verification page
+        let token = jwt.sign({userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+        res.setHeader('Set-Cookie', cookie.serialize(userVerificationCookieName, token, {
+            httpOnly: true,
+            sameSite:"strict",
+            maxAge: tokenExpire //1 day
+        }));
+        res.redirect("/userVerification");
     }
 }
 
@@ -131,6 +146,18 @@ function getUserDataFromCookie(req,res){
     //accesstoken already verified in the middleware so just decode now
     let userData = jwt.decode(accessToken);
     res.send(userData);
+}
+
+//only users with the unverified cookie
+function getVerificationPage(req,res){
+    //must be called after a middleware that checks if the user has the unverified cookie
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userVerification.html"));
+}
+async function postVerificationPage(req,res){
+    //get the user_id value inside the unverified cookie
+    let {code} = req.body;
+    console.log(code);
+    res.sendStatus(200);
 }
 
 //only normal users routes
@@ -211,4 +238,5 @@ module.exports = {getHomepage,
                 getadminpanelOrderList,
                 logout,getUserDataFromCookie,
                 getUserLogin,postUserLogin,getUserOrdersPage,
-                getUserSignup,postUserSignup};
+                getUserSignup,postUserSignup,
+                getVerificationPage,postVerificationPage};

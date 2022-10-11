@@ -61,7 +61,7 @@ app.get("/",(req,res)=>{
     server_routes.getHomepage(req,res);
 });
 
-//no logged user allowed
+//no logged user allowed 
 app.get("/adminLogin",server_middleware.noLoggedUserAllowed,server_routes.getAdminLogin);
 app.post("/adminLogin",server_middleware.noLoggedUserAllowed,server_routes.postAdminLogin);
 
@@ -70,6 +70,10 @@ app.post("/userLogin",server_middleware.noLoggedUserAllowed,server_routes.postUs
 
 app.get("/userSignup",server_middleware.noLoggedUserAllowed,server_routes.getUserSignup);
 app.post("/userSignup",server_middleware.noLoggedUserAllowed,server_routes.postUserSignup);
+
+//only users with the unverified cookie
+app.get("/userVerification",server_middleware.unverifiedUsers,server_routes.getVerificationPage);
+app.post("/userVerification",server_middleware.unverifiedUsers,server_routes.postVerificationPage);
 
 //any logged user
 app.post("/logout",server_middleware.anyLoggedUser,
@@ -93,4 +97,4 @@ app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
                             server_routes.getadminpanelOrderList);
 
 
-app.listen(PORT, ()=>console.log("server is on port " + PORT))
+app.listen(PORT, ()=>console.log("\x1b[33m" + "server is on port " + PORT + "\x1b[0m"))

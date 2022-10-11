@@ -69,10 +69,10 @@ function addOrderHTML(data){
             orderStatusMessage = "Under evaluation ⏳";
             break;
         case 1:
-            orderStatusMessage = "Verified ✔️"
+            orderStatusMessage = `Verified <span style="color:green;"> ✔️ </span>`
             break;
         case 2:
-            orderStatusMessage = "Declined ❌"
+            orderStatusMessage = `Declined <span style="color:red;"> ❌ </span>`
             break;
         default:
 

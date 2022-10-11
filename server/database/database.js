@@ -7,9 +7,32 @@ const client = new MongoClient(URL);
 const gameShopDB = client.db("GameShop");
 const gamesCollection = gameShopDB.collection("Games");
 const adminCollection = gameShopDB.collection("admin");
-const userCollection = gameShopDB.collection("user");
+const userCollection = gameShopDB.collection("users");
 const ordersCollection = gameShopDB.collection("orders");
 const logsCollection = gameShopDB.collection("logs");
+const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers")
+
+
+setupIndexes()
+async function setupIndexes(){
+    const deleteDataAfterSeconds = 1800;
+    let indexExist = await unverifiedUsersCollection.indexExists("createdAt_1");
+    console.log("Setting up unverified users expiration index");
+    if (!indexExist){
+        //creating a ttl index that will delete the unverified user data after some seconds
+        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:deleteDataAfterSeconds});
+        console.log(`Index has been created, unverified users data will expire after its creation by ${deleteDataAfterSeconds} sec.`);
+    }else{
+        console.log("Index already exists");
+        unverifiedUsersCollection.dropIndex("createdAt_1");
+        console.log("Index has been dropped");
+        console.log("Creating expiration index");
+        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:deleteDataAfterSeconds});
+        console.log(`Index has been created, unverified users data will be deleted after its creation by ${deleteDataAfterSeconds} sec.`);
+    }
+    console.log("\x1b[33m" + "Database is ready" + "\x1b[0m");
+}
+
 
 const getAllgames = async ()=>{
     try{
@@ -164,14 +187,16 @@ async function userExist(username,email){
         return {error};
     }
 }
-async function createUser(username,email,hashedPassword,hashKey){
+async function createUser(username,email,hashedPassword,hashKey,verificationCode){
     try{
         let checkIfUserExists= await userExist(username,email);
         if (!checkIfUserExists){
-            await userCollection.insertOne({username,email,hashedPassword,hashKey});
-            return true;
+            //createdAt is used as an index so the data will be deleted after some time
+            let createdAt = new Date();
+            let output = await unverifiedUsersCollection.insertOne({username,email,hashedPassword,hashKey,verificationCode,createdAt});
+            return {status:true,userID:output.insertedId.toString()};
         }else {
-            return false;
+            return {status:false};
         }
     }catch(err){
         console.error(err);
