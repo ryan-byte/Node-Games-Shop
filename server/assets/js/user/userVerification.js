@@ -3,6 +3,15 @@ const code = document.getElementById("verificationCode");
 const submit = document.getElementById("submit");
 const spinner = document.getElementById("spinner");
 
+const codeInputMaxLength = parseInt(code.getAttribute("maxlength"));
+
+code.addEventListener("input",(ev)=>{
+    if (code.value.length === codeInputMaxLength){
+        submit.click();
+    }
+})
+
+
 verificationForm.addEventListener("submit",async (ev)=>{
     ev.preventDefault();
     //user feedback

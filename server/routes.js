@@ -5,6 +5,7 @@ const database = require("./database/database");
 const crypto = require("crypto");
 const hashPassword = require("./utils/hashPassword");
 const randomNumber = require("./utils/randomNumber");
+const {sendVerificationCode} = require("./utils/sendMail");
 
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
@@ -19,7 +20,7 @@ function getHomepage(req,res){
 function removeVerificationCookie(req,res){
         //remove the verification cookie
         res.clearCookie(userVerificationCookieName);
-        res.redirect("/");
+        res.redirect("/userLogin");
 }
 
 //not logged users only
@@ -65,7 +66,7 @@ function getUserSignup(req,res){
 
 async function postUserSignup(req,res){
     //must be called after a middleware that verify if the user is not logged in
-    //username and password must be sent from urlencoded form
+    //username, email and password must be sent from urlencoded form
     let {username,email,password} = req.body;
     let condition = username === ""||
                     typeof username === "undefined"||
@@ -74,7 +75,10 @@ async function postUserSignup(req,res){
                     password === ""||
                     password.length < 8||
                     typeof password === "undefined";
-    if (condition){
+    //validate the email format
+    let splitEmail =  email.split("@");
+    let emailWrongFormat =splitEmail.length <= 1 || splitEmail[1] === "";
+    if (condition || emailWrongFormat){
         res.sendStatus(400);
         return;
     }
@@ -92,6 +96,9 @@ async function postUserSignup(req,res){
     }else if (output.status === false){
         res.sendStatus(409);
     }else{
+        //send an email to the user
+        sendVerificationCode(verificationCode,email);
+        //setup cookie
         let userID = output.userID;
         //give the user a cookie that contains the user_id so that he get access to the verification page
         let token = jwt.sign({userID},secretKey,{expiresIn:unverifiedUserDataExpirationTimeInSec});
@@ -183,17 +190,9 @@ async function postVerificationPage(req,res){
             res.sendStatus(500);
             return;
         }
-        let verifiedUserID = createdUser.userID;
         //delete the unverified user from the db
         let unverifiedUserID = output.userID;
         await database.deleteUnverifiedUser(unverifiedUserID);
-        //give the user a login cookie
-        let token = jwt.sign({username,admin:false,verifiedUserID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
-        res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
-            httpOnly: true,
-            sameSite:"strict",
-            maxAge: tokenExpire //1 day
-        }));
         //redirect
         res.redirect("/removeVerificationCookie");
     }

@@ -229,7 +229,7 @@ async function verifyUserSignup(userID,code){
 
         let verifiedCode = user.verificationCode.toString();
         if (code === verifiedCode){
-            return {status:true,userID,data:user};
+            return {status:true,data:user};
         }else{
             return {status:false};
         }
