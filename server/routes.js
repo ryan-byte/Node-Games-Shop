@@ -11,6 +11,7 @@ const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
 
 const accessCookieName = process.env.accessCookieName || "login";
+const userInfosCookieName = "info";
 const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
 //public routes
@@ -42,12 +43,18 @@ async function postAdminLogin(req,res){
         try{
             let userID = verification["userID"];
             let token = jwt.sign({username,admin:true,userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
-            
+            //add the access cookie which allow the user to do some actions in the backend
             res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
                 httpOnly: true,
                 sameSite:"strict",
                 maxAge: tokenExpire //1 day
             }));
+            //Add the info cookie which the frontend use to get some infos about the user
+            let userInfo = {username,admin:true};
+            res.cookie(userInfosCookieName,JSON.stringify(userInfo),{
+                maxAge: tokenExpire * 1000//1 day
+            });
+
             res.redirect("/adminpanel");
             //save logs
             database.logUserAction(username,`Admin logged in`);
@@ -129,12 +136,18 @@ async function postUserLogin(req,res){
         try{
             let userID = verification["userID"];
             let token = jwt.sign({username,admin:false,userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
-            
+            //add the access cookie which allow the user to do some actions in the backend
             res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
                 httpOnly: true,
                 sameSite:"strict",
                 maxAge: tokenExpire //1 day
             }));
+            //Add the info cookie which the frontend use to get some infos about the user
+            let userInfo = {username,admin:false};
+            res.cookie(userInfosCookieName,JSON.stringify(userInfo),{
+                maxAge: tokenExpire * 1000//1 day
+            });
+            
             res.redirect("/");
             //save logs
             database.logUserAction(username,`User logged in`);
@@ -148,16 +161,9 @@ async function postUserLogin(req,res){
 
 //any logged user
 function logout(req,res){
+    res.clearCookie(userInfosCookieName);
     res.clearCookie(accessCookieName);
     res.redirect("/");
-}
-function getUserDataFromCookie(req,res){
-    //get the jwt token (stored in a cookie)
-    let allCookies = cookie.parse(req.headers.cookie || "");
-    let accessToken = allCookies[accessCookieName];
-    //accesstoken already verified in the middleware so just decode now
-    let userData = jwt.decode(accessToken);
-    res.send(userData);
 }
 
 //only users with the unverified cookie
@@ -274,7 +280,7 @@ module.exports = {getHomepage,
                 getadminpanel,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
-                logout,getUserDataFromCookie,
+                logout,
                 getUserLogin,postUserLogin,getUserOrdersPage,
                 getUserSignup,postUserSignup,
                 getVerificationPage,postVerificationPage,
