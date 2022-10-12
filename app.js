@@ -76,8 +76,6 @@ app.post("/userVerification",server_middleware.unverifiedUsers,server_routes.pos
 //any logged user
 app.post("/logout",server_middleware.anyLoggedUser,
                     server_routes.logout);
-app.get("/user/data",server_middleware.anyLoggedUser,
-                    server_routes.getUserDataFromCookie);
 
 //normal allowed users pages
 app.get("/order",server_middleware.onlyNormalUsersAllowed,server_routes.getOrderPage);

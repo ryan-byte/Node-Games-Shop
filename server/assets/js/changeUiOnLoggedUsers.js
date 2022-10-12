@@ -5,12 +5,13 @@ onload();
 async function onload(){
     //request the cookie data from the endpoint
     try{
-        let request = await fetch("/user/data");
-        let userData = await request.json();
+        let userDataCookie = getCookie("info");
+        let userData = JSON.parse(decodeURIComponent(userDataCookie));
         if (userData.admin) adminUser_changeLoginButtonToUsername(userData.username);
         else normalUser_changeLoginButtonToUsername(userData.username);
 
     }catch(err){
+        console.log(err);
         console.log("User is not logged in");
     }
 }
@@ -52,4 +53,15 @@ function adminUser_changeLoginButtonToUsername(username){
         </ul>
     </div>
     `
+};
+
+function getCookie(cookieName) {
+    var allcookies = document.cookie;
+    var arrayb = allcookies.split(";");
+    for (let item of arrayb){
+        if (item.startsWith(cookieName)){
+            var cookie = item.substr(cookieName.length+1);
+            return cookie;
+        }
+    }
 }
