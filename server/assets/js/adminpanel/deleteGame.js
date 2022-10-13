@@ -21,13 +21,14 @@ function deleteGame_statusCode(statusCode,gameElem){
     if (statusCode === 200){
         //delete the elem
         gameElem.remove();
+        newAlert_success("Game has been deleted successfully");
     }else if (statusCode === 400){
-        alert("Bad Request");
+        newAlert_danger("Bad Request");
     }else if (statusCode === 404){
-        alert("Not Found");
+        newAlert_danger("Not Found");
     }else if (statusCode === 401){
-        alert("unauthorized (reload the page)")
+        newAlert_danger("unauthorized (reload the page)")
     }else{
-        alert("unknown error");
+        newAlert_danger("unknown error");
     }
 }

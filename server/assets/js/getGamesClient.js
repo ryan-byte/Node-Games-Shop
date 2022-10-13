@@ -14,7 +14,7 @@ async function getAllgames(title = ""){
         showGames(jsonData);
     }catch (err){
         if (! err instanceof SyntaxError){
-            alert("unknown error");
+            newAlert_danger("unknown error");
             console.error(err);
         }
     }

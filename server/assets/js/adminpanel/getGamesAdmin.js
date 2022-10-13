@@ -12,7 +12,7 @@ async function getAllgames(title = ""){
         showGames(jsonData);
     }catch (err){
         if (! err instanceof SyntaxError){
-            alert("unknown error");
+            newAlert_danger("unknown error");
             console.error(err);
         }
     }
@@ -25,7 +25,7 @@ function getGames_statusCodeOutput(statusCode){
         spinnerStatus(true);
         itemContainer.innerHTML = "Bad Gateway";
     }else if (statusCode === 429){
-        alert("Too Many Requests")
+        newAlert_danger("Too Many Requests")
     }else if (statusCode === 204){
         spinnerStatus(true);
         itemContainer.innerHTML = "No Content";

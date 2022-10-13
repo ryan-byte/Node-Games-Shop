@@ -23,9 +23,9 @@ loginForm.addEventListener("submit",async (ev)=>{
     if (request.redirected){
         window.location.replace(request.url);
     }else if (request.status === 404){
-        alert("Wrong credentials");
+        newAlert_danger("Wrong credentials");
     }else{
-        alert("server error");
+        newAlert_danger("server error");
     }
     disableButtons(false);
     spinnerStatus(true);

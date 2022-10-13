@@ -93,4 +93,7 @@ app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
                             server_routes.getadminpanelOrderList);
 
 
-app.listen(PORT, ()=>console.log("\x1b[33m" + "server is on port " + PORT + "\x1b[0m"))
+app.listen(PORT, ()=>{
+    console.log("\x1b[33m" + "server is on port " + PORT + "\x1b[0m");
+    console.log("Setting up Database");
+});

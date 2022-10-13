@@ -22,13 +22,13 @@ orderForm.addEventListener("submit",async (ev)=>{
     if (cart){
         cart = JSON.parse(cart);
         if (cart.length === 0){
-            alert("cart is empty");
+            newAlert_danger("cart is empty");
         }else{
             let status = await sendFormRequest(cart);
             statusCodeFeedBack(status);
         }
     }else{
-        alert("cart is empty");
+        newAlert_danger("cart is empty");
     }
 
     //feedback that the request is done
@@ -114,13 +114,13 @@ async function sendFormRequest(cart){
 }
 function statusCodeFeedBack(status){
     if (status === 201){
-        alert("Your order has been submited");
+        newAlert_success("Your order has been submited");
     }else if (status === 400){
-        alert("Bad request");
+        newAlert_danger("Bad request");
     }else if (status === 500){
-        alert("Bad Gateway");
+        newAlert_danger("Bad Gateway");
     }else{
-        alert("Unknown error");
+        newAlert_danger("Unknown error");
     }
 }
 

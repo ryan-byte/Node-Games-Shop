@@ -30,13 +30,13 @@ verificationForm.addEventListener("submit",async (ev)=>{
     if (request.redirected){
         window.location.replace(request.url);
     }else if (request.status === 404){
-        alert("wrong");
+        newAlert_danger("wrong");
     }else if (request.status === 502){
-        alert("gateway server error");
+        newAlert_danger("gateway server error");
     }else if (request.status === 500){
-        alert("internal server error");
+        newAlert_danger("internal server error");
     }else{
-        alert("unknown error status:"+request.status);
+        newAlert_danger("unknown error status:"+request.status);
     }
     disableButtons(false);
     spinnerStatus(true);
