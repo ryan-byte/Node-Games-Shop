@@ -11,7 +11,6 @@ async function onload(){
         else normalUser_changeLoginButtonToUsername(userData.username);
 
     }catch(err){
-        console.log(err);
         console.log("User is not logged in");
     }
 }
