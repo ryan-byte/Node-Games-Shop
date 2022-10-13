@@ -54,17 +54,17 @@ function updateGame_statusCode(statusCode,title,type,stock,price,objectId){
         //close the form
         updateFormClose.click();
     }else if (statusCode === 400){
-        alert("Bad parameters");
+        newAlert_danger("Bad parameters");
     }else if (statusCode === 401){
-        alert("unauthorized (reload the page)")
+        newAlert_danger("unauthorized (reload the page)")
     }else if (statusCode === 415){
-        alert("uploading image failed must be (jpeg/jng)")
+        newAlert_danger("uploading image failed must be (jpeg/jng)")
     }else if (statusCode === 413){
-        alert("file size is too large")
+        newAlert_danger("file size is too large")
     }else if (statusCode === 502){
-        alert("Bad Gateway");
+        newAlert_danger("Bad Gateway");
     }else{
-        alert("unknown error (try reloading the page)");
+        newAlert_danger("unknown error (try reloading the page)");
     }
 }
 

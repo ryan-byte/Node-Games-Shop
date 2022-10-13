@@ -44,13 +44,13 @@ async function getUserLatestOrders(){
         let data = await request.json();
         showOrders(data);
     }else if (status === 429){
-        alert("Too Many Requests")
+        newAlert_danger("Too Many Requests")
     }else if (status === 400){
-        alert("bad parameters");
+        newAlert_danger("bad parameters");
     }else if (status === 502){
-        alert("bad gateway");
+        newAlert_danger("bad gateway");
     }else{
-        alert("unknown error");
+        newAlert_danger("unknown error");
     }
 }
 
@@ -121,7 +121,7 @@ async function updateShowOrderModal(elem){
     let gamesIDs = Object.keys(data.Games);
     let gamesData = await getAllOrderGamesData(gamesIDs);
     if (gamesData === -1){
-        alert("an error occured");
+        newAlert_danger("an error occured");
         return;
     }
     
@@ -143,7 +143,7 @@ async function updateShowOrderModal(elem){
 async function getAllOrderGamesData(gamesIDs){
     let gameIDsString = JSON.stringify(gamesIDs);
     let encodedGamesIDs = encodeURIComponent(gameIDsString);
-    if (encodedGamesIDs.length > 2000){alert("encoded URI component length is more then 2000!!")};
+    if (encodedGamesIDs.length > 2000){newAlert_danger("encoded URI component length is more then 2000!!")};
     //make a request to the api to get the all games data
     let request = await fetch("/api/games/id/" + encodedGamesIDs);
     let status = request.status;
@@ -154,19 +154,19 @@ async function getAllOrderGamesData(gamesIDs){
             return data;
         }catch (err){
             if (err instanceof SyntaxError){
-                alert("bad parameters (json syntax error)")
+                newAlert_danger("bad parameters (json syntax error)")
             }
         }
     }else if (status === 400){
-        alert("Bad parameters");
+        newAlert_danger("Bad parameters");
     }else if (status === 429){
-        alert("Too Many Requests")
+        newAlert_danger("Too Many Requests")
     }else if (status === 500){
-        alert("internal server error");
+        newAlert_danger("internal server error");
     }else if (status === 502){
-        alert("bad gateway");
+        newAlert_danger("bad gateway");
     }else{
-        alert("unknown error");
+        newAlert_danger("unknown error");
     }
     return -1;
 }

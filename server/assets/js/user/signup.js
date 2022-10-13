@@ -13,7 +13,7 @@ signupForm.addEventListener("submit",async (ev)=>{
     disableButtons(true);
     spinnerStatus(false);
     if (password.value !== confirmPassword.value){
-        alert("password must be equal to confirm password");
+        newAlert_danger("password must be equal to confirm password");
         disableButtons(false);
         spinnerStatus(true);
         return;
@@ -30,13 +30,13 @@ signupForm.addEventListener("submit",async (ev)=>{
     if (request.redirected){
         window.location.replace(request.url);
     }else if (request.status === 404){
-        alert("not found");
+        newAlert_danger("not found");
     }else if (request.status === 400){
-        alert("Bad inputs (password must be longer then 8)");
+        newAlert_danger("Bad inputs (password must be longer then 8)");
     }else if (request.status === 409){
-        alert("username or email already exists");
+        newAlert_danger("username or email already exists");
     }else{
-        alert("Unknown error");
+        newAlert_danger("Unknown error");
     }
     disableButtons(false);
     spinnerStatus(true);

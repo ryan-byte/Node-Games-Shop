@@ -105,7 +105,7 @@ function storeGameInCart(data){
         data = JSON.parse(data);
     }
     if (data.stock <= 0){
-        alert("game is out of stock")
+        newAlert_danger("game is out of stock")
         return;
     }
     let cart = localStorage.getItem("cart");

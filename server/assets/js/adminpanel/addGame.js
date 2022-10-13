@@ -56,22 +56,22 @@ async function addGameAPI(title,type,price,stock,imageFile){
 }
 function addGame_statusCodeOutput(statusCode){
     if (statusCode === 201){
-        alert("Game added successfully");
+        newAlert_success("Game added successfully");
         input_newGameTitle.value = "";
         input_newGamePrice.value  = "";
         input_newGameType.value = "";
         input_newGameStock.value  = "";
     }else if (statusCode === 415){
-        alert("uploading image failed must be (jpeg/jng)")
+        newAlert_danger("uploading image failed must be (jpeg/jng)")
     }else if (statusCode === 413){
-        alert("file size is too large")
+        newAlert_danger("file size is too large")
     }else if (statusCode === 400){
-        alert("Bad parameters");
+        newAlert_danger("Bad parameters");
     }else if (statusCode === 502){
-        alert("Bad Gateway");
+        newAlert_danger("Bad Gateway");
     }else if (statusCode === 401){
-        alert("unauthorized (reload the page)");
+        newAlert_danger("unauthorized (reload the page)");
     }else{
-        alert("unknown error");
+        newAlert_danger("unknown error");
     }
 }

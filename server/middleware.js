@@ -165,6 +165,10 @@ function image_upload_middleware(req,res,next){
         bb.status = 413;
     })
     bb.on("close", async ()=>{
+        if (bb.fileBase64.length === 0){
+            res.sendStatus(400);
+            return;
+        }
         if (bb.status === 200){
             //proceed to the next function if everything is fine
             if (bb.fileName !== undefined){
