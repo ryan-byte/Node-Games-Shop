@@ -37,7 +37,7 @@
 ```
 $ npm i
 ```
-- <b>Step 2</b>: Add config.env file to the project folder, then add the following:
+- <b>Step 2</b>: Add `config.env` file to the project folder, then add the following:
 ```
 PORT = <integer>
 jwtSecretKey = <string>
