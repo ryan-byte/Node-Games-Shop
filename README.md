@@ -21,6 +21,7 @@
 -Users can view games <br>
 -Users can order games <br>
 -Users can signup/login <br>
+-Users can login with google openID <br>
 -Users must verify their account by typing a verification code that has been sent to their email <br>
 -Users can track their own orders <br>
 -Admins can create, update and delete games  <br>
