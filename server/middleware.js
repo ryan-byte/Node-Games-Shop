@@ -3,6 +3,8 @@ const cookie = require("cookie");
 const Busboy = require("busboy");
 const randomName = require("./utils/randomName");
 const fireBaseStorage = require("./utils/firebaseStorage");
+const database = require("./database/database");
+const {getTokens,getGoogleUser} = require("./utils/gmailOpenID");
 
 const accessCookieName = process.env.accessCookieName || "login";
 const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
@@ -215,8 +217,58 @@ function verifyGameInputs(req,res,next){
     else next();
 }
 
+//openID middleware
+async function googleConnect_redirect_middleware(req,res,next){
+    try{
+        //get the code from the url query
+        const code = req.query.code;
+        if (code === undefined){
+            throw new Error("code undefined");         
+        }
+        //get the tokens from the given code
+        const {id_token, access_token} = await getTokens(code);
+        //get the user infos
+        let userInfo =await getGoogleUser(access_token,id_token);
+        //check if the user already exist and if it in a normal user or google user
+        let output = await database.openID_userExist("google",userInfo.email)
+        if (output.userCanBeCreated){
+            //save the user info in the database
+            let objectID = await database.openID_saveUser("google",userInfo.id,userInfo.email,userInfo.name);
+            if (objectID["error"]){
+                res.sendStatus(502);
+                return;
+            }
+            console.log("signing up");
+            //add userID and username to the response local
+            res.locals.userID = objectID.userID;
+            res.locals.username = userInfo.name;
+            next();
+        }else if (output.canLogin){
+            //get the user objectID
+            let objectID = await database.openID_userLogin("google",userInfo.id,userInfo.email,userInfo.name);
+            if (objectID["error"]){
+                res.sendStatus(502);
+                return;
+            }
+            console.log("logging in");
+            //add userID and username to the response local
+            res.locals.userID = objectID.userID;
+            res.locals.username = userInfo.name;
+            next();
+        }else{
+            //send a message that the user email already exists
+            res.send("cannot login with google (account already exists)");
+        }
+    }catch(error){
+        res.sendStatus(400);
+    }
+}
+
+
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
                 image_upload_middleware,
                 verifyGameInputs,
                 noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
-                unverifiedUsers};
+                unverifiedUsers,
+            
+                googleConnect_redirect_middleware};
