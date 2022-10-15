@@ -6,7 +6,6 @@
     width: 300px;
     max-height: 500px;
     z-index: 2000;
-    filter: brightness(90%);
 }
 
 @keyframes shake {

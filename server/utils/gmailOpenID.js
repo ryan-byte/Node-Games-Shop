@@ -7,11 +7,12 @@ const clientSecret = process.env.clientSecret;
 const redirectURL = process.env.redirectURL;
 
 
-function getGoogleAuthURL() {
+function getGoogleAuthURL(state) {
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const options = {
     redirect_uri: redirectURL,
     client_id: clientID,
+    state,
     access_type: "offline",
     response_type: "code",
     prompt: "consent",

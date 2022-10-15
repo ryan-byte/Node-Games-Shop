@@ -12,9 +12,10 @@ const {getGoogleAuthURL} = require("./utils/gmailOpenID");
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
 
-const accessCookieName = process.env.accessCookieName || "login";
+const accessCookieName = "login";
 const userInfosCookieName = "info";
-const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
+const userVerificationCookieName = "verification";
+const antiForgeryCookieName = "state";
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
 //public routes
 function getHomepage(req,res){
@@ -161,7 +162,13 @@ async function postUserLogin(req,res){
 }
 
 function openIDConnect_gmail_login(req,res){
-    let url = getGoogleAuthURL();
+    //add a random hashed number to the state 
+    let hashedRandomState = crypto.createHash('sha256').update(crypto.randomBytes(30)).digest('hex');
+    let url = getGoogleAuthURL(hashedRandomState);
+    //create a safe cookie that will contain this hashed number to verify if it matches later 
+    res.cookie(antiForgeryCookieName, hashedRandomState, {
+        maxAge: tokenExpire * 10 //1 day
+    });
     res.redirect(url);
 }
 async function googleConnect_redirect(req,res){

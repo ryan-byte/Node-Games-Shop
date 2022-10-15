@@ -3,7 +3,7 @@ const database = require("../server/database/database");
 const fireBaseStorage = require("../server/utils/firebaseStorage");
 const cookie = require("cookie");
 
-const accessCookieName = process.env.accessCookieName || "login";
+const accessCookieName = "login";
 
 //public api
 async function api_getAllgames(req,res){

@@ -6,8 +6,9 @@ const fireBaseStorage = require("./utils/firebaseStorage");
 const database = require("./database/database");
 const {getTokens,getGoogleUser} = require("./utils/gmailOpenID");
 
-const accessCookieName = process.env.accessCookieName || "login";
-const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
+const antiForgeryCookieName = "state";
+const accessCookieName = "login";
+const userVerificationCookieName = "verification";
 const secretKey = process.env.jwtSecretKey;
 const maxImgUploadSize = parseInt(process.env.maxImgUploadSize) || 5000000;
 
@@ -218,6 +219,16 @@ function verifyGameInputs(req,res,next){
 }
 
 //openID middleware
+function confirmAntiForgeryState(req,res,next){
+    let state = req.query.state;
+    let cookies = cookie.parse(req.headers.cookie || "");
+    let cookieState = cookies[antiForgeryCookieName];
+    if (state === cookieState){
+        next();
+    }else{
+        res.send({error:"Anti forgery detected"});
+    }
+}
 async function googleConnect_redirect_middleware(req,res,next){
     try{
         //get the code from the url query
@@ -238,7 +249,6 @@ async function googleConnect_redirect_middleware(req,res,next){
                 res.sendStatus(502);
                 return;
             }
-            console.log("signing up");
             //add userID and username to the response local
             res.locals.userID = objectID.userID;
             res.locals.username = userInfo.name;
@@ -250,7 +260,6 @@ async function googleConnect_redirect_middleware(req,res,next){
                 res.sendStatus(502);
                 return;
             }
-            console.log("logging in");
             //add userID and username to the response local
             res.locals.userID = objectID.userID;
             res.locals.username = userInfo.name;
@@ -271,4 +280,4 @@ module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
                 noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
                 unverifiedUsers,
             
-                googleConnect_redirect_middleware};
+                googleConnect_redirect_middleware,confirmAntiForgeryState};

@@ -45,8 +45,6 @@ mongoURL = <mongodb atlas connect url>
 digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
 maxImgUploadSize = <integer>
-accessCookieName = <string>
-userVerificationCookieName = <string>
 unverifiedUserDataExpirationTimeInSec = <integer>
 ```
 #### config.env variables
@@ -65,10 +63,6 @@ Change the digest algorithm that is used for hashing password (default value sha
 Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
-###### accessCookieName (OPTIONAL)
-Name of the cookie used in Authentication (default "login")
-###### userVerificationCookieName (OPTIONAL)
-The cookie name that will let the user access the verification endpoint (default "verification")
 ###### unverifiedUserDataExpirationTimeInSec (OPTIONAL)
 Time for the unverified user to be deleted from the database, also used as an expiration time for verification cookie (default 1800)
 

@@ -76,6 +76,7 @@ app.post("/userSignup",server_middleware.noLoggedUserAllowed,server_routes.postU
 
 app.get("/openID/gmail",server_middleware.noLoggedUserAllowed,server_routes.openIDConnect_gmail_login);
 app.get(`${redirectURIcomponned}`,server_middleware.noLoggedUserAllowed,
+                        server_middleware.confirmAntiForgeryState,
                         server_middleware.googleConnect_redirect_middleware,
                         server_routes.googleConnect_redirect);
 
