@@ -10,7 +10,7 @@ function addNewAlertContainer(){
 
 function newAlert_danger(output){
     let html = `
-    <div class="alert alert-danger alert-dismissible mb-3 me-3" role="alert" style="display:block;">
+    <div class="alert alert-danger alert-dismissible fade show mb-3 me-3" role="alert">
         <div>${output}</div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>`;

@@ -1,14 +1,19 @@
 //now all the env variables can be used in all scripts
 require('dotenv').config({path:__dirname+'/config.env'});
+require('dotenv').config({path:__dirname+'/gmailOpenID.env'});
 
 //upload the required packages
 const express = require("express");
+const url = require("url");
 const app = express();
+
 const api_routes = require("./api/apiGameRoutes");
 const rateLimiter_Middleware = require("./api/apiRateLimiter");
 const server_routes = require("./server/routes");
 const server_middleware = require("./server/middleware")
+
 const PORT = process.env.PORT || 8080;
+const redirectURIcomponned = new url.URL(process.env.redirectURL).pathname;
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -68,6 +73,12 @@ app.post("/userLogin",server_middleware.noLoggedUserAllowed,server_routes.postUs
 
 app.get("/userSignup",server_middleware.noLoggedUserAllowed,server_routes.getUserSignup);
 app.post("/userSignup",server_middleware.noLoggedUserAllowed,server_routes.postUserSignup);
+
+app.get("/openID/gmail",server_middleware.noLoggedUserAllowed,server_routes.openIDConnect_gmail_login);
+app.get(`${redirectURIcomponned}`,server_middleware.noLoggedUserAllowed,
+                        server_middleware.confirmAntiForgeryState,
+                        server_middleware.googleConnect_redirect_middleware,
+                        server_routes.googleConnect_redirect);
 
 //only users with the unverified cookie
 app.get("/userVerification",server_middleware.unverifiedUsers,server_routes.getVerificationPage);

@@ -7,12 +7,15 @@ const hashPassword = require("./utils/hashPassword");
 const randomNumber = require("./utils/randomNumber");
 const {sendVerificationCode} = require("./utils/sendMail");
 
+const {getGoogleAuthURL} = require("./utils/gmailOpenID");
+
 const secretKey = process.env.jwtSecretKey;
 const tokenExpire = 60 * 60 * 24;
 
-const accessCookieName = process.env.accessCookieName || "login";
+const accessCookieName = "login";
 const userInfosCookieName = "info";
-const userVerificationCookieName = process.env.userVerificationCookieName || "verification";
+const userVerificationCookieName = "verification";
+const antiForgeryCookieName = "state";
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
 //public routes
 function getHomepage(req,res){
@@ -44,11 +47,11 @@ async function postAdminLogin(req,res){
             let userID = verification["userID"];
             let token = jwt.sign({username,admin:true,userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
             //add the access cookie which allow the user to do some actions in the backend
-            res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
+            res.cookie(accessCookieName, token, {
                 httpOnly: true,
                 sameSite:"strict",
-                maxAge: tokenExpire //1 day
-            }));
+                maxAge: tokenExpire * 1000 //1 day
+            });
             //Add the info cookie which the frontend use to get some infos about the user
             let userInfo = {username,admin:true};
             res.cookie(userInfosCookieName,JSON.stringify(userInfo),{
@@ -70,7 +73,6 @@ function getUserSignup(req,res){
     //must be called after a middleware that verify if the user is not logged in
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userSignup.html"));
 }
-
 async function postUserSignup(req,res){
     //must be called after a middleware that verify if the user is not logged in
     //username, email and password must be sent from urlencoded form
@@ -137,11 +139,11 @@ async function postUserLogin(req,res){
             let userID = verification["userID"];
             let token = jwt.sign({username,admin:false,userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
             //add the access cookie which allow the user to do some actions in the backend
-            res.setHeader('Set-Cookie', cookie.serialize(accessCookieName, token, {
+            res.cookie(accessCookieName, token, {
                 httpOnly: true,
                 sameSite:"strict",
-                maxAge: tokenExpire //1 day
-            }));
+                maxAge: tokenExpire * 1000 //1 day
+            });
             //Add the info cookie which the frontend use to get some infos about the user
             let userInfo = {username,admin:false};
             res.cookie(userInfosCookieName,JSON.stringify(userInfo),{
@@ -157,6 +159,48 @@ async function postUserLogin(req,res){
     }else{
         res.sendStatus(500);
     }
+}
+
+function openIDConnect_gmail_login(req,res){
+    //add a random hashed number to the state 
+    let hashedRandomState = crypto.createHash('sha256').update(crypto.randomBytes(30)).digest('hex');
+    let url = getGoogleAuthURL(hashedRandomState);
+    //create a safe cookie that will contain this hashed number to verify if it matches later 
+    res.cookie(antiForgeryCookieName, hashedRandomState, {
+        maxAge: tokenExpire * 10 //1 day
+    });
+    res.redirect(url);
+}
+async function googleConnect_redirect(req,res){
+    /* 
+    before getting to this route the user must 
+    go throught the middleware and verify 
+    if the user already signed up as this openID service,
+    if the user is new,
+    if the user is logged with another openID service or logged with a normal password
+    */
+    //get the userID and username
+    let userID = res.locals.userID;
+    let username = res.locals.username;
+    //give the user a jwt login token
+    let token = jwt.sign({username,admin:false,userID},secretKey,{expiresIn:tokenExpire}); //expires in 1 day
+    //add the access cookie which allow the user to do some actions in the backend
+    res.cookie(accessCookieName, token, {
+        httpOnly: true,
+        sameSite:"strict",
+        maxAge: tokenExpire * 1000 //1 day
+    });
+    //Add the info cookie which the frontend use to get some infos about the user
+    let userInfo = {username,admin:false};
+    res.cookie(userInfosCookieName,JSON.stringify(userInfo),{
+        maxAge: tokenExpire * 1000//1 day
+    });
+    
+    //redirect
+    res.redirect("/");
+    //save logs
+    database.logUserAction(username,`User logged in`);
+
 }
 
 //any logged user
@@ -284,4 +328,5 @@ module.exports = {getHomepage,
                 getUserLogin,postUserLogin,getUserOrdersPage,
                 getUserSignup,postUserSignup,
                 getVerificationPage,postVerificationPage,
-                removeVerificationCookie};
+                removeVerificationCookie,
+                openIDConnect_gmail_login,googleConnect_redirect};

@@ -178,6 +178,7 @@ const verifyAdmin = async (username,password)=>{
     }
 }
 
+//normal user
 async function userExist(username,email){
     try{
         let userExistData =await userCollection.findOne({$or:[{username},{email}]});
@@ -265,6 +266,43 @@ async function verifyUserCredentials(username,password){
         return {"error":err};
     }
 }
+
+//openID user
+async function openID_userExist(service,email){
+    try{
+        let userExistData = await userCollection.findOne({email});
+        if (userExistData === null){
+            return {userCanBeCreated:true};
+        }else{
+            let openID_user_service = userExistData.service;
+            if (openID_user_service === service){
+                return {userCanBeCreated:false,canLogin:true};
+            }else{
+                return {userCanBeCreated:false,canLogin:false};
+            }
+        };
+    }catch(error){
+        return {error};
+    }
+}
+async function openID_saveUser(service,id,email,name){
+    try{
+        let output = await userCollection.insertOne({service,id,email,name});
+        return {userID:output.insertedId.toString()};
+    }catch(error){
+        return {error};
+    }
+}
+async function openID_userLogin(service,id,email,name){
+    try{
+        let output = await userCollection.findOne({service,id,email,name});
+        return {userID:output._id.toString()};
+    }catch(error){
+        return {error};
+    }
+}
+
+
 
 async function logUserAction(username,action){
     try{
@@ -372,4 +410,6 @@ module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 verifyOrder,declineOrder,
                 verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
                 getUserLatestOrders,
-                verifyUserSignup,createVerifiedUser};
+                verifyUserSignup,createVerifiedUser,
+
+                openID_userExist,openID_saveUser,openID_userLogin};

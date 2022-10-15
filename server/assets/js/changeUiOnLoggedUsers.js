@@ -56,7 +56,7 @@ function adminUser_changeLoginButtonToUsername(username){
 
 function getCookie(cookieName) {
     var allcookies = document.cookie;
-    var arrayb = allcookies.split(";");
+    var arrayb = allcookies.split("; ");
     for (let item of arrayb){
         if (item.startsWith(cookieName)){
             var cookie = item.substr(cookieName.length+1);

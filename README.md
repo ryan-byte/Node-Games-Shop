@@ -21,6 +21,7 @@
 -Users can view games <br>
 -Users can order games <br>
 -Users can signup/login <br>
+-Users can login with google openID <br>
 -Users must verify their account by typing a verification code that has been sent to their email <br>
 -Users can track their own orders <br>
 -Admins can create, update and delete games  <br>
@@ -35,9 +36,9 @@
 - Install nodejs from https://nodejs.org/en/download/
 - <b>Step 1</b>: Open the terminal or cmd at the project directory then run:
 ```
-$ npm i
+npm i
 ```
-- <b>Step 2</b>: Add config.env file to the project folder, then add the following:
+- <b>Step 2</b>: Add `config.env` file to the project folder, then add the following:
 ```
 PORT = <integer>
 jwtSecretKey = <string>
@@ -45,8 +46,6 @@ mongoURL = <mongodb atlas connect url>
 digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
 maxImgUploadSize = <integer>
-accessCookieName = <string>
-userVerificationCookieName = <string>
 unverifiedUserDataExpirationTimeInSec = <integer>
 ```
 #### config.env variables
@@ -65,10 +64,6 @@ Change the digest algorithm that is used for hashing password (default value sha
 Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
-###### accessCookieName (OPTIONAL)
-Name of the cookie used in Authentication (default "login")
-###### userVerificationCookieName (OPTIONAL)
-The cookie name that will let the user access the verification endpoint (default "verification")
 ###### unverifiedUserDataExpirationTimeInSec (OPTIONAL)
 Time for the unverified user to be deleted from the database, also used as an expiration time for verification cookie (default 1800)
 
@@ -118,6 +113,14 @@ The Address mail used for sending the validation code for validating user signup
 ###### appPassword (REQUIRED)
 For gmail service you should setup an app password (follow these [steps](#setupgmailapp))
 
+- <b>Step 6</b>: Create `gmailOpenID.env` in the app root directory, then add the following:
+```
+clientID = <string>
+clientSecret = <string>
+redirectURL = <string>
+```
+Follow this <a href = "https://support.google.com/cloud/answer/6158849?hl=en"> guide </a> to create an oauth client, make sure to add an authorized redirect URI then copy it in the redirectURL field (redirect URI example `http://localhost:3000/openID/google`, make sure you dont set it to an already existing endpoint, to see all endpoints see the app.js).<br>
+After creating an oauth client and setting up the redirectURL get the clientID and clientSecret by visiting this  <a href = https://console.cloud.google.com/apis/credentials> page</a>, selecting the created client oauth, you should see the clientID with the secret on the top right of the page.
 
 
 <a name = "setupgmailapp"/>
@@ -131,7 +134,7 @@ For gmail service you should setup an app password (follow these [steps](#setupg
 ### How to Run the Project:
 - To start the server open the terminal or cmd at the project directory then run:
 ```
-$ npm start
+npm start
 ```
 - Visit the app at `127.0.0.1:3000` (if the PORT = 3000)
 
@@ -140,7 +143,7 @@ $ npm start
 ### How to create an admin user:
 - Open the terminal or cmd at the project directory then run:
 ```
-$ node createAdmin.js
+node createAdmin.js
 ```
 - Input the username 
 - Input the password 
@@ -181,6 +184,7 @@ $ node createAdmin.js
 - [ ] make the game type selectable + verification
 - [x] user register
 - [x] user register verification by sending email
+- [x] login/register with google openID
 - [x] login page for users/admin
 - [x] users can track their orders
 - [ ] limit the number of games loaded and more will be loaded when scrolling down
