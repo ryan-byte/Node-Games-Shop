@@ -297,6 +297,47 @@ async function postOrder(req,res){
     res.sendStatus(statusCode);
 }
 
+function getInfoPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInformations.html"));
+}
+function getInfoAddPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInfoAdd.html"));
+}
+async function postInfoAddPage(req,res){
+    const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
+    let parsedTelNumber = parseInt(TelNumber);
+    let invalid =   FirstName === ""||
+                    typeof FirstName === "undefined"||
+                    LastName === ""||
+                    typeof LastName === "undefined"||
+                    TelNumber === ""||
+                    typeof TelNumber === "undefined"||
+                    isNaN(parsedTelNumber) ||
+                    parsedTelNumber < 10000000 ||
+                    parsedTelNumber > 99999999 ||
+                    Address === ""||
+                    typeof Address === "undefined"||
+                    City === ""||
+                    typeof City === "undefined"||
+                    PostalCode === ""||
+                    typeof PostalCode === "undefined";
+    if (invalid){
+        res.sendStatus(400);
+        return;
+    }
+    //last thing is to get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+    //when everything is fine then add the order to the database
+    let statusCode = await database.addNewUserInformation(userID,FirstName,LastName,TelNumber,Address,City,PostalCode);
+    //send back the status code to the client
+    res.sendStatus(statusCode);
+    
+}
+
+
 function getUserOrdersPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrders.html"));
 }
@@ -318,7 +359,7 @@ function getadminpanelOrderList(req,res){
 
 
 module.exports = {getHomepage,
-                getOrderPage,postOrder,
+                getOrderPage,postOrder,getInfoPage,getInfoAddPage,postInfoAddPage,
                 getAdminLogin,
                 postAdminLogin,
                 getadminpanel,

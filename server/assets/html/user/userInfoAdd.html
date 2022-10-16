@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Information</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <link rel="stylesheet" href="/css/newAlert.css">
+    <script defer src="/js/newAlert.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            
+            
+            <a class="navbar-brand" href="/">Game Shop</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item" id = "loginOrLogoutButtonContainer">
+                    <a href="/userLogin" class="btn btn-secondary">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+
+        <h3 class = "my3" style="text-align: center;">Add Information</h3>
+
+        <form class="container-fluid mt-5" id = "addInfoForm" method="post">
+            <div class = "row input-group ">
+                <div class="col mb-3">
+                    <label for="FirstName" class="form-label">First Name</label>
+                    <input required name="FirstName" type="text" class="form-control" id="FirstName">
+                </div>
+                <div class="col mb-3">
+                    <label for="LastName" class="form-label">Last Name</label>
+                    <input required name="LastName" type="text" class="form-control" id="LastName">
+                </div>
+                <div class="col mb-3">
+                    <label for="TelNumber" class="form-label">phone number</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon3">+216</span>
+                        <input required name="TelNumber" type="tel" class="form-control" id="phone" pattern="[0-9]{8}" placeholder="12 234 568">
+                    </div>
+                </div>
+            </div>
+            <div class = "row input-group">
+                <div class="col mb-3">
+                    <label for="Address" class="form-label">Address</label>
+                    <input required name="Address" type="text" class="form-control" id="Address">
+                </div>
+                <div class = "col"></div>
+            </div>
+            <div class = "row input-group">
+                <div class="col mb-3">
+                    <label for="City" class="form-label">City</label>
+                    <input required name="City" type="text" class="form-control" id="City">
+                </div>
+                <div class="col mb-3">
+                    <label for="PostalCode" class="form-label">Postal code</label>
+                    <input required name="PostalCode" type="text" class="form-control" id="PostalCode">
+                </div>
+            </div>
+
+            <div id = "spinner" class="spinner-border" role="status" style="display: none;">
+                <span  class="visually-hidden">Loading...</span>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button id = "addInfoButton" type="submit" class="btn btn-primary mb-2 mx-3" >Add</button>
+                <a href="/order/information" class="btn btn-secondary mb-2 mx-3" >Cancel</a>
+            </div>
+        </form>
+    </main>
+
+    <script defer src="/js/user/addUserInfo.js"></script>
+    <script defer src="/js/bootstrap.min.js"></script>
+    <script src="/js/changeUiOnLoggedUsers.js"></script>
+</body>
+</html>

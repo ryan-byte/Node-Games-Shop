@@ -92,6 +92,10 @@ app.post("/logout",server_middleware.anyLoggedUser,
 app.get("/order",server_middleware.onlyNormalUsersAllowed,server_routes.getOrderPage);
 app.post("/order",server_middleware.onlyNormalUsersAllowed,server_routes.postOrder);
 
+app.get("/order/information",server_middleware.onlyNormalUsersAllowed,server_routes.getInfoPage);
+app.get("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.getInfoAddPage);
+app.post("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.postInfoAddPage);
+
 app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,server_routes.getUserOrdersPage);
 
 //admin allowed pages
