@@ -350,7 +350,7 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
             return 201;
         }catch (err){
             console.log(err);
-            return 500;
+            return 502;
         }
     }else{
         return 400;
@@ -373,10 +373,19 @@ async function addNewUserInformation(userID,FirstName,LastName,TelNumber,Address
             return 201;
         }catch (err){
             console.log(err);
-            return 500;
+            return 502;
         }
     }else{
         return 400;
+    }
+}
+async function getUserInformation(userID){
+    try{
+        let data = await userInfoCollection.find({userID}).toArray();
+        return data;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
     }
 }
 
@@ -430,7 +439,7 @@ async function logUserAction(username,action){
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder,getOrders,addNewUserInformation,
+                createNewOrder,getOrders,addNewUserInformation,getUserInformation,
                 verifyOrder,declineOrder,
                 verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
                 getUserLatestOrders,

@@ -36,15 +36,15 @@
         
         <br>
         </div>
-        <ul class="list-group list-group-horizontal flex-wrap  justify-content-center mb-3">
-            <li class="list-group-item list-group-item-action addressItem">
+        <ul id = "infoContainer" class="list-group list-group-horizontal flex-wrap  justify-content-center mb-3">
+            <li class="list-group-item list-group-item-action infoItem">
                 Empty
             </li>
         </ul>
         <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
-            <a id = "createAddress" href = "/order/information/add" type="button" class="btn btn-outline-success mx-3">Add Informations</a>
-            <a id = "editAddress" href = "/order/information/edit" type="button" class="btn btn-outline-warning disabled mx-3">Edit</a>
-            <a id = "next" href = "/order" type="button" class="btn btn-outline-primary mx-3">Next</a>
+            <a id = "createInfo" href = "/order/information/add" type="button" class="btn btn-success mx-3">Add Informations</a>
+            <a id = "editInfo" href = "/order/information/edit" type="button" class="btn btn-warning mx-3">Edit</a>
+            <a id = "next" href = "/order" type="button" class="btn btn-primary mx-3">Next</a>
         </div>
         <div id = "spinner" class="spinner-border" style="display:none;" role="status">
             <span  class="visually-hidden">Loading...</span>
@@ -52,6 +52,7 @@
     </main>
 
 
+    <script defer src="/js/user/getUserInfo.js"></script>
     <script defer src="/js/bootstrap.min.js"></script>
     <script defer src="/js/changeUiOnLoggedUsers.js"></script>
 </body>

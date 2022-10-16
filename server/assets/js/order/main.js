@@ -117,7 +117,7 @@ function statusCodeFeedBack(status){
         newAlert_success("Your order has been submited");
     }else if (status === 400){
         newAlert_danger("Bad request");
-    }else if (status === 500){
+    }else if (status === 502){
         newAlert_danger("Bad Gateway");
     }else{
         newAlert_danger("Unknown error");

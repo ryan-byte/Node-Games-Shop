@@ -58,6 +58,10 @@ app.get("/api/user/getOrders",rateLimiter_Middleware(),
                     server_middleware.onlyNormalUsersAllowed,
                     api_routes.api_getLatestOrders);
 
+app.get("/api/user/getInfos",rateLimiter_Middleware(),
+                    server_middleware.onlyNormalUsersAllowed,
+                    api_routes.api_getUserInfos);
+
 //public pages
 app.get("/",(req,res)=>{
     server_routes.getHomepage(req,res);

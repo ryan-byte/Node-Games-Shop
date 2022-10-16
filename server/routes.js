@@ -298,7 +298,7 @@ async function postOrder(req,res){
 }
 
 function getInfoPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInformations.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInfo.html"));
 }
 function getInfoAddPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInfoAdd.html"));
