@@ -62,6 +62,10 @@ app.get("/api/user/getInfos",rateLimiter_Middleware(),
                     server_middleware.onlyNormalUsersAllowed,
                     api_routes.api_getUserInfos);
 
+app.get("/api/user/getSpecificInfo",rateLimiter_Middleware(),
+                    server_middleware.onlyNormalUsersAllowed,
+                    api_routes.api_getSpecificUserInfos);
+
 //public pages
 app.get("/",(req,res)=>{
     server_routes.getHomepage(req,res);
@@ -93,12 +97,17 @@ app.post("/logout",server_middleware.anyLoggedUser,
                     server_routes.logout);
 
 //normal allowed users pages
-app.get("/order",server_middleware.onlyNormalUsersAllowed,server_routes.getOrderPage);
-app.post("/order",server_middleware.onlyNormalUsersAllowed,server_routes.postOrder);
+app.get("/order/information",server_middleware.onlyNormalUsersAllowed,server_routes.getDeliveryInfoPage);
 
-app.get("/order/information",server_middleware.onlyNormalUsersAllowed,server_routes.getInfoPage);
-app.get("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.getInfoAddPage);
-app.post("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.postInfoAddPage);
+app.post("/order/information/select",server_middleware.onlyNormalUsersAllowed,server_routes.postDeliveryInfoSelect);
+
+app.get("/order/confirmation",server_middleware.onlyNormalUsersAllowed,
+                        server_routes.getOrderConfirmationPage);
+app.post("/order/confirmation",server_middleware.onlyNormalUsersAllowed,
+                        server_routes.postOrder);
+
+app.get("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.getDeliveryInfoAddPage);
+app.post("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.postDeliveryInfoAddPage);
 
 app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,server_routes.getUserOrdersPage);
 

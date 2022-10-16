@@ -26,6 +26,7 @@ function renderInfo(data){
     const infoItem = document.createElement("li");
     infoItem.classList.add("list-group-item","list-group-item-action","infoItem");
     infoItem.setAttribute("onclick","selectInfo(this)");
+    infoItem.dataset.id = data._id;
     infoItem.innerHTML = `
     <b>Name:</b> ${data.FirstName} ${data.LastName}<br>
     <b>Phone:</b> ${data.TelNumber}<br>
@@ -69,5 +70,38 @@ function disableSelectButtons(bool){
     }else{
         next.classList.remove("disabled");
         editInfo.classList.remove("disabled");
+    }
+}
+
+//next button functions
+next.addEventListener("click",(ev)=>{
+    if (selectedElement === ""){
+        return;
+    }
+    let deliveryInfoId = selectedElement.dataset.id;
+    nextRequest(deliveryInfoId)
+})
+
+async function nextRequest(deliveryInfoId){
+    let data = "deliveryInfoId=" +deliveryInfoId; 
+    let request = await fetch("/order/information/select",{
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method:"post",
+        body:data
+    });
+    let status = request.status;
+    statusFeedback(status);
+    if (request.redirected){
+        window.location.replace(request.url);
+    }
+}
+
+function statusFeedback(status){
+    if (status === 404){
+        newAlert_danger("Not Found (reload the page)");
+    }else if (status === 502){
+        newAlert_danger("Bad Gateway");
     }
 }

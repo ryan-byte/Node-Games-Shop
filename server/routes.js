@@ -14,6 +14,7 @@ const tokenExpire = 60 * 60 * 24;
 
 const accessCookieName = "login";
 const userInfosCookieName = "info";
+const DeliveryInfoCookieName= "deliveryInfo";
 const userVerificationCookieName = "verification";
 const antiForgeryCookieName = "state";
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
@@ -249,27 +250,24 @@ async function postVerificationPage(req,res){
 }
 
 //only normal users routes
-function getOrderPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/order/order.html"));
-}
 async function postOrder(req,res){
     //get the order informations
-    let {FirstName,LastName,TelNumber,Address,City,PostalCode,games} = req.body;
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessCookie = allCookies[accessCookieName];
+    const userID = jwt.decode(accessCookie).userID;
+    let {deliveryInfoId,games} = req.body;
+    const data = await database.getSpecificUserDeliveryInfo(userID,deliveryInfoId);
+    if (data === null){
+        res.sendStatus(404);
+        return;
+    }else if (data["error"]){
+        res.sendStatus(502);
+        return;
+    }
+    const {FirstName,LastName,TelNumber,Address,City,PostalCode} = data;
     //verify the order informations
-    let condition = FirstName === ""||
-                    typeof FirstName === "undefined"||
-                    LastName === ""||
-                    typeof LastName === "undefined"||
-                    TelNumber === ""||
-                    typeof TelNumber === "undefined"||
-                    Address === ""||
-                    typeof Address === "undefined"||
-                    City === ""||
-                    typeof City === "undefined"||
-                    games === ""||
-                    typeof games === "undefined"||
-                    PostalCode === ""||
-                    typeof PostalCode === "undefined";
+    let condition = games === ""||
+                    typeof games === "undefined";
     try{
         games = JSON.parse(games);
         //verify the games quantity
@@ -286,24 +284,41 @@ async function postOrder(req,res){
         res.sendStatus(400);
         return;
     }
-    //last thing is to get the user ID that is stored in the cookie
-    //note that the cookie must be verified in a middleware before this route
-    let allCookies = cookie.parse(req.headers.cookie || "");
-    let accessToken = allCookies[accessCookieName];
-    let userID = jwt.decode(accessToken).userID;
     //when everything is fine then add the order to the database
     let statusCode = await database.createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,games);
     //send back the status code to the client
     res.sendStatus(statusCode);
 }
 
-function getInfoPage(req,res){
+function getDeliveryInfoPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInfo.html"));
 }
-function getInfoAddPage(req,res){
+
+async function postDeliveryInfoSelect(req,res){
+    //get the userID and the infoId
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = jwt.decode(allCookies[accessCookieName]);
+    const {userID} = accessToken;
+    const {deliveryInfoId} = req.body;
+    //get selected address id that is with the user id
+    let data = await database.getSpecificUserDeliveryInfo(userID,deliveryInfoId);
+    if (data === null){
+        res.sendStatus(404);
+    }else if (data["error"]){
+        res.sendStatus(502);
+    }else{
+        //give the use a selectedInfo cookie
+        res.cookie(DeliveryInfoCookieName,deliveryInfoId,{
+            maxAge: tokenExpire * 100//1 day
+        });
+        res.redirect("/order/confirmation");
+    }
+}
+
+function getDeliveryInfoAddPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInfoAdd.html"));
 }
-async function postInfoAddPage(req,res){
+async function postDeliveryInfoAddPage(req,res){
     const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
     let parsedTelNumber = parseInt(TelNumber);
     let invalid =   FirstName === ""||
@@ -337,6 +352,9 @@ async function postInfoAddPage(req,res){
     
 }
 
+function getOrderConfirmationPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userDeliveryConfirmation.html"));
+}
 
 function getUserOrdersPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrders.html"));
@@ -359,7 +377,8 @@ function getadminpanelOrderList(req,res){
 
 
 module.exports = {getHomepage,
-                getOrderPage,postOrder,getInfoPage,getInfoAddPage,postInfoAddPage,
+                postOrder,getDeliveryInfoPage,getDeliveryInfoAddPage,
+                postDeliveryInfoAddPage,postDeliveryInfoSelect,getOrderConfirmationPage,
                 getAdminLogin,
                 postAdminLogin,
                 getadminpanel,
