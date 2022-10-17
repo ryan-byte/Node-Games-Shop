@@ -153,6 +153,9 @@ function statusCodeFeedBack(status){
         newAlert_success("Your order has been submited");
     }else if (status === 400){
         newAlert_danger("Bad request");
+    }else if (status === 404){
+        newAlert_danger("delivery info not found");
+        return;
     }else if (status === 502){
         newAlert_danger("Bad Gateway");
     }else{

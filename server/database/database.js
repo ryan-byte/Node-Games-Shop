@@ -357,7 +357,7 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
     }
 }
 
-async function addNewUserInformation(userID,FirstName,LastName,TelNumber,Address,City,PostalCode){
+async function addUserDeliveryInfo(userID,FirstName,LastName,TelNumber,Address,City,PostalCode){
     const validInputs = typeof userID === "string" && 
                         typeof FirstName === "string" && 
                         typeof LastName === "string" && 
@@ -379,7 +379,7 @@ async function addNewUserInformation(userID,FirstName,LastName,TelNumber,Address
         return 400;
     }
 }
-async function getAllUserInformation(userID){
+async function getAllUserDeliveryInfo(userID){
     try{
         let data = await userInfoCollection.find({userID}).toArray();
         return data;
@@ -393,7 +393,11 @@ async function getSpecificUserDeliveryInfo(userID,deliveryInfoId){
         let data = await userInfoCollection.findOne({"_id": new ObjectId(deliveryInfoId),userID});
         return data;
     }catch (err){
-        return {error:"db error"};
+        if(err instanceof BSONTypeError){
+            return {error:"db error",status:404};
+        }else{
+            return {error:"db error",status:502};
+        }
     }
 }
 
@@ -447,7 +451,7 @@ async function logUserAction(username,action){
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder,getOrders,addNewUserInformation,getAllUserInformation,getSpecificUserDeliveryInfo,
+                createNewOrder,getOrders,addUserDeliveryInfo,getAllUserDeliveryInfo,getSpecificUserDeliveryInfo,
                 verifyOrder,declineOrder,
                 verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
                 getUserLatestOrders,

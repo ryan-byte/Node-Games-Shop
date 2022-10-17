@@ -100,7 +100,7 @@ async function nextRequest(deliveryInfoId){
 
 function statusFeedback(status){
     if (status === 404){
-        newAlert_danger("Not Found (reload the page)");
+        newAlert_danger("Delivery info Not Found (reload the page)");
     }else if (status === 502){
         newAlert_danger("Bad Gateway");
     }

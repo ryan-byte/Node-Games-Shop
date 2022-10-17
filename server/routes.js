@@ -261,7 +261,7 @@ async function postOrder(req,res){
         res.sendStatus(404);
         return;
     }else if (data["error"]){
-        res.sendStatus(502);
+        res.sendStatus(data.status);
         return;
     }
     const {FirstName,LastName,TelNumber,Address,City,PostalCode} = data;
@@ -305,7 +305,7 @@ async function selectDeliveryInfo(req,res){
     if (data === null){
         res.sendStatus(404);
     }else if (data["error"]){
-        res.sendStatus(502);
+        res.sendStatus(data.status);
     }else{
         //give the use a selectedInfo cookie
         res.cookie(DeliveryInfoCookieName,deliveryInfoId,{
@@ -346,7 +346,7 @@ async function postDeliveryInfoAdd(req,res){
     let accessToken = allCookies[accessCookieName];
     let userID = jwt.decode(accessToken).userID;
     //when everything is fine then add the order to the database
-    let statusCode = await database.addNewUserInformation(userID,FirstName,LastName,TelNumber,Address,City,PostalCode);
+    let statusCode = await database.addUserDeliveryInfo(userID,FirstName,LastName,TelNumber,Address,City,PostalCode);
     //send back the status code to the client
     res.sendStatus(statusCode);
     

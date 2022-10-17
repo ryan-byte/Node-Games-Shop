@@ -194,7 +194,7 @@ async function api_getAllUserDeliveryInfo(req,res){
     let accessToken = allCookies[accessCookieName];
     let userID = jwt.decode(accessToken).userID;
 
-    let data = await database.getAllUserInformation(userID);
+    let data = await database.getAllUserDeliveryInfo(userID);
     if (data["error"]){
         res.sendStatus(502);
     }else{
@@ -214,7 +214,7 @@ async function api_getSpecificUserDeliveryInfo(req,res){
     if (data === null){
         res.sendStatus(404);
     }else if (data["error"]){
-        res.sendStatus(502);
+        res.sendStatus(data.status);
     }else{
         let output = {
             "FirstName":data.FirstName,
