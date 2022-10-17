@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Informations</title>
+    <title>User Orders</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/spinner.css">
-    <link rel="stylesheet" href="/css/userInformations.css">
 
     <link rel="stylesheet" href="/css/newAlert.css">
     <script defer src="/js/newAlert.js"></script>
@@ -30,30 +29,45 @@
         </div>
     </nav>
 
-    <main>
-        <h3 class = "my3" style="text-align: center;">Select Delivery Information</h3>
-        <br>
-        
-        <br>
-        </div>
-        <ul id = "infoContainer" class="list-group list-group-horizontal flex-wrap  justify-content-center mb-3">
-            <li class="list-group-item list-group-item-action infoItem">
-                Empty
-            </li>
-        </ul>
+    <main><br>
         <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
-            <a id = "createInfo" href = "/order/information/add" type="button" class="btn btn-success mx-3">Add Informations</a>
-            <a id = "editInfo" href = "/order/information/edit" type="button" class="btn btn-warning mx-3">Edit</a>
-            <button id = "next" type="button" class="btn btn-primary mx-3">Next</button>
+            <button id = "getLatestOrders" type="button" class="btn btn-outline-primary mx-3">My Latest Orders</button>
         </div>
         <div id = "spinner" class="spinner-border" style="display:none;" role="status">
             <span  class="visually-hidden">Loading...</span>
-        </div><br>
+        </div>
+        <br>
+        <div id = "orderList" class="d-flex flex-column bd-highlight mb-3 mx-5">
+
+        </div>
     </main>
 
 
-    <script defer src="/js/user/selectUserInfo.js"></script>
+    <div class="modal fade " id="orderInfo" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Order info</h5>
+                <button id = "closeModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id = "orderModalSpinner" class="spinner-border" role="status">
+                <span  class="visually-hidden">Loading...</span>
+            </div>
+            <div id = "orderInfoBody" class="modal-body container-fluid">
+                
+
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+
     <script defer src="/js/bootstrap.min.js"></script>
     <script defer src="/js/changeUiOnLoggedUsers.js"></script>
+    <script src="/js/user/userOrder/getUserOrders.js"></script>
 </body>
 </html>

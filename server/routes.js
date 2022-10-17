@@ -72,7 +72,7 @@ async function postAdminLogin(req,res){
 
 function getUserSignup(req,res){
     //must be called after a middleware that verify if the user is not logged in
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userSignup.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin/userSignup.html"));
 }
 async function postUserSignup(req,res){
     //must be called after a middleware that verify if the user is not logged in
@@ -123,7 +123,7 @@ async function postUserSignup(req,res){
 
 function getUserLogin(req,res){
     //must be called after a middleware that verify if the user is already logged in
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin/userLogin.html"));
 }
 async function postUserLogin(req,res){
     //verify login
@@ -214,7 +214,7 @@ function logout(req,res){
 //only users with the unverified cookie
 function getVerificationPage(req,res){
     //must be called after a middleware that checks if the user has the unverified cookie
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userVerification.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin/userVerification.html"));
 }
 async function postVerificationPage(req,res){
     /must call a middleware that check if the jwt inside the verification cookie is valid/
@@ -291,7 +291,7 @@ async function postOrder(req,res){
 }
 
 function getDeliveryInfoPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInfo.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/selectDeliveryInfo.html"));
 }
 
 async function postDeliveryInfoSelect(req,res){
@@ -316,7 +316,7 @@ async function postDeliveryInfoSelect(req,res){
 }
 
 function getDeliveryInfoAddPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userInfoAdd.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/addDeliveryInfo.html"));
 }
 async function postDeliveryInfoAddPage(req,res){
     const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
@@ -353,11 +353,11 @@ async function postDeliveryInfoAddPage(req,res){
 }
 
 function getOrderConfirmationPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userDeliveryConfirmation.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/orderConfirmation.html"));
 }
 
 function getUserOrdersPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrders.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/viewOrderHistory.html"));
 }
 
 //admin users only
