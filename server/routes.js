@@ -290,11 +290,11 @@ async function postOrder(req,res){
     res.sendStatus(statusCode);
 }
 
-function getDeliveryInfoPage(req,res){
+function getDeliveryInfoSelect(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/selectDeliveryInfo.html"));
 }
 
-async function postDeliveryInfoSelect(req,res){
+async function selectDeliveryInfo(req,res){
     //get the userID and the infoId
     let allCookies = cookie.parse(req.headers.cookie || "");
     let accessToken = jwt.decode(allCookies[accessCookieName]);
@@ -315,10 +315,10 @@ async function postDeliveryInfoSelect(req,res){
     }
 }
 
-function getDeliveryInfoAddPage(req,res){
+function getDeliveryInfoAdd(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/addDeliveryInfo.html"));
 }
-async function postDeliveryInfoAddPage(req,res){
+async function postDeliveryInfoAdd(req,res){
     const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
     let parsedTelNumber = parseInt(TelNumber);
     let invalid =   FirstName === ""||
@@ -356,7 +356,7 @@ function getOrderConfirmationPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/orderConfirmation.html"));
 }
 
-function getUserOrdersPage(req,res){
+function getUserOrdersHistoryPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/viewOrderHistory.html"));
 }
 
@@ -377,15 +377,15 @@ function getadminpanelOrderList(req,res){
 
 
 module.exports = {getHomepage,
-                postOrder,getDeliveryInfoPage,getDeliveryInfoAddPage,
-                postDeliveryInfoAddPage,postDeliveryInfoSelect,getOrderConfirmationPage,
+                postOrder,getDeliveryInfoSelect,getDeliveryInfoAdd,
+                postDeliveryInfoAdd,selectDeliveryInfo,getOrderConfirmationPage,
                 getAdminLogin,
                 postAdminLogin,
                 getadminpanel,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
                 logout,
-                getUserLogin,postUserLogin,getUserOrdersPage,
+                getUserLogin,postUserLogin,getUserOrdersHistoryPage,
                 getUserSignup,postUserSignup,
                 getVerificationPage,postVerificationPage,
                 removeVerificationCookie,
