@@ -311,12 +311,15 @@ async function selectDeliveryInfo(req,res){
         res.cookie(DeliveryInfoCookieName,deliveryInfoId,{
             maxAge: tokenExpire * 100//1 day
         });
-        res.redirect("/order/confirmation");
+        res.sendStatus(200);
     }
 }
 
 function getDeliveryInfoAdd(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/addDeliveryInfo.html"));
+}
+function getDeliveryInfoEdit(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/editDeliveryInfo.html"));
 }
 async function postDeliveryInfoAdd(req,res){
     const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
@@ -377,7 +380,7 @@ function getadminpanelOrderList(req,res){
 
 
 module.exports = {getHomepage,
-                postOrder,getDeliveryInfoSelect,getDeliveryInfoAdd,
+                postOrder,getDeliveryInfoSelect,getDeliveryInfoAdd,getDeliveryInfoEdit,
                 postDeliveryInfoAdd,selectDeliveryInfo,getOrderConfirmationPage,
                 getAdminLogin,
                 postAdminLogin,

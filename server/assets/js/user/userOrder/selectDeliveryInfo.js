@@ -1,6 +1,6 @@
 const infoContainer = document.getElementById("infoContainer");
-const editInfo = document.getElementById("editInfo");
 const next = document.getElementById("next");
+const edit = document.getElementById("edit");
 
 
 let selectedElement = "";
@@ -66,10 +66,10 @@ function desactiveChilds(parent){
 function disableSelectButtons(bool){
     if (bool){
         next.classList.add("disabled");
-        editInfo.classList.add("disabled");
+        edit.classList.add("disabled");
     }else{
         next.classList.remove("disabled");
-        editInfo.classList.remove("disabled");
+        edit.classList.remove("disabled");
     }
 }
 
@@ -79,10 +79,21 @@ next.addEventListener("click",(ev)=>{
         return;
     }
     let deliveryInfoId = selectedElement.dataset.id;
-    nextRequest(deliveryInfoId)
+    selectRequest(deliveryInfoId,"/order/confirmation")
 })
 
-async function nextRequest(deliveryInfoId){
+//edit button functions
+edit.addEventListener("click",(ev)=>{
+    if (selectedElement === ""){
+        return;
+    }
+    let deliveryInfoId = selectedElement.dataset.id;
+    selectRequest(deliveryInfoId,"/order/information/edit")
+})
+
+
+
+async function selectRequest(deliveryInfoId,redirectURL){
     let data = "deliveryInfoId=" +deliveryInfoId; 
     let request = await fetch("/order/information/select",{
         headers: {
@@ -93,8 +104,8 @@ async function nextRequest(deliveryInfoId){
     });
     let status = request.status;
     statusFeedback(status);
-    if (request.redirected){
-        window.location.replace(request.url);
+    if (status === 200){
+        window.location.replace(redirectURL);
     }
 }
 

@@ -1,10 +1,10 @@
-const infoForm = document.getElementById("addInfoForm");
+const addInfoForm = document.getElementById("addInfoForm");
 const spinner = document.getElementById("spinner");
 const addInfoButton = document.getElementById("addInfoButton");
 
 
 //main event
-infoForm.addEventListener("submit",async (ev)=>{
+addInfoForm.addEventListener("submit",async (ev)=>{
     ev.preventDefault();
     //feedback
     spinnerStatus(false);
@@ -25,7 +25,7 @@ infoForm.addEventListener("submit",async (ev)=>{
 //functions to achieve the main event
 async function sendInfoFormRequest(){
     //get the form info
-    let orderFormData = new FormData(infoForm);
+    let orderFormData = new FormData(addInfoForm);
     //send info data
     let URI = "/order/information/add";
     const data = new URLSearchParams(orderFormData);

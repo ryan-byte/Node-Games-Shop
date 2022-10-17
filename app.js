@@ -99,17 +99,24 @@ app.post("/logout",server_middleware.anyLoggedUser,
 //normal allowed users pages
 app.get("/order/information",server_middleware.onlyNormalUsersAllowed,server_routes.getDeliveryInfoSelect);
 
-app.post("/order/information/select",server_middleware.onlyNormalUsersAllowed,server_routes.selectDeliveryInfo);
+app.post("/order/information/select",server_middleware.onlyNormalUsersAllowed,
+                    server_routes.selectDeliveryInfo);
 
 app.get("/order/confirmation",server_middleware.onlyNormalUsersAllowed,
                         server_routes.getOrderConfirmationPage);
 app.post("/order/confirmation",server_middleware.onlyNormalUsersAllowed,
                         server_routes.postOrder);
 
-app.get("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.getDeliveryInfoAdd);
-app.post("/order/information/add",server_middleware.onlyNormalUsersAllowed,server_routes.postDeliveryInfoAdd);
+app.get("/order/information/add",server_middleware.onlyNormalUsersAllowed,
+                    server_routes.getDeliveryInfoAdd);
+app.post("/order/information/add",server_middleware.onlyNormalUsersAllowed,
+                    server_routes.postDeliveryInfoAdd);
 
-app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,server_routes.getUserOrdersHistoryPage);
+app.get("/order/information/edit",server_middleware.onlyNormalUsersAllowed,
+                    server_routes.getDeliveryInfoEdit);
+
+app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,
+                    server_routes.getUserOrdersHistoryPage);
 
 //admin allowed pages
 app.get("/adminpanel",server_middleware.webpage_verifyAdmin_middleware,
