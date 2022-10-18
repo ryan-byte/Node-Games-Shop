@@ -18,7 +18,7 @@ function sendVerificationCode(code,destMail){
         from: mail,
         to: destMail,
         subject: 'Verification Code',
-        html: `<h4> Thank you for signing up in our <b> Fake Game Shop </b> <br> verification code: <span style="color:blue;"> ${code} </span></h4>`,
+        html: `<h4> Thank you for signing up to our <b> Fake Game Shop </b> <br> verification code: <span style="color:blue;"> ${code} </span></h4>`,
     };
     transporter.sendMail(mailOptions,(err,info)=>{
         if (err) console.log(err);

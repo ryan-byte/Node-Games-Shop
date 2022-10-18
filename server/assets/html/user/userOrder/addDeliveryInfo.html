@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order</title>
+    <title>Add Information</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
 
@@ -32,7 +32,9 @@
     </nav>
     <main>
 
-        <form class="container-fluid mt-5" id = "orderForm" method="post">
+        <h3 class = "my3" style="text-align: center;">Add Information</h3>
+
+        <form class="container-fluid mt-5" id = "addInfoForm" method="post">
             <div class = "row input-group ">
                 <div class="col mb-3">
                     <label for="FirstName" class="form-label">First Name</label>
@@ -68,30 +70,21 @@
                 </div>
             </div>
 
-            <div class="GameInfo my-3">
-                <div class="mb-3">
-                    <b>Games:</b>
-                    <div id = "gameList">
-                        <ul class="list-group">
-                            <li class="list-group-item"></li>
-                        </ul>
-                    </div>
-                </div>
-                <div>
-                    <b>Total: </b><span id="totalMoney">0</span>.000DT
-                </div>
-            </div>
-
             <div id = "spinner" class="spinner-border" role="status" style="display: none;">
                 <span  class="visually-hidden">Loading...</span>
             </div>
-            
-            <button id = "orderButton" type="submit" class="btn btn-primary">Order</button>
+
+            <div class="d-flex justify-content-center">
+                <button id = "addInfoButton" type="submit" class="btn btn-primary mb-2 mx-3" >Add</button>
+                <a href="/order/information" class="btn btn-secondary mb-2 mx-3" >Cancel</a>
+            </div>
         </form>
     </main>
 
-    <script defer src="/js/order/main.js"></script>
+    <script defer src="/js/user/userOrder/addDeliveryInfo.js"></script>
     <script defer src="/js/bootstrap.min.js"></script>
     <script src="/js/changeUiOnLoggedUsers.js"></script>
+
+    <script defer src="/js/addFooter.js"></script>
 </body>
 </html>

@@ -3,12 +3,13 @@ const gameList = document.getElementById("gameList");
 const orderForm = document.getElementById("orderForm");
 const submitButton = document.getElementById("orderButton");
 const spinner = document.getElementById("spinner");
+const deliveryInformation = document.getElementById("deliveryInformation");
 
 //events
 window.addEventListener("storage",(ev)=>{
     //if the user tries to clear the cart value from the storage
     if (ev.key === "cart" || ev.key === null){
-        onLoad();
+        onPageLoad();
     }
 })
 orderForm.addEventListener("submit",async (ev)=>{
@@ -26,6 +27,12 @@ orderForm.addEventListener("submit",async (ev)=>{
         }else{
             let status = await sendFormRequest(cart);
             statusCodeFeedBack(status);
+            //clear the cart on success
+            if (status === 201){
+                localStorage.removeItem("cart");
+                localStorage.removeItem("quantity");
+                onPageLoad();
+            }
         }
     }else{
         newAlert_danger("cart is empty");
@@ -36,10 +43,13 @@ orderForm.addEventListener("submit",async (ev)=>{
     submitButton.disabled = false;
 })
 
+//disable the order button until the user gets the delivery infos
+disableOrderButton(true); 
 //functions
 removeAllNegativeQuantity();
-onLoad();
-function onLoad(){
+onPageLoad();
+fillDeliveryInformation();
+function onPageLoad(){
     let cart = localStorage.getItem("cart");
     if (cart){
         cart = JSON.parse(cart);
@@ -48,6 +58,30 @@ function onLoad(){
         totalMoney.innerText = 0;
         gameList.innerHTML = `<li class="list-group-item"></li>`;
     }
+}
+
+async function fillDeliveryInformation(){
+    let deliveryInfoId = getCookie("deliveryInfo");
+    let url = "/api/user/getSpecificInfo?deliveryInfoId=" + encodeURIComponent(deliveryInfoId);
+    let request = await fetch(url); 
+    let status = request.status;
+    if (status === 404){
+        newAlert_danger("delivery info not found");
+        return;
+    }else if (status === 502){
+        newAlert_danger("Bad Gateway");
+        return;
+    }
+    
+    let data = await request.json();
+    
+    deliveryInformation.innerHTML = `
+    <b>Name:</b> ${data.FirstName} ${data.LastName}<br>
+    <b>Phone:</b> ${data.TelNumber}<br>
+    <b>Address:</b> ${data.Address}<br>
+    <b>City:</b> ${data.City}<br>
+    <b>PostalCode:</b> ${data.PostalCode}<br>`;
+    disableOrderButton(false);
 }
 
 function showGamesAndTotalMoney(cart){
@@ -101,10 +135,12 @@ function getAllGamesIDAndQuantity(cart){
 async function sendFormRequest(cart){
     //add the games ID to the form
     let games = JSON.stringify(getAllGamesIDAndQuantity(cart));
-    let orderFormData = new FormData(orderForm);
+    let deliveryInfoId = getCookie("deliveryInfo");
+    let orderFormData = new FormData();
+    orderFormData.append("deliveryInfoId",deliveryInfoId);
     orderFormData.append("games",games);
     //send the form with the fetch api
-    let URI = "/order";
+    let URI = "/order/confirmation";
     const data = new URLSearchParams(orderFormData);
     let postRequest = await fetch(URI,{
         method:"post",
@@ -117,7 +153,10 @@ function statusCodeFeedBack(status){
         newAlert_success("Your order has been submited");
     }else if (status === 400){
         newAlert_danger("Bad request");
-    }else if (status === 500){
+    }else if (status === 404){
+        newAlert_danger("delivery info not found");
+        return;
+    }else if (status === 502){
         newAlert_danger("Bad Gateway");
     }else{
         newAlert_danger("Unknown error");
@@ -145,4 +184,8 @@ function removeAllNegativeQuantity(){
         }
     }
     localStorage.setItem("quantity",JSON.stringify(allGamesQuantity));
+}
+
+function disableOrderButton(bool){
+    submitButton.disabled = bool;
 }

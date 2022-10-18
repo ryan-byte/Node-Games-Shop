@@ -187,6 +187,46 @@ async function api_getLatestOrders(req,res){
         res.status(200).json(data);
     }
 }
+async function api_getAllUserDeliveryInfo(req,res){
+    //get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+
+    let data = await database.getAllUserDeliveryInfo(userID);
+    if (data["error"]){
+        res.sendStatus(502);
+    }else{
+        res.status(200).json(data);
+    }
+}
+async function api_getSpecificUserDeliveryInfo(req,res){
+    //get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let deliveryInfoId = req.query.deliveryInfoId;
+
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+
+    let data = await database.getSpecificUserDeliveryInfo(userID,deliveryInfoId);
+    if (data === null){
+        res.sendStatus(404);
+    }else if (data["error"]){
+        res.sendStatus(data.status);
+    }else{
+        let output = {
+            "FirstName":data.FirstName,
+            "LastName":data.LastName,
+            "TelNumber":data.TelNumber,
+            "Address":data.Address,
+            "City":data.City,
+            "PostalCode":data.PostalCode,
+        }
+        res.status(200).json(output);
+    }
+}
 
 
 module.exports = {  api_getAllgames,
@@ -196,4 +236,4 @@ module.exports = {  api_getAllgames,
                     api_updateGame,
                     api_getOrder,
                     api_verifyOrder,api_declineOrder,
-                    api_getLatestOrders}
+                    api_getLatestOrders,api_getAllUserDeliveryInfo,api_getSpecificUserDeliveryInfo}

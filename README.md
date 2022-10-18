@@ -113,6 +113,7 @@ The Address mail used for sending the validation code for validating user signup
 ###### appPassword (REQUIRED)
 For gmail service you should setup an app password (follow these [steps](#setupgmailapp))
 
+
 - <b>Step 6</b>: Create `gmailOpenID.env` in the app root directory, then add the following:
 ```
 clientID = <string>
@@ -123,11 +124,14 @@ Follow this <a href = "https://support.google.com/cloud/answer/6158849?hl=en"> g
 After creating an oauth client and setting up the redirectURL get the clientID and clientSecret by visiting this  <a href = https://console.cloud.google.com/apis/credentials> page</a>, selecting the created client oauth, you should see the clientID with the secret on the top right of the page.
 
 
+
 <a name = "setupgmailapp"/>
 
 ### Setup gmail app password:
 - First we have to  <a href = "https://myaccount.google.com/signinoptions/two-step-verification/enroll-welcome">enable 2-Step Verification.</a>
 - Now select the <a href = "https://myaccount.google.com/u/2/apppasswords"> App passwords </a> option and generate a password, that's it.  
+
+
 
 <a name="run"/>
 

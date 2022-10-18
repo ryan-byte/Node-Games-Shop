@@ -9,6 +9,7 @@ const gamesCollection = gameShopDB.collection("Games");
 const adminCollection = gameShopDB.collection("admin");
 const userCollection = gameShopDB.collection("users");
 const ordersCollection = gameShopDB.collection("orders");
+const userInfoCollection = gameShopDB.collection("userInfo");
 const logsCollection = gameShopDB.collection("logs");
 const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers")
 
@@ -65,7 +66,7 @@ async function getGamesByIDs(gamesIDsArray){
         return {error:"db error"}
     }
 }
-
+//admin users
 const addNewGame = async (title,price,stock,type,imageURL,imageName)=>{
     const validInputs = typeof title === "string" && 
                         typeof price === "number" && 
@@ -178,6 +179,60 @@ const verifyAdmin = async (username,password)=>{
     }
 }
 
+async function getOrders(verificationStatus){
+    try{
+        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
+        return allOrders;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
+    }
+}
+async function verifyOrder(orderID){
+    try{
+        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let updateDoc = {
+            $set:{
+                "verificationStatus":1
+            }
+        };
+        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
+        if (output.value === null){
+            return 404;
+        }
+        return 200;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return 400;
+        }else{
+            console.error(err);
+            return 502;
+        }
+    }
+}
+async function declineOrder(orderID){
+    try{
+        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let updateDoc = {
+            $set:{
+                "verificationStatus":2
+            }
+        };
+        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
+        if (output.value === null){
+            return 404;
+        }
+        return 200;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return 400;
+        }else{
+            console.error(err);
+            return 502;
+        }
+    }
+}
+
 //normal user
 async function userExist(username,email){
     try{
@@ -267,6 +322,127 @@ async function verifyUserCredentials(username,password){
     }
 }
 
+async function getUserLatestOrders(userID){
+    try{
+        const latestTimestamp = { timeStamp: -1 };
+        let latestOrders = await ordersCollection.find({userID}).sort(latestTimestamp).toArray();
+        return latestOrders;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
+    }
+}
+
+async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,Games){
+    const validInputs = typeof userID === "string" && 
+                        typeof FirstName === "string" && 
+                        typeof LastName === "string" && 
+                        typeof City === "string" && 
+                        typeof PostalCode === "string" && 
+                        typeof TelNumber === "string" && 
+                        typeof Games === "object" && 
+                        typeof Address === "string";
+    if (validInputs){
+        let timeStamp = Math.floor(Date.now() / 1000);
+        const newOrder = {userID,FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
+        try{
+            await ordersCollection.insertOne(newOrder)
+            return 201;
+        }catch (err){
+            console.log(err);
+            return 502;
+        }
+    }else{
+        return 400;
+    }
+}
+
+async function addUserDeliveryInfo(userID,FirstName,LastName,TelNumber,Address,City,PostalCode){
+    const validInputs = typeof userID === "string" && 
+                        typeof FirstName === "string" && 
+                        typeof LastName === "string" && 
+                        typeof City === "string" && 
+                        typeof PostalCode === "string" && 
+                        typeof TelNumber === "string" && 
+                        typeof Address === "string";
+    if (validInputs){
+        let date = new Date();
+        const newUserInfo = {userID,FirstName,LastName,TelNumber,Address,City,PostalCode,date};
+        try{
+            await userInfoCollection.insertOne(newUserInfo)
+            return 201;
+        }catch (err){
+            console.log(err);
+            return 502;
+        }
+    }else{
+        return 400;
+    }
+}
+async function editUserDeliveryInfo(userID,deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode){
+    const validInputs = typeof deliveryInfoId === "string" &&
+                        typeof userID === "string" && 
+                        typeof FirstName === "string" && 
+                        typeof LastName === "string" && 
+                        typeof City === "string" && 
+                        typeof PostalCode === "string" && 
+                        typeof TelNumber === "string" && 
+                        typeof Address === "string";
+    if (validInputs){
+        const editedData = new Date();
+        const updateDoc = {
+            $set:{
+                FirstName,
+                LastName,
+                TelNumber,
+                Address,
+                City,
+                PostalCode,
+                editedData
+            }
+        };
+        try{
+            const filter = {"_id": new ObjectId(deliveryInfoId),userID};
+            let output = await userInfoCollection.updateOne(filter,updateDoc);
+            if (output.matchedCount === 1){
+                return 201;
+            }else{
+                return 404;
+            }
+        }catch (err){
+            if(err instanceof BSONTypeError){
+                return 404;
+            }else{
+                return 502;
+            };
+        }
+    }else{
+        return 400;
+    }
+}
+
+async function getAllUserDeliveryInfo(userID){
+    try{
+        let data = await userInfoCollection.find({userID}).toArray();
+        return data;
+    }catch (err){
+        console.error(err)
+        return {error:"db error"};
+    }
+}
+async function getSpecificUserDeliveryInfo(userID,deliveryInfoId){
+    try{
+        let data = await userInfoCollection.findOne({"_id": new ObjectId(deliveryInfoId),userID});
+        return data;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return {error:"db error",status:404};
+        }else{
+            return {error:"db error",status:502};
+        }
+    }
+}
+
 //openID user
 async function openID_userExist(service,email){
     try{
@@ -313,100 +489,12 @@ async function logUserAction(username,action){
     }
 }
 
-async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,Games){
-    const validInputs = typeof userID === "string" && 
-                        typeof FirstName === "string" && 
-                        typeof LastName === "string" && 
-                        typeof City === "string" && 
-                        typeof PostalCode === "string" && 
-                        typeof TelNumber === "string" && 
-                        typeof Games === "object" && 
-                        typeof Address === "string";
-    if (validInputs){
-        let timeStamp = Math.floor(Date.now() / 1000);
-        const newOrder = {userID,FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
-        try{
-            await ordersCollection.insertOne(newOrder)
-            return 201;
-        }catch (err){
-            console.log(err);
-            return 500;
-        }
-    }else{
-        return 400;
-    }
-}
-
-async function getOrders(verificationStatus){
-    try{
-        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
-        return allOrders;
-    }catch (err){
-        console.error(err)
-        return {error:"db error"};
-    }
-}
-async function verifyOrder(orderID){
-    try{
-        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
-        let updateDoc = {
-            $set:{
-                "verificationStatus":1
-            }
-        };
-        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
-        if (output.value === null){
-            return 404;
-        }
-        return 200;
-    }catch (err){
-        if(err instanceof BSONTypeError){
-            return 400;
-        }else{
-            console.error(err);
-            return 502;
-        }
-    }
-}
-async function declineOrder(orderID){
-    try{
-        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
-        let updateDoc = {
-            $set:{
-                "verificationStatus":2
-            }
-        };
-        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
-        if (output.value === null){
-            return 404;
-        }
-        return 200;
-    }catch (err){
-        if(err instanceof BSONTypeError){
-            return 400;
-        }else{
-            console.error(err);
-            return 502;
-        }
-    }
-}
-
-
-async function getUserLatestOrders(userID){
-    try{
-        const latestTimestamp = { timeStamp: -1 };
-        let latestOrders = await ordersCollection.find({userID}).sort(latestTimestamp).toArray();
-        return latestOrders;
-    }catch (err){
-        console.error(err)
-        return {error:"db error"};
-    }
-}
 
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder,getOrders,
+                createNewOrder,getOrders,addUserDeliveryInfo,editUserDeliveryInfo,
+                getAllUserDeliveryInfo,getSpecificUserDeliveryInfo,
                 verifyOrder,declineOrder,
                 verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
                 getUserLatestOrders,

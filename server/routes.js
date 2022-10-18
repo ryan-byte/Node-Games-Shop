@@ -14,6 +14,7 @@ const tokenExpire = 60 * 60 * 24;
 
 const accessCookieName = "login";
 const userInfosCookieName = "info";
+const DeliveryInfoCookieName= "deliveryInfo";
 const userVerificationCookieName = "verification";
 const antiForgeryCookieName = "state";
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
@@ -71,7 +72,7 @@ async function postAdminLogin(req,res){
 
 function getUserSignup(req,res){
     //must be called after a middleware that verify if the user is not logged in
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userSignup.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin/userSignup.html"));
 }
 async function postUserSignup(req,res){
     //must be called after a middleware that verify if the user is not logged in
@@ -122,7 +123,7 @@ async function postUserSignup(req,res){
 
 function getUserLogin(req,res){
     //must be called after a middleware that verify if the user is already logged in
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin/userLogin.html"));
 }
 async function postUserLogin(req,res){
     //verify login
@@ -213,7 +214,7 @@ function logout(req,res){
 //only users with the unverified cookie
 function getVerificationPage(req,res){
     //must be called after a middleware that checks if the user has the unverified cookie
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userVerification.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userLogin/userVerification.html"));
 }
 async function postVerificationPage(req,res){
     /must call a middleware that check if the jwt inside the verification cookie is valid/
@@ -249,27 +250,24 @@ async function postVerificationPage(req,res){
 }
 
 //only normal users routes
-function getOrderPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/order/order.html"));
-}
 async function postOrder(req,res){
     //get the order informations
-    let {FirstName,LastName,TelNumber,Address,City,PostalCode,games} = req.body;
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessCookie = allCookies[accessCookieName];
+    const userID = jwt.decode(accessCookie).userID;
+    let {deliveryInfoId,games} = req.body;
+    const data = await database.getSpecificUserDeliveryInfo(userID,deliveryInfoId);
+    if (data === null){
+        res.sendStatus(404);
+        return;
+    }else if (data["error"]){
+        res.sendStatus(data.status);
+        return;
+    }
+    const {FirstName,LastName,TelNumber,Address,City,PostalCode} = data;
     //verify the order informations
-    let condition = FirstName === ""||
-                    typeof FirstName === "undefined"||
-                    LastName === ""||
-                    typeof LastName === "undefined"||
-                    TelNumber === ""||
-                    typeof TelNumber === "undefined"||
-                    Address === ""||
-                    typeof Address === "undefined"||
-                    City === ""||
-                    typeof City === "undefined"||
-                    games === ""||
-                    typeof games === "undefined"||
-                    PostalCode === ""||
-                    typeof PostalCode === "undefined";
+    let condition = games === ""||
+                    typeof games === "undefined";
     try{
         games = JSON.parse(games);
         //verify the games quantity
@@ -286,19 +284,119 @@ async function postOrder(req,res){
         res.sendStatus(400);
         return;
     }
-    //last thing is to get the user ID that is stored in the cookie
-    //note that the cookie must be verified in a middleware before this route
-    let allCookies = cookie.parse(req.headers.cookie || "");
-    let accessToken = allCookies[accessCookieName];
-    let userID = jwt.decode(accessToken).userID;
     //when everything is fine then add the order to the database
     let statusCode = await database.createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,games);
     //send back the status code to the client
     res.sendStatus(statusCode);
 }
 
-function getUserOrdersPage(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrders.html"));
+function getDeliveryInfoSelect(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/selectDeliveryInfo.html"));
+}
+
+async function selectDeliveryInfo(req,res){
+    //get the userID and the infoId
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = jwt.decode(allCookies[accessCookieName]);
+    const {userID} = accessToken;
+    const {deliveryInfoId} = req.body;
+    //get selected address id that is with the user id
+    let data = await database.getSpecificUserDeliveryInfo(userID,deliveryInfoId);
+    if (data === null){
+        res.sendStatus(404);
+    }else if (data["error"]){
+        res.sendStatus(data.status);
+    }else{
+        //give the use a selectedInfo cookie
+        res.cookie(DeliveryInfoCookieName,deliveryInfoId,{
+            maxAge: tokenExpire * 100//1 day
+        });
+        res.sendStatus(200);
+    }
+}
+
+function getDeliveryInfoAdd(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/addDeliveryInfo.html"));
+}
+async function postDeliveryInfoAdd(req,res){
+    const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
+    let parsedTelNumber = parseInt(TelNumber);
+    let invalid =   FirstName === ""||
+                    typeof FirstName === "undefined"||
+                    LastName === ""||
+                    typeof LastName === "undefined"||
+                    TelNumber === ""||
+                    typeof TelNumber === "undefined"||
+                    isNaN(parsedTelNumber) ||
+                    parsedTelNumber < 10000000 ||
+                    parsedTelNumber > 99999999 ||
+                    Address === ""||
+                    typeof Address === "undefined"||
+                    City === ""||
+                    typeof City === "undefined"||
+                    PostalCode === ""||
+                    typeof PostalCode === "undefined";
+    if (invalid){
+        res.sendStatus(400);
+        return;
+    }
+    //last thing is to get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+    //when everything is fine then add the order to the database
+    let statusCode = await database.addUserDeliveryInfo(userID,FirstName,LastName,TelNumber,Address,City,PostalCode);
+    //send back the status code to the client
+    res.sendStatus(statusCode);
+    
+}
+
+function getDeliveryInfoEdit(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/editDeliveryInfo.html"));
+}
+async function putDeliveryInfoEdit(req,res){
+    const {deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
+    let parsedTelNumber = parseInt(TelNumber);
+    let invalid =   deliveryInfoId === ""||
+                    typeof deliveryInfoId === "undefined"||
+                    FirstName === ""||
+                    typeof FirstName === "undefined"||
+                    LastName === ""||
+                    typeof LastName === "undefined"||
+                    TelNumber === ""||
+                    typeof TelNumber === "undefined"||
+                    isNaN(parsedTelNumber) ||
+                    parsedTelNumber < 10000000 ||
+                    parsedTelNumber > 99999999 ||
+                    Address === ""||
+                    typeof Address === "undefined"||
+                    City === ""||
+                    typeof City === "undefined"||
+                    PostalCode === ""||
+                    typeof PostalCode === "undefined";
+    if (invalid){
+        res.sendStatus(400);
+        return;
+    }
+    //last thing is to get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+    //when everything is fine then add the order to the database
+    let statusCode = await database.editUserDeliveryInfo(userID,deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode);
+    //send back the status code to the client
+    res.sendStatus(statusCode);
+    
+}
+
+function getOrderConfirmationPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/orderConfirmation.html"));
+}
+
+function getUserOrdersHistoryPage(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/viewOrderHistory.html"));
 }
 
 //admin users only
@@ -318,14 +416,15 @@ function getadminpanelOrderList(req,res){
 
 
 module.exports = {getHomepage,
-                getOrderPage,postOrder,
+                postOrder,getDeliveryInfoSelect,getDeliveryInfoAdd,getDeliveryInfoEdit,putDeliveryInfoEdit,
+                postDeliveryInfoAdd,selectDeliveryInfo,getOrderConfirmationPage,
                 getAdminLogin,
                 postAdminLogin,
                 getadminpanel,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
                 logout,
-                getUserLogin,postUserLogin,getUserOrdersPage,
+                getUserLogin,postUserLogin,getUserOrdersHistoryPage,
                 getUserSignup,postUserSignup,
                 getVerificationPage,postVerificationPage,
                 removeVerificationCookie,

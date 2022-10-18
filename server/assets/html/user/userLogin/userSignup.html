@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>admin login</title>
+    <title>User Signup</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
 
@@ -15,11 +15,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            
-            
             <a class="navbar-brand" href="/">Game Shop</a>
-            
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -31,22 +27,23 @@
             <div class="row">
                 <div class="col"></div>
                 <div class="col-8">
-                    <div class="position-relative">
-                        <a href="/adminLogin" class="position-absolute top-0 end-0">
-                            <button class="btn btn-secondary">Admin Login</button>
-                        </a>
-                    </div>
-                    <h3 class = "my3" style="text-align: center;">User Login</h3>
-
-
-                    <form class="my-3" id="loginForm" action="" method="post">
+                    <h3 class = "my3" style="text-align: center;">User Signup</h3>
+                    <form class="my-3" id="signupForm" action="" method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label"><b>Username</b></label>    
-                            <input class="form-control" type="text" name="username" id="username" placeholder="Username">
+                            <input required class="form-control" type="text" name="username" id="username" placeholder="Username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label"><b>Email</b></label>    
+                            <input required class="form-control" type="email" name="email" id="email" placeholder="Email">
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label"><b>Password</b></label>    
-                            <input class="form-control" type="password" name="password" id="password" placeholder="Password">    
+                            <input required class="form-control" type="password" name="password" id="password" placeholder="Password">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label"><b>Confirm Password</b></label>    
+                            <input required class="form-control" type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password">    
                         </div>
                         <div style="display:none;" id = "spinner" class="spinner-border" role="status">
                             <span  class="visually-hidden">Loading...</span>
@@ -55,9 +52,11 @@
                             <input type="checkbox" class="form-check-input" id="remeberMe">
                             <label class="form-check-label" for="remeberMe">Remember me</label>
                         </div>
-                        <button type="submit" id="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-                        Don't have an account?<a href="/userSignup"> Sign Up</a>
+                        <button type="submit" id="submit" class="btn btn-primary" style="width: 100%;">Signup</button>
+                        <br><br>
+                        Already have an account?<a href="/userLogin"> Login</a>
                     </form>
+
                     
                     <div class="container">
                         <div class="row">
@@ -77,13 +76,14 @@
                           <div class="col-md-3">
                               <a class="btn btn-outline-dark" href="/openID/gmail" role="button" style="text-transform:none">
                                   <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
-                                  Login with Google
+                                  signup with Google
                               </a>
                           </div>
                       </div>
                       
 
                       <br>
+                    
                 </div>
                 <div class="col"></div>
             </div>
@@ -92,6 +92,8 @@
 
     
     <script defer src="/js/bootstrap.min.js"></script>
-    <script defer src="/js/user/login.js"></script>
+    <script defer src="/js/user/userLogin/signup.js"></script>
+
+    <script defer src="/js/addFooter.js"></script>
 </body>
 </html>

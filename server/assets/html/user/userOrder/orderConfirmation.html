@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <link rel="stylesheet" href="/css/newAlert.css">
+    <script defer src="/js/newAlert.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            
+            
+            <a class="navbar-brand" href="/">Game Shop</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item" id = "loginOrLogoutButtonContainer">
+                    <a href="/userLogin" class="btn btn-secondary">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+
+        <form class="container-fluid mt-5" id = "orderForm" method="post">
+            
+            <div class="GameInfo my-3">
+                <b>Selected Delivery Information:</b>
+                <div id = "deliveryInformation" class="list-group-item list-group-item-action infoItem">
+                    Empty
+                </div>
+            </div>
+
+            <div class="GameInfo my-3">
+                <div class="mb-3">
+                    <b>Games:</b>
+                    <div id = "gameList">
+                        <ul class="list-group">
+                            <li class="list-group-item"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <b>Total: </b><span id="totalMoney">0</span>.000DT
+                </div>
+            </div>
+
+            <div id = "spinner" class="spinner-border" role="status" style="display: none;">
+                <span  class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
+                <a href = "/order/information" class="btn btn-secondary mx-3">back</a>
+                <button id = "orderButton" type="submit" class="btn btn-primary mx-3">Order</button>
+            </div>
+        </form>
+    </main>
+
+    <script defer src="/js/user/userOrder/orderConfirmation.js"></script>
+    <script defer src="/js/bootstrap.min.js"></script>
+    <script src="/js/changeUiOnLoggedUsers.js"></script>
+
+    <script defer src="/js/addFooter.js"></script>
+</body>
+</html>
