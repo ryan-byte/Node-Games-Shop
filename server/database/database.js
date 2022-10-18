@@ -379,6 +379,48 @@ async function addUserDeliveryInfo(userID,FirstName,LastName,TelNumber,Address,C
         return 400;
     }
 }
+async function editUserDeliveryInfo(userID,deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode){
+    const validInputs = typeof deliveryInfoId === "string" &&
+                        typeof userID === "string" && 
+                        typeof FirstName === "string" && 
+                        typeof LastName === "string" && 
+                        typeof City === "string" && 
+                        typeof PostalCode === "string" && 
+                        typeof TelNumber === "string" && 
+                        typeof Address === "string";
+    if (validInputs){
+        const editedData = new Date();
+        const updateDoc = {
+            $set:{
+                FirstName,
+                LastName,
+                TelNumber,
+                Address,
+                City,
+                PostalCode,
+                editedData
+            }
+        };
+        try{
+            const filter = {"_id": new ObjectId(deliveryInfoId),userID};
+            let output = await userInfoCollection.updateOne(filter,updateDoc);
+            if (output.matchedCount === 1){
+                return 201;
+            }else{
+                return 404;
+            }
+        }catch (err){
+            if(err instanceof BSONTypeError){
+                return 404;
+            }else{
+                return 502;
+            };
+        }
+    }else{
+        return 400;
+    }
+}
+
 async function getAllUserDeliveryInfo(userID){
     try{
         let data = await userInfoCollection.find({userID}).toArray();
@@ -451,7 +493,8 @@ async function logUserAction(username,action){
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder,getOrders,addUserDeliveryInfo,getAllUserDeliveryInfo,getSpecificUserDeliveryInfo,
+                createNewOrder,getOrders,addUserDeliveryInfo,editUserDeliveryInfo,
+                getAllUserDeliveryInfo,getSpecificUserDeliveryInfo,
                 verifyOrder,declineOrder,
                 verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
                 getUserLatestOrders,

@@ -318,9 +318,6 @@ async function selectDeliveryInfo(req,res){
 function getDeliveryInfoAdd(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/addDeliveryInfo.html"));
 }
-function getDeliveryInfoEdit(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/editDeliveryInfo.html"));
-}
 async function postDeliveryInfoAdd(req,res){
     const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
     let parsedTelNumber = parseInt(TelNumber);
@@ -355,6 +352,45 @@ async function postDeliveryInfoAdd(req,res){
     
 }
 
+function getDeliveryInfoEdit(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/editDeliveryInfo.html"));
+}
+async function putDeliveryInfoEdit(req,res){
+    const {deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
+    let parsedTelNumber = parseInt(TelNumber);
+    let invalid =   deliveryInfoId === ""||
+                    typeof deliveryInfoId === "undefined"||
+                    FirstName === ""||
+                    typeof FirstName === "undefined"||
+                    LastName === ""||
+                    typeof LastName === "undefined"||
+                    TelNumber === ""||
+                    typeof TelNumber === "undefined"||
+                    isNaN(parsedTelNumber) ||
+                    parsedTelNumber < 10000000 ||
+                    parsedTelNumber > 99999999 ||
+                    Address === ""||
+                    typeof Address === "undefined"||
+                    City === ""||
+                    typeof City === "undefined"||
+                    PostalCode === ""||
+                    typeof PostalCode === "undefined";
+    if (invalid){
+        res.sendStatus(400);
+        return;
+    }
+    //last thing is to get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+    //when everything is fine then add the order to the database
+    let statusCode = await database.editUserDeliveryInfo(userID,deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode);
+    //send back the status code to the client
+    res.sendStatus(statusCode);
+    
+}
+
 function getOrderConfirmationPage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/orderConfirmation.html"));
 }
@@ -380,7 +416,7 @@ function getadminpanelOrderList(req,res){
 
 
 module.exports = {getHomepage,
-                postOrder,getDeliveryInfoSelect,getDeliveryInfoAdd,getDeliveryInfoEdit,
+                postOrder,getDeliveryInfoSelect,getDeliveryInfoAdd,getDeliveryInfoEdit,putDeliveryInfoEdit,
                 postDeliveryInfoAdd,selectDeliveryInfo,getOrderConfirmationPage,
                 getAdminLogin,
                 postAdminLogin,

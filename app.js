@@ -114,6 +114,8 @@ app.post("/order/information/add",server_middleware.onlyNormalUsersAllowed,
 
 app.get("/order/information/edit",server_middleware.onlyNormalUsersAllowed,
                     server_routes.getDeliveryInfoEdit);
+app.put("/order/information/edit",server_middleware.onlyNormalUsersAllowed,
+                    server_routes.putDeliveryInfoEdit);
 
 app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,
                     server_routes.getUserOrdersHistoryPage);
