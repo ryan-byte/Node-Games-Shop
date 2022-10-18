@@ -6,5 +6,5 @@ async function addFooter(){
     let footerHtml = await footer.text();
 
     document.body.insertAdjacentHTML("afterend",footerHtml);
-    document.body.style.minHeight = "100vh"
+    document.body.style.minHeight = "80vh"
 }

@@ -14,23 +14,45 @@ const logsCollection = gameShopDB.collection("logs");
 const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers")
 
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
+const unverifiedUser_Expiration_IndexName = "unverifiedUserExpiration";
+
 
 setupIndexes()
 async function setupIndexes(){
-    let indexExist = await unverifiedUsersCollection.indexExists("createdAt_1");
+    let indexExist = await unverifiedUsersCollection.indexExists(unverifiedUser_Expiration_IndexName);
+    let allIndexes = await unverifiedUsersCollection.indexes();
     console.log("Setting up unverified users expiration index");
     if (!indexExist){
         //creating a ttl index that will delete the unverified user data after some seconds
-        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:unverifiedUserDataExpirationTimeInSec});
+        unverifiedUsersCollection.createIndex({"createdAt":1},
+        {
+            expireAfterSeconds:unverifiedUserDataExpirationTimeInSec,
+            name:unverifiedUser_Expiration_IndexName
+        });
         console.log(`Index has been created, unverified users data will expire after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
     }else{
         console.log("Index already exists");
-        unverifiedUsersCollection.dropIndex("createdAt_1");
-        console.log("Index has been dropped");
-        console.log("Creating expiration index");
-        unverifiedUsersCollection.createIndex({"createdAt":1},{expireAfterSeconds:unverifiedUserDataExpirationTimeInSec});
-        console.log(`Index has been created, unverified users data will be deleted after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
-    }
+        let dropAndChangeIndex = true;
+        //if the index exist and its value arent changed then dont drop and create the index
+        for (let i = 0;i<allIndexes.length; i++){
+            if (allIndexes[i].name === unverifiedUser_Expiration_IndexName && allIndexes[i].expireAfterSeconds === unverifiedUserDataExpirationTimeInSec){
+                console.log("Index values are unchanged");
+                return;
+            }
+        }
+
+        if (dropAndChangeIndex){
+            unverifiedUsersCollection.dropIndex(unverifiedUser_Expiration_IndexName);
+            console.log("Index has been dropped");
+            console.log("Creating unverified users expiration index");
+            unverifiedUsersCollection.createIndex({"createdAt":1},
+            {
+                expireAfterSeconds:unverifiedUserDataExpirationTimeInSec,
+                name:unverifiedUser_Expiration_IndexName
+            });
+            console.log(`Index has been created, unverified users data will be deleted after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
+        }
+        }
     console.log("\x1b[33m" + "Database is ready" + "\x1b[0m");
 }
 

@@ -128,7 +128,8 @@ function unverifiedUsers(req,res,next){
     }
 }
 
-function image_upload_middleware(req,res,next){
+function add_new_image_upload_middleware(req,res,next){
+    //this middleware will raise a 400 error code on error
     const bb = Busboy({headers:req.headers,limits:{fileSize:maxImgUploadSize}});
     //setup bb vars
     bb.fileBase64 = "";
@@ -172,6 +173,73 @@ function image_upload_middleware(req,res,next){
             res.sendStatus(400);
             return;
         }
+        if (bb.status === 200){
+            //proceed to the next function if everything is fine
+            if (bb.fileName !== undefined){
+                let imageURL = await fireBaseStorage.uploadImage(bb.fileBase64,bb.fileName);
+                if (imageURL["error"]){
+                    //when an error occure then stop the request
+                    console.log(imageURL["error"]);
+                    console.log("error while uploading the image to the firebase storage");
+                    res.sendStatus(500);
+                }else{
+                    //when there is no error keep the request going
+                    res.locals.imageURL = imageURL;
+                    res.locals.imageName = bb.fileName;
+                    next();
+                }
+            }else{
+                res.locals.imageName = undefined;
+                next();
+            }
+        }else{
+            //sending an error status code
+            res.sendStatus(bb.status);
+        }
+    })
+    req.pipe(bb);
+}
+function upadte_image_upload_middleware(req,res,next){
+    //this middleware will not raise an error when there is no file uploaded
+    const bb = Busboy({headers:req.headers,limits:{fileSize:maxImgUploadSize}});
+    //setup bb vars
+    bb.fileBase64 = "";
+    bb.totalSize = 0;
+    bb.status = 200;
+
+    bb.on("file",(name,file,info)=>{
+        
+        const {mimeType} = info;
+        let ext = "";
+        if (mimeType === "image/jpeg"){
+            ext = ".jpg";
+        }else if (mimeType === "image/png"){
+            ext = ".png";
+        }else{
+            //a client error status code that indicates that his file mimetype is unaccepted
+            bb.status = 415;
+        }
+        //setup the file meta data
+        bb.fileName = randomName() + ext;
+        file.setEncoding("base64");
+
+        file.on("data",(chunk)=>{
+            if (ext === ".png" || ext === ".jpg"){
+                //store all the file base64 in a variable
+                bb.fileBase64 += chunk;
+            }
+        })
+
+        file.on("close",()=>{
+            if (file.truncated){
+                bb.emit("filesLimit");
+            }
+        })
+    })
+    bb.on("filesLimit",()=>{
+        bb.status = 413;
+    })
+    bb.on("close", async ()=>{
         if (bb.status === 200){
             //proceed to the next function if everything is fine
             if (bb.fileName !== undefined){
@@ -275,7 +343,7 @@ async function googleConnect_redirect_middleware(req,res,next){
 
 
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
-                image_upload_middleware,
+                add_new_image_upload_middleware,upadte_image_upload_middleware,
                 verifyGameInputs,
                 noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
                 unverifiedUsers,
