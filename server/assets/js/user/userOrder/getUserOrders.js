@@ -117,7 +117,6 @@ async function updateShowOrderModal(elem){
     //get the order infos from the dataset
     let data = elem.dataset.data;
     data = JSON.parse(data);
-
     let gamesIDs = Object.keys(data.Games);
     let gamesData = await getAllOrderGamesData(gamesIDs);
     if (gamesData === -1){
@@ -125,7 +124,7 @@ async function updateShowOrderModal(elem){
         return;
     }
     
-    let totalMoney = getTotalMoney(gamesData,data.Games);
+    let totalMoney = data.total;
     let gamesDataContainer = transfromGamesToDiv(gamesData,data.Games);
     orderInfoBody.innerHTML = `
     <div>
@@ -184,14 +183,4 @@ function transfromGamesToDiv(gamesData,gamesQuantity){
         gamesContainer.appendChild(gameDiv);
     }
     return gamesContainer;
-}
-function getTotalMoney(gamesData,gamesQuantity){
-    let total = 0;
-    for (let i =0; i<gamesData.length; i++){
-        //get quantity
-        let gameID = gamesData[i]["_id"]
-        let quantity = gamesQuantity[gameID] === undefined ? 1 : gamesQuantity[gameID];
-        total += gamesData[i].price * quantity;
-    }
-    return total;
 }

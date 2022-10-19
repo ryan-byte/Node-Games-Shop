@@ -140,7 +140,7 @@ async function updateShowOrderModal(elem){
         return;
     }
     
-    let totalMoney = getTotalMoney(gamesData,data.Games);
+    let totalMoney = data.total;
     let gamesDataContainer = transfromGamesToDiv(gamesData,data.Games);
     orderInfoBody.innerHTML = `
     <div>
@@ -208,16 +208,6 @@ function transfromGamesToDiv(gamesData,gamesQuantity){
     }
     return gamesContainer;
 }
-function getTotalMoney(gamesData,gamesQuantity){
-    let total = 0;
-    for (let i =0; i<gamesData.length; i++){
-        //get quantity
-        let gameID = gamesData[i]["_id"]
-        let quantity = gamesQuantity[gameID] === undefined ? 1 : gamesQuantity[gameID];
-        total += gamesData[i].price * quantity;
-    }
-    return total;
-}
 
 //verify |decline functions
 async function verifyOrder(elem){
@@ -262,7 +252,7 @@ async function declineOrder(elem){
     if (status === 200){
         //remove order
         elem.parentElement.parentElement.parentElement.remove();
-        newAlert_success("order has been verified");
+        newAlert_success("order has been declined");
     }else if (status === 400){
         newAlert_danger("bad parameters cannot verify order");
     }else if (status === 404){

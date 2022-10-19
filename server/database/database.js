@@ -1,6 +1,7 @@
 const {MongoClient,ObjectId} = require("mongodb");
 const {BSONTypeError} = require("bson");
 const hashPassword = require("../utils/hashPassword");
+const dbUtils = require("../utils/dbUtils");
 
 const URL = process.env.mongoURL;
 const client = new MongoClient(URL);
@@ -11,7 +12,8 @@ const userCollection = gameShopDB.collection("users");
 const ordersCollection = gameShopDB.collection("orders");
 const userInfoCollection = gameShopDB.collection("userInfo");
 const logsCollection = gameShopDB.collection("logs");
-const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers")
+const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers");
+const soldProductsCollection = gameShopDB.collection("soldProducts");
 
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
 const unverifiedUser_Expiration_IndexName = "unverifiedUserExpiration";
@@ -37,7 +39,7 @@ async function setupIndexes(){
         for (let i = 0;i<allIndexes.length; i++){
             if (allIndexes[i].name === unverifiedUser_Expiration_IndexName && allIndexes[i].expireAfterSeconds === unverifiedUserDataExpirationTimeInSec){
                 console.log("Index values are unchanged");
-                return;
+                dropAndChangeIndex = false;
             }
         }
 
@@ -62,7 +64,7 @@ const getAllgames = async ()=>{
         let allGames = await gamesCollection.find({}).toArray();
         return allGames;
     }catch (err){
-        console.error(err)
+        console.error("getting all games error:\n\n" + err);
         return {error:"db error"}
     }
 }
@@ -72,7 +74,7 @@ const getGamesByTitle = async (title)=>{
         let getGames = await gamesCollection.find(query).toArray()
         return getGames;
     }catch (err){
-        console.error(err)
+        console.error("getting all games by title error:\n\n" + err);
         return {error:"db error"}
     }
 }
@@ -100,7 +102,7 @@ const addNewGame = async (title,price,stock,type,imageURL,imageName)=>{
             await gamesCollection.insertOne(newGame)
             return 201;
         }catch (err){
-            console.log(err);
+            console.error("adding new game error:\n\n" + err);
             return {error:"db error"}
         }
     }else{
@@ -158,7 +160,7 @@ const updateGame = async (id,title,price,stock,type,imageURL = undefined,imageNa
         }
         return {status:200,oldValues:output.value};
     }catch(err){
-        console.log(err);
+        console.error("updating game error:\n\n" + err);
         return {status:400};
     }
 }
@@ -168,7 +170,7 @@ const createAdmin = async (username,hashedPassword,hashKey)=>{
         await adminCollection.insertOne({username,hashedPassword,hashKey});
         return true;
     }catch(err){
-        console.error(err);
+        console.error("creating admin error:\n\n" + err);
         return false;
     }
 }
@@ -203,10 +205,15 @@ const verifyAdmin = async (username,password)=>{
 
 async function getOrders(verificationStatus){
     try{
-        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
-        return allOrders;
+        if (verificationStatus === 0){
+            let allOrders = await ordersCollection.find({verificationStatus}).toArray();
+            return allOrders;
+        }else{
+            let allOrders = await ordersCollection.find({verificationStatus}).sort({timeStamp:-1}).toArray();
+            return allOrders;
+        }
     }catch (err){
-        console.error(err)
+        console.error("getting all orders (for admins) error:\n\n" + err);
         return {error:"db error"};
     }
 }
@@ -227,7 +234,7 @@ async function verifyOrder(orderID){
         if(err instanceof BSONTypeError){
             return 400;
         }else{
-            console.error(err);
+            console.error("verifying order error:\n\n" + err);
             return 502;
         }
     }
@@ -249,7 +256,7 @@ async function declineOrder(orderID){
         if(err instanceof BSONTypeError){
             return 400;
         }else{
-            console.error(err);
+            console.error("declining order error:\n\n" + err);
             return 502;
         }
     }
@@ -277,7 +284,7 @@ async function createUnverifiedUser(username,email,hashedPassword,hashKey,verifi
             return {status:false};
         }
     }catch(err){
-        console.error(err);
+        console.error("creating unverified user error:\n\n" + err);
         return {error:"db error"};
     }
 }
@@ -294,7 +301,7 @@ async function createVerifiedUser(username,email,hashedPassword,hashKey){
         let output = await userCollection.insertOne({username,email,hashedPassword,hashKey});
         return {userID:output.insertedId.toString()};
     }catch(err){
-        console.error(err);
+        console.error("creating verified user error:\n\n" + err);
         return {error:"db error"};
     }
 }
@@ -311,7 +318,7 @@ async function verifyUserSignup(userID,code){
             return {status:false};
         }
     }catch(err){
-        console.error(err);
+        console.error("verification of user signup error:\n\n" + err);
         return {error:"db error"};
     }
 }
@@ -350,7 +357,7 @@ async function getUserLatestOrders(userID){
         let latestOrders = await ordersCollection.find({userID}).sort(latestTimestamp).toArray();
         return latestOrders;
     }catch (err){
-        console.error(err)
+        console.error("get user latest orders error:\n\n" + err);
         return {error:"db error"};
     }
 }
@@ -368,10 +375,18 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
         let timeStamp = Math.floor(Date.now() / 1000);
         const newOrder = {userID,FirstName,LastName,TelNumber,Address,City,PostalCode,verificationStatus:0,Games,timeStamp};
         try{
-            await ordersCollection.insertOne(newOrder)
+            //get Games price list
+            let gamesQuantityAndPriceList = await getGamesMoney(Games);
+            //get total money
+            let total = dbUtils.calculateGamesTotalMoney(gamesQuantityAndPriceList);
+            //save order
+            newOrder.total= total;
+            await ordersCollection.insertOne(newOrder);
+            //save ordered games in a sold history collection
+            await saveProductToSoldHistory(gamesQuantityAndPriceList,userID);
             return 201;
         }catch (err){
-            console.log(err);
+            console.error("creating order error:\n\n" + err);
             return 502;
         }
     }else{
@@ -394,7 +409,7 @@ async function addUserDeliveryInfo(userID,FirstName,LastName,TelNumber,Address,C
             await userInfoCollection.insertOne(newUserInfo)
             return 201;
         }catch (err){
-            console.log(err);
+            console.error("adding user delivery information error:\n\n" + err);
             return 502;
         }
     }else{
@@ -448,7 +463,7 @@ async function getAllUserDeliveryInfo(userID){
         let data = await userInfoCollection.find({userID}).toArray();
         return data;
     }catch (err){
-        console.error(err)
+        console.error("getting all user delivery information error:\n\n" + err);
         return {error:"db error"};
     }
 }
@@ -507,7 +522,50 @@ async function logUserAction(username,action){
         let timeStamp = Math.floor(Date.now() / 1000)
         await logsCollection.insertOne({username,action,timeStamp});
     }catch(err){
-        console.error(err);
+        console.error("log user action error:\n\n" + err);
+    }
+}
+
+async function getGamesMoney(Games){
+    let gamesIDList = Object.keys(Games);
+    for (let i = 0; i<gamesIDList.length; i++){
+        gamesIDList[i] = {"_id":new ObjectId(gamesIDList[i])};
+    }
+    //get all the games with only the price field
+    const query = {$or:gamesIDList};
+    let output = await gamesCollection.find(query).project({price:1}).toArray();
+
+    //clean output
+    let priceList = {};
+    for (let i = 0; i<output.length; i++){
+        priceList[output[i]._id] = {price:output[i].price,quantity:Games[output[i]._id]};
+    }
+
+    return priceList;
+}
+
+async function saveProductToSoldHistory(gamesQuantityAndPriceList,buyerID){
+    let gameIDs = Object.keys(gamesQuantityAndPriceList)
+    try{
+        //prepare the documents to be saved
+        let timeStamp = Math.floor(Date.now() / 1000);
+        let docs = [];
+        for (let i = 0; i<gameIDs.length; i++){
+            let quantity = gamesQuantityAndPriceList[gameIDs[i]].quantity;
+            let price = gamesQuantityAndPriceList[gameIDs[i]].price;
+            let gameSold = {
+                "gameID":gameIDs[i],
+                "unitPrice":price,
+                "quantity":quantity,
+                "total":quantity * price,
+                "buyerID":buyerID,
+                timeStamp
+            };
+            docs.push(gameSold);
+        }
+        await soldProductsCollection.insertMany(docs);
+    }catch(err){
+        console.error("save product to sold history error:\n\n" + err);
     }
 }
 
