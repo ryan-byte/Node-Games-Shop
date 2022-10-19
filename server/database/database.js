@@ -13,7 +13,7 @@ const ordersCollection = gameShopDB.collection("orders");
 const userInfoCollection = gameShopDB.collection("userInfo");
 const logsCollection = gameShopDB.collection("logs");
 const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers");
-const soldProductsCollection = gameShopDB.collection("soldProducts");
+const SalesProductsCollection = gameShopDB.collection("SalesProducts");
 
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
 const unverifiedUser_Expiration_IndexName = "unverifiedUserExpiration";
@@ -205,13 +205,8 @@ const verifyAdmin = async (username,password)=>{
 
 async function getOrders(verificationStatus){
     try{
-        if (verificationStatus === 0){
-            let allOrders = await ordersCollection.find({verificationStatus}).toArray();
-            return allOrders;
-        }else{
-            let allOrders = await ordersCollection.find({verificationStatus}).sort({timeStamp:-1}).toArray();
-            return allOrders;
-        }
+        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
+        return allOrders;
     }catch (err){
         console.error("getting all orders (for admins) error:\n\n" + err);
         return {error:"db error"};
@@ -382,8 +377,8 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
             //save order
             newOrder.total= total;
             await ordersCollection.insertOne(newOrder);
-            //save ordered games in a sold history collection
-            await saveProductToSoldHistory(gamesQuantityAndPriceList,userID);
+            //save ordered games in a Sales history collection
+            await saveProductToSalesHistory(gamesQuantityAndPriceList,userID);
             return 201;
         }catch (err){
             console.error("creating order error:\n\n" + err);
@@ -544,7 +539,7 @@ async function getGamesMoney(Games){
     return priceList;
 }
 
-async function saveProductToSoldHistory(gamesQuantityAndPriceList,buyerID){
+async function saveProductToSalesHistory(gamesQuantityAndPriceList,buyerID){
     let gameIDs = Object.keys(gamesQuantityAndPriceList)
     try{
         //prepare the documents to be saved
@@ -553,7 +548,7 @@ async function saveProductToSoldHistory(gamesQuantityAndPriceList,buyerID){
         for (let i = 0; i<gameIDs.length; i++){
             let quantity = gamesQuantityAndPriceList[gameIDs[i]].quantity;
             let price = gamesQuantityAndPriceList[gameIDs[i]].price;
-            let gameSold = {
+            let gameSales = {
                 "gameID":gameIDs[i],
                 "unitPrice":price,
                 "quantity":quantity,
@@ -561,11 +556,11 @@ async function saveProductToSoldHistory(gamesQuantityAndPriceList,buyerID){
                 "buyerID":buyerID,
                 timeStamp
             };
-            docs.push(gameSold);
+            docs.push(gameSales);
         }
-        await soldProductsCollection.insertMany(docs);
+        await SalesProductsCollection.insertMany(docs);
     }catch(err){
-        console.error("save product to sold history error:\n\n" + err);
+        console.error("save product to Sales history error:\n\n" + err);
     }
 }
 

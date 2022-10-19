@@ -109,6 +109,44 @@
         </div>
     </div>
 
+    <!--sales history modal --> 
+    <div class="modal fade" id="salesHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Sales History</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>  
+                            <th scope="col" colspan="4">Title</th>
+                            <th scope="col" colspan="4">Unit price</th>    
+                            <th scope="col" colspan="4">Quantity</th>
+                            <th scope="col" colspan="4">Total price</th>    
+                            <th scope="col" colspan="4">Date</th>                                                    
+                        </tr>
+                    </thead>
+                    <tbody id = "salesTableBody">
+                        <tr>
+                            <td colspan="4" scope="row">${data.title.title.title.title}</td>
+                            <td colspan="4">${data.type}</td>
+                            <td colspan="4">${data.price}</td>
+                            <td colspan="4">${data.stock}</td>
+                            <td colspan="4">${data.stock}</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+        </div>
+    </div>
+
 
     <footer></footer>
 

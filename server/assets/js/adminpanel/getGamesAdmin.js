@@ -1,10 +1,13 @@
 const searchButton = document.getElementById("search");
 const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
+const salesTableBody = document.getElementById("salesTableBody");
 
+getAllgames();
 //main function
 async function getAllgames(title = ""){
     try{
+        spinnerStatus(false);
         disableSearchButton(true);
         const request = await fetch(`/api/games/${title}`);
         getGames_statusCodeOutput(request.status);
@@ -42,6 +45,7 @@ function showGames(gamesData){
             <th scope="col" colspan="4">Stock</th>
             <th scope="col" colspan="1">Update</th>   
             <th scope="col" colspan="1">Delete</th>   
+            <th scope="col" colspan="1">Sales History</th>   
                                 
         </tr>
     </thead>
@@ -74,6 +78,11 @@ function adminpanel_renderGame(tr,data){
             Delete
         </span>
     </td>
+    <td colspan="1">
+        <span data-id="${data["_id"]}" class = "linkButton" onclick="fillSalesHistoryModal(this)" data-bs-toggle="modal" data-bs-target="#salesHistory">
+            Sales
+        </span>
+    </td>
     `;
 }
 function spinnerStatus(hide = true){
@@ -97,6 +106,22 @@ titleInput.addEventListener("keypress",(ev)=>{
     }
 })
 searchButton.addEventListener("click",(ev)=>{
-    spinnerStatus(false);
     getAllgames(titleInput.value);
 })
+
+
+//fill Sales history modal
+async function fillSalesHistoryModal(elem){
+    //make a request to get all the product sales history
+    let gameID = elem.dataset.id;
+    console.log(gameID);
+    let data = requestSalesHistory("");
+    //update the html
+    updateSalesHistoryHTML(data);
+}
+async function requestSalesHistory(gameID){
+
+}
+function updateSalesHistoryHTML(data){
+    console.log(salesTableBody.innerHTML);
+}
