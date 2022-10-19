@@ -31,12 +31,12 @@ app.get("/api/games/:title",rateLimiter_Middleware(),
 app.post("/api/games",rateLimiter_Middleware(),
                     server_middleware.verifyGameInputs,
                     server_middleware.api_verifyAdmin_middleware,
-                    server_middleware.image_upload_middleware,
+                    server_middleware.add_new_image_upload_middleware,
                     api_routes.api_addGame);
 app.put("/api/games/:id",rateLimiter_Middleware(),
                     server_middleware.verifyGameInputs,
                     server_middleware.api_verifyAdmin_middleware,
-                    server_middleware.image_upload_middleware,
+                    server_middleware.upadte_image_upload_middleware,
                     api_routes.api_updateGame);
                     
 app.delete("/api/games/:id",rateLimiter_Middleware(),

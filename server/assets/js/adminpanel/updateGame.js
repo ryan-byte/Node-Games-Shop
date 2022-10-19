@@ -53,6 +53,8 @@ function updateGame_statusCode(statusCode,title,type,stock,price,objectId){
         adminpanel_renderGame(gameElem,data);
         //close the form
         updateFormClose.click();
+        //send a feedback
+        newAlert_danger("Game has been updated");
     }else if (statusCode === 400){
         newAlert_danger("Bad parameters");
     }else if (statusCode === 401){

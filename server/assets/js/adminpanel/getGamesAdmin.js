@@ -36,12 +36,12 @@ function showGames(gamesData){
     itemContainer.innerHTML = `
     <thead>
         <tr>  
-            <th scope="col" colspan="4">title</th>
-            <th scope="col" colspan="4">type</th>
-            <th scope="col" colspan="4">price</th>
-            <th scope="col" colspan="4">stock</th>   
-            <th scope="col" colspan="1">update</th>   
-            <th scope="col" colspan="1">delete</th>   
+            <th scope="col" colspan="4">Title</th>
+            <th scope="col" colspan="4">Type</th>
+            <th scope="col" colspan="4">Price</th>   
+            <th scope="col" colspan="4">Stock</th>
+            <th scope="col" colspan="1">Update</th>   
+            <th scope="col" colspan="1">Delete</th>   
                                 
         </tr>
     </thead>
@@ -62,8 +62,8 @@ function adminpanel_renderGame(tr,data){
     tr.innerHTML = `
     <td colspan="4" scope="row">${data.title}</td>
     <td colspan="4">${data.type}</td>
-    <td colspan="4">${data.stock}</td>
     <td colspan="4">${data.price}</td>
+    <td colspan="4">${data.stock}</td>
     <td colspan="1">
         <span class = "linkButton" onclick="fillUpdateForm(this)" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             Update
