@@ -55,6 +55,9 @@
                     </div>
                 </div>
             </div>
+            <div id = "spinner" class="spinner-border" role="status">
+                <span  class="visually-hidden">Loading...</span>
+            </div>
             
             <div class="table-responsive">
                 <table id = "itemContainer" class="table table-bordered table-hover">
@@ -62,9 +65,6 @@
                 </table>
             </div>
 
-            <div id = "spinner" class="spinner-border" role="status">
-                <span  class="visually-hidden">Loading...</span>
-            </div>
         </div>
     </main>
     
@@ -118,10 +118,16 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div>
+                    <b>total sales (lifetime):</b> <span id = "totalSalesMoney"></span>
+                </div>
+                <div id = "spinner_salesHistory" class="spinner-border" role="status">
+                    <span  class="visually-hidden">Loading...</span>
+                </div>
+                <br>
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>  
-                            <th scope="col" colspan="4">Title</th>
                             <th scope="col" colspan="4">Unit price</th>    
                             <th scope="col" colspan="4">Quantity</th>
                             <th scope="col" colspan="4">Total price</th>    
@@ -129,13 +135,7 @@
                         </tr>
                     </thead>
                     <tbody id = "salesTableBody">
-                        <tr>
-                            <td colspan="4" scope="row">${data.title.title.title.title}</td>
-                            <td colspan="4">${data.type}</td>
-                            <td colspan="4">${data.price}</td>
-                            <td colspan="4">${data.stock}</td>
-                            <td colspan="4">${data.stock}</td>
-                        </tr>
+                        
                     </tbody>
 
                 </table>

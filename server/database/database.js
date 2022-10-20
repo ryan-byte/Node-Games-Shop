@@ -257,6 +257,15 @@ async function declineOrder(orderID){
     }
 }
 
+async function getSaleHistory(gameID){
+    try{
+        let gameSalesHistory = await SalesProductsCollection.find({"gameID":gameID}).toArray();
+        return gameSalesHistory;
+    }catch (err){
+        console.error("getting game sales history (for admins) error:\n\n" + err);
+        return {error:"db error"};
+    }
+}
 //normal user
 async function userExist(username,email){
     try{
@@ -574,5 +583,5 @@ module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,
                 getUserLatestOrders,
                 verifyUserSignup,createVerifiedUser,
-
+                getSaleHistory,
                 openID_userExist,openID_saveUser,openID_userLogin};

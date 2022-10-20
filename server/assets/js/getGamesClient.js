@@ -4,10 +4,12 @@ const titleInput = document.getElementById("title");
 const spinner = document.getElementById("spinner");
 
 
+getAllgames();
 //main function
 async function getAllgames(title = ""){
+    spinnerStatus(false);
+    disableSearchButton(true);
     try{
-        disableSearchButton(true);
         const request = await fetch(`/api/games/${title}`);
         getGames_statusCodeOutput(request.status);
         const jsonData = await request.json();
@@ -19,20 +21,18 @@ async function getAllgames(title = ""){
         }
     }
     disableSearchButton(false);
+    spinnerStatus(true);
 }
 
 //show games functions
 function getGames_statusCodeOutput(statusCode){
     if (statusCode === 502){
-        spinnerStatus(true);
         itemContainer.innerHTML = "Bad Gateway";
     }else if (statusCode === 204){
-        spinnerStatus(true);
         itemContainer.innerHTML = "No Content";
     }
 }
 function showGames(gamesData){
-    spinnerStatus(true);
     itemContainer.innerHTML = "";
     gamesData.forEach(data => {
         let div = document.createElement("div");
@@ -82,6 +82,5 @@ titleInput.addEventListener("keypress",(ev)=>{
     }
 })
 searchButton.addEventListener("click",(ev)=>{
-    spinnerStatus(false);
     getAllgames(titleInput.value);
 })

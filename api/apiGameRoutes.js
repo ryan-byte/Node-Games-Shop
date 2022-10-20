@@ -172,6 +172,18 @@ async function api_verifyOrder(req,res){
     res.sendStatus(statusCode);
 }
 
+
+async function api_getSalesHistory(req,res){
+    let gameID = req.params.gameID;
+    let data = await database.getSaleHistory(gameID);
+    if (data["error"]){
+        res.sendStatus(502)
+    }else{
+        res.status(200);
+        res.json(data);
+    }
+}
+
 //normal users api
 async function api_getLatestOrders(req,res){
     //get the user ID that is stored in the cookie
@@ -236,4 +248,5 @@ module.exports = {  api_getAllgames,
                     api_updateGame,
                     api_getOrder,
                     api_verifyOrder,api_declineOrder,
+                    api_getSalesHistory,
                     api_getLatestOrders,api_getAllUserDeliveryInfo,api_getSpecificUserDeliveryInfo}
