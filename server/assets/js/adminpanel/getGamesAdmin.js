@@ -3,6 +3,7 @@ const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
 const salesTableBody = document.getElementById("salesTableBody");
 const totalMoneyElem = document.getElementById("totalSalesMoney")
+const totalQuantityElem = document.getElementById("totalQuantityElem");
 const button = document.getElementById("spinner");
 const salesHistoryModalSpinner = document.getElementById("spinner_salesHistory");
 
@@ -133,6 +134,8 @@ function updateSalesHistoryHTML(data){
     salesTableBody.innerHTML = "";
 
     let totalGamesMoney = 0;
+    let totalGamesQuantity = 0;
+
     data.forEach(saleData => {
         let tr = document.createElement("tr");
         let date = new Date(saleData.timeStamp * 1000);
@@ -145,7 +148,9 @@ function updateSalesHistoryHTML(data){
         salesTableBody.append(tr);
 
         totalGamesMoney += saleData.total;
+        totalGamesQuantity += saleData.quantity;
     });
+    totalQuantityElem.innerHTML = `${totalGamesQuantity}`;
     totalMoneyElem.innerText = `${totalGamesMoney}DT`;
 }
 
