@@ -53,6 +53,10 @@ app.put("/api/declineOrder/:orderID",rateLimiter_Middleware(),
                     server_middleware.api_verifyAdmin_middleware,
                     api_routes.api_declineOrder);
 
+app.get("/api/games/sales/history/:gameID",rateLimiter_Middleware(),
+                    server_middleware.api_verifyAdmin_middleware,
+                    api_routes.api_getSalesHistory);
+
 //normal users api
 app.get("/api/user/getOrders",rateLimiter_Middleware(),
                     server_middleware.onlyNormalUsersAllowed,

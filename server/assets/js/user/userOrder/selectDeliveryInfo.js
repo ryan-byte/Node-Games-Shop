@@ -1,6 +1,7 @@
 const infoContainer = document.getElementById("infoContainer");
 const next = document.getElementById("next");
 const edit = document.getElementById("edit");
+const spinner = document.getElementById("spinner");
 
 
 let selectedElement = "";
@@ -10,6 +11,7 @@ showInformations();
 
 //show info functions
 async function showInformations(){
+    spinnerStatus(false);
     let url = "/api/user/getInfos";
     let request = await fetch(url);
     
@@ -21,6 +23,7 @@ async function showInformations(){
             renderInfo(info);
         });
     }
+    spinnerStatus(true);
 }
 function renderInfo(data){
     const infoItem = document.createElement("li");
@@ -55,40 +58,31 @@ function selectInfo(element){
     selectedElement = element;
     disableSelectButtons(false);
 }
-function desactiveChilds(parent){
-    let currentActive = parent.querySelectorAll("[aria-current=true]");
-    for (let i = 0; i<currentActive.length; i++){
-        currentActive[i].classList.remove("active");
-        currentActive[i].removeAttribute("aria-current");
-    }
-}
-
-function disableSelectButtons(bool){
-    if (bool){
-        next.classList.add("disabled");
-        edit.classList.add("disabled");
-    }else{
-        next.classList.remove("disabled");
-        edit.classList.remove("disabled");
-    }
-}
 
 //next button functions
-next.addEventListener("click",(ev)=>{
+next.addEventListener("click",async (ev)=>{
+    disableSelectButtons(true);
+    spinnerStatus(false);
     if (selectedElement === ""){
         return;
     }
     let deliveryInfoId = selectedElement.dataset.id;
-    selectRequest(deliveryInfoId,"/order/confirmation")
+    await selectRequest(deliveryInfoId,"/order/confirmation")
+    disableSelectButtons(false);
+    spinnerStatus(true);
 })
 
 //edit button functions
-edit.addEventListener("click",(ev)=>{
+edit.addEventListener("click",async (ev)=>{
+    disableSelectButtons(true);
+    spinnerStatus(false);
     if (selectedElement === ""){
         return;
     }
     let deliveryInfoId = selectedElement.dataset.id;
-    selectRequest(deliveryInfoId,"/order/information/edit")
+    await selectRequest(deliveryInfoId,"/order/information/edit")
+    disableSelectButtons(false);
+    spinnerStatus(true);
 })
 
 
@@ -109,10 +103,35 @@ async function selectRequest(deliveryInfoId,redirectURL){
     }
 }
 
+//user feedback
 function statusFeedback(status){
     if (status === 404){
         newAlert_danger("Delivery info Not Found (reload the page)");
     }else if (status === 502){
         newAlert_danger("Bad Gateway");
+    }
+}
+function spinnerStatus(hide = true){
+    if (hide){
+        spinner.style.display = "none";
+    }else{
+        spinner.style.display = "block";
+    }
+}
+
+function desactiveChilds(parent){
+    let currentActive = parent.querySelectorAll("[aria-current=true]");
+    for (let i = 0; i<currentActive.length; i++){
+        currentActive[i].classList.remove("active");
+        currentActive[i].removeAttribute("aria-current");
+    }
+}
+function disableSelectButtons(bool){
+    if (bool){
+        next.classList.add("disabled");
+        edit.classList.add("disabled");
+    }else{
+        next.classList.remove("disabled");
+        edit.classList.remove("disabled");
     }
 }
