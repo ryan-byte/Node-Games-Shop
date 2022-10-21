@@ -25,6 +25,7 @@
 -Users can login with google openID <br>
 -Users can track their own orders <br>
 -Admins can create, update and delete games  <br>
+-Admins can view sales history for games <br>
 -Admins can view all orders <br>
 -Admins can verify or decline orders <br>
 -Log admin action <br>
