@@ -162,14 +162,21 @@ async function api_verifyOrder(req,res){
     const username = res.locals.username;
     
     const orderID = req.params.orderID;
-    let statusCode = await database.verifyOrder(orderID);
+    let output = await database.verifyOrder(orderID);
 
     //log admin action
-    if (statusCode === 200){
+    if (output.status === 200){
+        //send a message back to the client
+        if (output.message){
+            res.status(200).send({error:true,message:output.message});
+            return;
+        }
+        res.status(200).send({error:false,message:"order has been verified"});
         database.logUserAction(username,`Verified ${orderID}`);
+        return;
     }
     //send a status code back
-    res.sendStatus(statusCode);
+    res.sendStatus(output.status);
 }
 
 

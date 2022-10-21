@@ -225,8 +225,18 @@ async function verifyOrder(elem){
     let status = request.status; 
     if (status === 200){
         //remove order
-        elem.parentElement.parentElement.parentElement.remove();
-        newAlert_success("order has been verified");
+        try{
+            let serverJsonRes = await request.json();
+            if (serverJsonRes.error){
+                newAlert_danger(serverJsonRes.message);            
+            }else{
+                elem.parentElement.parentElement.parentElement.remove();
+                newAlert_success(serverJsonRes.message);                            
+            }
+        }catch(err){
+            console.error(err);
+            newAlert_danger("server error (must respond by a json object)");
+        }
     }else if (status === 400){
         newAlert_danger("bad parameters cannot verify order");
     }else if (status === 404){

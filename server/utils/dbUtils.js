@@ -6,5 +6,13 @@ function calculateGamesTotalMoney(gamesQuantityAndPriceList){
     }
     return total;
 }
+function enoughGamesInStock(gamesIDList,gamesIDAndQuantity,gamesIDAndStock){
+    for (let i = 0; i<gamesIDList.length; i++){
+        if (gamesIDAndQuantity[gamesIDList[i]] > gamesIDAndStock[gamesIDList[i]]){
+            return false;
+        }
+    }
+    return true;
+}
 
-module.exports = {calculateGamesTotalMoney};
+module.exports = {calculateGamesTotalMoney,enoughGamesInStock};
