@@ -223,6 +223,7 @@ async function verifyOrder(orderID){
         //get bought games with their quantity from the order
         const orderDoc = {"_id": new ObjectId(orderID),"verificationStatus":0};
         let output = await ordersCollection.findOne(orderDoc);
+        const userID = output.userID;
         const gamesIDAndQuantity = output.Games;
         if (gamesIDAndQuantity === undefined){
             return {status:404};
@@ -246,6 +247,10 @@ async function verifyOrder(orderID){
             if (stockReducedSuccessfully){
                 await ordersCollection.updateOne(orderDoc,verifyOrder);
             }
+            //save ordered games in a Sales history collection
+            let gamesQuantityAndPriceList = await getGamesMoney(gamesIDAndQuantity);
+            await saveProductToSalesHistory(gamesQuantityAndPriceList,userID);
+            
         }else{
             //not enough in stock
             return {status:200,message:"out of stock"};
@@ -415,8 +420,6 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
             //save order
             newOrder.total= total;
             await ordersCollection.insertOne(newOrder);
-            //save ordered games in a Sales history collection
-            await saveProductToSalesHistory(gamesQuantityAndPriceList,userID);
             return 201;
         }catch (err){
             console.error("creating order error:\n\n" + err);
@@ -559,8 +562,8 @@ async function logUserAction(username,action){
     }
 }
 
-async function getGamesMoney(Games){
-    let gamesIDList = Object.keys(Games);
+async function getGamesMoney(gamesIDAndQuantity){
+    let gamesIDList = Object.keys(gamesIDAndQuantity);
     for (let i = 0; i<gamesIDList.length; i++){
         gamesIDList[i] = {"_id":new ObjectId(gamesIDList[i])};
     }
@@ -571,7 +574,7 @@ async function getGamesMoney(Games){
     //clean output
     let priceList = {};
     for (let i = 0; i<output.length; i++){
-        priceList[output[i]._id] = {price:output[i].price,quantity:Games[output[i]._id]};
+        priceList[output[i]._id] = {price :output[i].price, quantity: gamesIDAndQuantity[output[i]._id]};
     }
 
     return priceList;
