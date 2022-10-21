@@ -205,8 +205,14 @@ const verifyAdmin = async (username,password)=>{
 
 async function getOrders(verificationStatus){
     try{
-        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
-        return allOrders;
+        if (verificationStatus === 0){
+            let allOrders = await ordersCollection.find({verificationStatus}).toArray();
+            return allOrders;
+        }else{
+            const latestOrdersTimestamp = { modifiedTimestamp: -1 };
+            let allOrders = await ordersCollection.find({verificationStatus}).sort(latestOrdersTimestamp).toArray();
+            return allOrders;
+        }
     }catch (err){
         console.error("getting all orders (for admins) error:\n\n" + err);
         return {error:"db error"};
@@ -227,8 +233,10 @@ async function verifyOrder(orderID){
     
         if (enoughInStock){
             //there is enough in stock
+            let timeStamp = Math.floor(Date.now() / 1000);
             let verifyOrder = {
                 $set:{
+                    "modifiedTimestamp":timeStamp,
                     "verificationStatus":1
                 }
             };
@@ -256,8 +264,10 @@ async function verifyOrder(orderID){
 async function declineOrder(orderID){
     try{
         const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let timeStamp = Math.floor(Date.now() / 1000);
         let updateDoc = {
             $set:{
+                "modifiedTimestamp":timeStamp,
                 "verificationStatus":2
             }
         };
