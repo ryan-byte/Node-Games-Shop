@@ -293,7 +293,8 @@ async function declineOrder(orderID){
 
 async function getSaleHistory(gameID){
     try{
-        let gameSalesHistory = await SalesProductsCollection.find({"gameID":gameID}).toArray();
+        const latestTimestamp = { timeStamp: -1 };
+        let gameSalesHistory = await SalesProductsCollection.find({"gameID":gameID}).sort(latestTimestamp).toArray();
         return gameSalesHistory;
     }catch (err){
         console.error("getting game sales history (for admins) error:\n\n" + err);
