@@ -47,6 +47,7 @@ digestAlgorithm = <crypto digest algorithm>
 apiRequestsPerMin = <integer> 
 maxImgUploadSize = <integer>
 unverifiedUserDataExpirationTimeInSec = <integer>
+logsExpirationTimeInSec = <interger>
 ```
 #### config.env variables
 ###### PORT (OPTIONAL)
@@ -65,7 +66,9 @@ Max number of API requests a user can make per minute (default value 60)
 ###### maxImgUploadSize (OPTIONAL)
 Max size of the image file for a game (default 5000000 in bytes = 5mb)
 ###### unverifiedUserDataExpirationTimeInSec (OPTIONAL)
-Time for the unverified user to be deleted from the database, also used as an expiration time for verification cookie (default 1800)
+Time for the unverified user to be deleted from the database, also used as an expiration time for verification cookie (default 1800 = 30 min)
+###### logsExpirationTimeInSec (OPTIONAL)
+Time for the logs to be deleted from the database (default 2592000 = 30 Days)
 
 
 - <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br>

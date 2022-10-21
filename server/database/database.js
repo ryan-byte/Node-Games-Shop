@@ -16,45 +16,19 @@ const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers");
 const SalesProductsCollection = gameShopDB.collection("SalesProducts");
 
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
-const unverifiedUser_Expiration_IndexName = "unverifiedUserExpiration";
+const unverifiedUser_Expiration_IndexName = "unverified_User_Expiration";
+
+const logsExpirationTimeInSec = parseInt(process.env.logsExpirationTimeInSec) || 2592000;
+const logsExpiration_IndexName = "logs_Expiration";
 
 
 setupIndexes()
 async function setupIndexes(){
-    let indexExist = await unverifiedUsersCollection.indexExists(unverifiedUser_Expiration_IndexName);
-    let allIndexes = await unverifiedUsersCollection.indexes();
-    console.log("Setting up unverified users expiration index");
-    if (!indexExist){
-        //creating a ttl index that will delete the unverified user data after some seconds
-        unverifiedUsersCollection.createIndex({"createdAt":1},
-        {
-            expireAfterSeconds:unverifiedUserDataExpirationTimeInSec,
-            name:unverifiedUser_Expiration_IndexName
-        });
-        console.log(`Index has been created, unverified users data will expire after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
-    }else{
-        console.log("Index already exists");
-        let dropAndChangeIndex = true;
-        //if the index exist and its value arent changed then dont drop and create the index
-        for (let i = 0;i<allIndexes.length; i++){
-            if (allIndexes[i].name === unverifiedUser_Expiration_IndexName && allIndexes[i].expireAfterSeconds === unverifiedUserDataExpirationTimeInSec){
-                console.log("Index values are unchanged");
-                dropAndChangeIndex = false;
-            }
-        }
+    let collectionNames = await gameShopDB.listCollections({},{nameOnly:true}).toArray();
 
-        if (dropAndChangeIndex){
-            unverifiedUsersCollection.dropIndex(unverifiedUser_Expiration_IndexName);
-            console.log("Index has been dropped");
-            console.log("Creating unverified users expiration index");
-            unverifiedUsersCollection.createIndex({"createdAt":1},
-            {
-                expireAfterSeconds:unverifiedUserDataExpirationTimeInSec,
-                name:unverifiedUser_Expiration_IndexName
-            });
-            console.log(`Index has been created, unverified users data will be deleted after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
-        }
-        }
+    await dbUtils.createTTLIndex(gameShopDB,collectionNames,unverifiedUsersCollection,unverifiedUser_Expiration_IndexName,unverifiedUserDataExpirationTimeInSec);
+    await dbUtils.createTTLIndex(gameShopDB,collectionNames,logsCollection,logsExpiration_IndexName,logsExpirationTimeInSec);
+    
     console.log("\x1b[33m" + "Database is ready" + "\x1b[0m");
 }
 
