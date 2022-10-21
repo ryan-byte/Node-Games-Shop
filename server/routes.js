@@ -401,7 +401,7 @@ function getUserOrdersHistoryPage(req,res){
 
 //admin users only
 function getadminpanel(req,res){
-    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/adminpanel.html"));
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/manageGames.html"));
 }
 function getadminpanelAddGame(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/addGame.html"));

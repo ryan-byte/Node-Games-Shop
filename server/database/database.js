@@ -16,45 +16,19 @@ const unverifiedUsersCollection = gameShopDB.collection("unverifiedUsers");
 const SalesProductsCollection = gameShopDB.collection("SalesProducts");
 
 const unverifiedUserDataExpirationTimeInSec = parseInt(process.env.unverifiedUserDataExpirationTimeInSec) || 1800;
-const unverifiedUser_Expiration_IndexName = "unverifiedUserExpiration";
+const unverifiedUser_Expiration_IndexName = "unverified_User_Expiration";
+
+const logsExpirationTimeInSec = parseInt(process.env.logsExpirationTimeInSec) || 2592000;
+const logsExpiration_IndexName = "logs_Expiration";
 
 
 setupIndexes()
 async function setupIndexes(){
-    let indexExist = await unverifiedUsersCollection.indexExists(unverifiedUser_Expiration_IndexName);
-    let allIndexes = await unverifiedUsersCollection.indexes();
-    console.log("Setting up unverified users expiration index");
-    if (!indexExist){
-        //creating a ttl index that will delete the unverified user data after some seconds
-        unverifiedUsersCollection.createIndex({"createdAt":1},
-        {
-            expireAfterSeconds:unverifiedUserDataExpirationTimeInSec,
-            name:unverifiedUser_Expiration_IndexName
-        });
-        console.log(`Index has been created, unverified users data will expire after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
-    }else{
-        console.log("Index already exists");
-        let dropAndChangeIndex = true;
-        //if the index exist and its value arent changed then dont drop and create the index
-        for (let i = 0;i<allIndexes.length; i++){
-            if (allIndexes[i].name === unverifiedUser_Expiration_IndexName && allIndexes[i].expireAfterSeconds === unverifiedUserDataExpirationTimeInSec){
-                console.log("Index values are unchanged");
-                dropAndChangeIndex = false;
-            }
-        }
+    let collectionNames = await gameShopDB.listCollections({},{nameOnly:true}).toArray();
 
-        if (dropAndChangeIndex){
-            unverifiedUsersCollection.dropIndex(unverifiedUser_Expiration_IndexName);
-            console.log("Index has been dropped");
-            console.log("Creating unverified users expiration index");
-            unverifiedUsersCollection.createIndex({"createdAt":1},
-            {
-                expireAfterSeconds:unverifiedUserDataExpirationTimeInSec,
-                name:unverifiedUser_Expiration_IndexName
-            });
-            console.log(`Index has been created, unverified users data will be deleted after its creation by ${unverifiedUserDataExpirationTimeInSec} sec.`);
-        }
-        }
+    await dbUtils.createTTLIndex(gameShopDB,collectionNames,unverifiedUsersCollection,unverifiedUser_Expiration_IndexName,unverifiedUserDataExpirationTimeInSec);
+    await dbUtils.createTTLIndex(gameShopDB,collectionNames,logsCollection,logsExpiration_IndexName,logsExpirationTimeInSec);
+    
     console.log("\x1b[33m" + "Database is ready" + "\x1b[0m");
 }
 
@@ -205,8 +179,14 @@ const verifyAdmin = async (username,password)=>{
 
 async function getOrders(verificationStatus){
     try{
-        let allOrders = await ordersCollection.find({verificationStatus}).toArray();
-        return allOrders;
+        if (verificationStatus === 0){
+            let allOrders = await ordersCollection.find({verificationStatus}).toArray();
+            return allOrders;
+        }else{
+            const latestOrdersTimestamp = { modifiedTimestamp: -1 };
+            let allOrders = await ordersCollection.find({verificationStatus}).sort(latestOrdersTimestamp).toArray();
+            return allOrders;
+        }
     }catch (err){
         console.error("getting all orders (for admins) error:\n\n" + err);
         return {error:"db error"};
@@ -214,31 +194,59 @@ async function getOrders(verificationStatus){
 }
 async function verifyOrder(orderID){
     try{
-        const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
-        let updateDoc = {
-            $set:{
-                "verificationStatus":1
-            }
-        };
-        let output = await ordersCollection.findOneAndUpdate(filter,updateDoc);
-        if (output.value === null){
-            return 404;
+        //get bought games with their quantity from the order
+        const orderDoc = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let output = await ordersCollection.findOne(orderDoc);
+        const userID = output.userID;
+        const gamesIDAndQuantity = output.Games;
+        if (gamesIDAndQuantity === undefined){
+            return {status:404};
         }
-        return 200;
+        //check if there is still games in stock
+        const gamesIDAndStock = await getGamesStock(Object.keys(gamesIDAndQuantity));
+        let enoughInStock = dbUtils.enoughGamesInStock(Object.keys(gamesIDAndQuantity),gamesIDAndQuantity,gamesIDAndStock);
+    
+        if (enoughInStock){
+            //there is enough in stock
+            let timeStamp = Math.floor(Date.now() / 1000);
+            let verifyOrder = {
+                $set:{
+                    "modifiedTimestamp":timeStamp,
+                    "verificationStatus":1
+                }
+            };
+            //reduce stock
+            let stockReducedSuccessfully = await reduceStock(Object.keys(gamesIDAndQuantity),gamesIDAndQuantity);
+            //verify order
+            if (stockReducedSuccessfully){
+                await ordersCollection.updateOne(orderDoc,verifyOrder);
+            }
+            //save ordered games in a Sales history collection
+            let gamesQuantityAndPriceList = await getGamesMoney(gamesIDAndQuantity);
+            await saveProductToSalesHistory(gamesQuantityAndPriceList,userID);
+            
+        }else{
+            //not enough in stock
+            return {status:200,message:"out of stock"};
+        }
+        return {status:200};
+
     }catch (err){
         if(err instanceof BSONTypeError){
-            return 400;
+            return {status:400};
         }else{
             console.error("verifying order error:\n\n" + err);
-            return 502;
+            return {status:502};
         }
     }
 }
 async function declineOrder(orderID){
     try{
         const filter = {"_id": new ObjectId(orderID),"verificationStatus":0};
+        let timeStamp = Math.floor(Date.now() / 1000);
         let updateDoc = {
             $set:{
+                "modifiedTimestamp":timeStamp,
                 "verificationStatus":2
             }
         };
@@ -259,7 +267,8 @@ async function declineOrder(orderID){
 
 async function getSaleHistory(gameID){
     try{
-        let gameSalesHistory = await SalesProductsCollection.find({"gameID":gameID}).toArray();
+        const latestTimestamp = { timeStamp: -1 };
+        let gameSalesHistory = await SalesProductsCollection.find({"gameID":gameID}).sort(latestTimestamp).toArray();
         return gameSalesHistory;
     }catch (err){
         console.error("getting game sales history (for admins) error:\n\n" + err);
@@ -386,8 +395,6 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
             //save order
             newOrder.total= total;
             await ordersCollection.insertOne(newOrder);
-            //save ordered games in a Sales history collection
-            await saveProductToSalesHistory(gamesQuantityAndPriceList,userID);
             return 201;
         }catch (err){
             console.error("creating order error:\n\n" + err);
@@ -530,8 +537,8 @@ async function logUserAction(username,action){
     }
 }
 
-async function getGamesMoney(Games){
-    let gamesIDList = Object.keys(Games);
+async function getGamesMoney(gamesIDAndQuantity){
+    let gamesIDList = Object.keys(gamesIDAndQuantity);
     for (let i = 0; i<gamesIDList.length; i++){
         gamesIDList[i] = {"_id":new ObjectId(gamesIDList[i])};
     }
@@ -542,7 +549,7 @@ async function getGamesMoney(Games){
     //clean output
     let priceList = {};
     for (let i = 0; i<output.length; i++){
-        priceList[output[i]._id] = {price:output[i].price,quantity:Games[output[i]._id]};
+        priceList[output[i]._id] = {price :output[i].price, quantity: gamesIDAndQuantity[output[i]._id]};
     }
 
     return priceList;
@@ -570,6 +577,48 @@ async function saveProductToSalesHistory(gamesQuantityAndPriceList,buyerID){
         await SalesProductsCollection.insertMany(docs);
     }catch(err){
         console.error("save product to Sales history error:\n\n" + err);
+    }
+}
+
+async function getGamesStock(gamesIDList){
+    try{
+        for (let i = 0; i<gamesIDList.length; i++){
+            gamesIDList[i] = {"_id":new ObjectId(gamesIDList[i])};
+        }
+        //get all the games with only the stock field
+        const query = {$or:gamesIDList};
+        let output = await gamesCollection.find(query).project({stock:1}).toArray();
+    
+        //clean output
+        let stockList = {};
+        for (let i = 0; i<output.length; i++){
+            stockList[output[i]._id] = output[i].stock;
+        }
+    
+        return stockList;
+    }catch (err){
+        console.error("get games Stock error:\n\n" + err);
+    }
+}
+
+async function reduceStock(gamesIDList,gamesIDAndQuantity){
+    try{
+        let bulkRequest = [];
+        for (let i = 0; i<gamesIDList.length; i++){
+            let gameID = gamesIDList[i];
+            let request = {
+                updateOne:{
+                    "filter":{"_id": new ObjectId(gameID)},
+                    "update":{$inc: {stock: -1 * gamesIDAndQuantity[gameID]}}
+                }
+            };
+            bulkRequest.push(request);
+        }
+        await gamesCollection.bulkWrite(bulkRequest);
+        return true;
+    }catch (err){
+        console.error("reduce stock error:\n\n" + err);
+        return false;
     }
 }
 
