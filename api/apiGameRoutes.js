@@ -63,16 +63,16 @@ async function api_addGame(req,res){
     if (dataStatus["error"]){
         res.sendStatus(502)
     }else{
-        res.sendStatus(dataStatus);
         if (dataStatus === 201){
             //log the username action
             let username = res.locals.username;
             if (res.locals.imageName === undefined){
-                database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
+                await database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
             }else{
-                database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
+                await database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
             }
         }
+        res.sendStatus(dataStatus);
     }
 }
 
@@ -93,7 +93,7 @@ async function api_removeGame(req,res){
         }
         //log the username action
         let username = res.locals.username;
-        database.logUserAction(username,`Deleted ${gameTitle} from the game list`);
+        await database.logUserAction(username,`Deleted ${gameTitle} from the game list`);
     }
     res.sendStatus(status);
 }
@@ -123,9 +123,28 @@ async function api_updateGame(req,res){
                 console.log("error while deleting an image from firebase");
             }
         }
+        
+        //get updated values for log
+        let updatedValuesObject = {}
+        if (oldValues.title !== title){
+            updatedValuesObject.title = title;
+        }
+        if (oldValues.type !== type){
+            updatedValuesObject.type = type;
+        }
+        if (oldValues.price !== price){
+            updatedValuesObject.price = price;
+        }
+        if (oldValues.stock !== stock){
+            updatedValuesObject.stock = stock;
+        }
         //log the username action
         let username = res.locals.username;
-        database.logUserAction(username,`Updated old values(title: ${oldValues.title} /type: ${oldValues.type} /price: ${oldValues.price}/ stock: ${oldValues.stock}) new values (title: ${title} /type: ${type} /price: ${price}/ stock: ${stock})`);
+        if (imageName){
+            await database.logUserAction(username,`Updated ${oldValues.title} values ${JSON.stringify(updatedValuesObject)} / Image Updated`);
+        }else{
+            await database.logUserAction(username,`Updated ${oldValues.title} values ${JSON.stringify(updatedValuesObject)}`);
+        }
     }
     //send the response
     res.sendStatus(updateGameStatus);
@@ -153,7 +172,7 @@ async function api_declineOrder(req,res){
     const statusCode = await database.declineOrder(orderID);
     //log admin action
     if (statusCode === 200){
-        database.logUserAction(username,`Declined ${orderID}`);
+        await database.logUserAction(username,`Declined with the order id of ${orderID}`);
     }
     //send a status code back
     res.sendStatus(statusCode);
@@ -172,7 +191,7 @@ async function api_verifyOrder(req,res){
             return;
         }
         res.status(200).send({error:false,message:"order has been verified"});
-        database.logUserAction(username,`Verified ${orderID}`);
+        await database.logUserAction(username,`Verified with the order id of ${orderID}`);
         return;
     }
     //send a status code back

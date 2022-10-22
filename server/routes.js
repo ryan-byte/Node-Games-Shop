@@ -59,9 +59,10 @@ async function postAdminLogin(req,res){
                 maxAge: tokenExpire * 1000//1 day
             });
 
-            res.redirect("/adminpanel");
             //save logs
-            database.logUserAction(username,`Admin logged in`);
+            await database.logUserAction(username,`Admin logged in`);
+            //redirect
+            res.redirect("/adminpanel");
         }catch (err){
             res.sendStatus(400);
         }
@@ -151,9 +152,10 @@ async function postUserLogin(req,res){
                 maxAge: tokenExpire * 1000//1 day
             });
             
-            res.redirect("/");
             //save logs
-            database.logUserAction(username,`User logged in`);
+            await database.logUserAction(username,`User logged in`);
+            //redirect
+            res.redirect("/");
         }catch (err){
             res.sendStatus(400);
         }
@@ -197,10 +199,10 @@ async function googleConnect_redirect(req,res){
         maxAge: tokenExpire * 1000//1 day
     });
     
+    //save logs
+    await database.logUserAction(username,`User logged in`);
     //redirect
     res.redirect("/");
-    //save logs
-    database.logUserAction(username,`User logged in`);
 
 }
 
@@ -254,7 +256,8 @@ async function postOrder(req,res){
     //get the order informations
     let allCookies = cookie.parse(req.headers.cookie || "");
     let accessCookie = allCookies[accessCookieName];
-    const userID = jwt.decode(accessCookie).userID;
+    const decodedJWT = jwt.decode(accessCookie);
+    const userID = decodedJWT.userID;
     let {deliveryInfoId,games} = req.body;
     const data = await database.getSpecificUserDeliveryInfo(userID,deliveryInfoId);
     if (data === null){
@@ -285,9 +288,13 @@ async function postOrder(req,res){
         return;
     }
     //when everything is fine then add the order to the database
-    let statusCode = await database.createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,games);
+    let output = await database.createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,games);
+    //log action
+    if (output.orderID){
+        await database.logUserAction(decodedJWT.username,`Created an order with the id of ${output.orderID}`);
+    }
     //send back the status code to the client
-    res.sendStatus(statusCode);
+    res.sendStatus(output.status);
 }
 
 function getDeliveryInfoSelect(req,res){

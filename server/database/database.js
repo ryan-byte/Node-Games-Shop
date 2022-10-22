@@ -406,14 +406,15 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
             let total = dbUtils.calculateGamesTotalMoney(gamesQuantityAndPriceList);
             //save order
             newOrder.total= total;
-            await ordersCollection.insertOne(newOrder);
-            return 201;
+            let output = await ordersCollection.insertOne(newOrder);
+            let orderID = output.insertedId.toString();
+            return {status:201,orderID:orderID};
         }catch (err){
             console.error("creating order error:\n\n" + err);
-            return 502;
+            return {status:502};
         }
     }else{
-        return 400;
+        return {status:400};
     }
 }
 
