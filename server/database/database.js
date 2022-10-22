@@ -275,6 +275,27 @@ async function getSaleHistory(gameID){
         return {error:"db error"};
     }
 }
+
+async function getLogs(start,limit,username,type){
+    try{
+        //prepare filter
+        let filter = {username:{$regex:`${username}`,$options:"i"},type}
+        if (username === ""){
+            delete filter.username;
+        }
+        if (type === ""){
+            delete filter.type;            
+        }
+        //make the request
+        const latestTimestamp = { timeStamp: -1 };
+        let logs = await logsCollection.find(filter).skip(start).limit(limit).sort(latestTimestamp).toArray();
+        let counts = await logsCollection.estimatedDocumentCount()
+        return {counts,logs};
+    }catch (err){
+        console.error("getting Logs error:\n\n" + err);
+        return {error:"db error"};
+    }
+}
 //normal user
 async function userExist(username,email){
     try{
@@ -394,14 +415,15 @@ async function createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,P
             let total = dbUtils.calculateGamesTotalMoney(gamesQuantityAndPriceList);
             //save order
             newOrder.total= total;
-            await ordersCollection.insertOne(newOrder);
-            return 201;
+            let output = await ordersCollection.insertOne(newOrder);
+            let orderID = output.insertedId.toString();
+            return {status:201,orderID:orderID};
         }catch (err){
             console.error("creating order error:\n\n" + err);
-            return 502;
+            return {status:502};
         }
     }else{
-        return 400;
+        return {status:400};
     }
 }
 
@@ -528,10 +550,10 @@ async function openID_userLogin(service,id,email,name){
 
 
 
-async function logUserAction(username,action){
+async function logUserAction(username,action,type){
     try{
         let timeStamp = Math.floor(Date.now() / 1000)
-        await logsCollection.insertOne({username,action,timeStamp});
+        await logsCollection.insertOne({username,action,type,timeStamp});
     }catch(err){
         console.error("log user action error:\n\n" + err);
     }
@@ -633,4 +655,5 @@ module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 getUserLatestOrders,
                 verifyUserSignup,createVerifiedUser,
                 getSaleHistory,
-                openID_userExist,openID_saveUser,openID_userLogin};
+                openID_userExist,openID_saveUser,openID_userLogin,
+                getLogs};

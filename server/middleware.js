@@ -286,6 +286,21 @@ function verifyGameInputs(req,res,next){
     else next();
 }
 
+function verifyLogsInputs(req,res,next){
+    let {start,limit,username,type} = req.query;
+    start = parseInt(start);
+    limit = parseInt(limit);
+    const invalid = typeof start === "undefined" ||
+                    isNaN(start) ||
+                    typeof limit === "undefined" ||
+                    isNaN(limit)||
+                    typeof username === "undefined"||
+                    typeof type === "undefined";
+                        
+    if (invalid) res.sendStatus(400);
+    else next();
+}
+
 //openID middleware
 function confirmAntiForgeryState(req,res,next){
     let state = req.query.state;
@@ -344,7 +359,7 @@ async function googleConnect_redirect_middleware(req,res,next){
 
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
                 add_new_image_upload_middleware,upadte_image_upload_middleware,
-                verifyGameInputs,
+                verifyGameInputs,verifyLogsInputs,
                 noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
                 unverifiedUsers,
             

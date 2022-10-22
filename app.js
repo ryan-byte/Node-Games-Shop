@@ -57,6 +57,10 @@ app.get("/api/games/sales/history/:gameID",rateLimiter_Middleware(),
                     server_middleware.api_verifyAdmin_middleware,
                     api_routes.api_getSalesHistory);
 
+app.get("/api/logs",rateLimiter_Middleware(),
+                    server_middleware.verifyLogsInputs,
+                    server_middleware.api_verifyAdmin_middleware,
+                    api_routes.api_getLogs);
 //normal users api
 app.get("/api/user/getOrders",rateLimiter_Middleware(),
                     server_middleware.onlyNormalUsersAllowed,
@@ -132,6 +136,9 @@ app.get("/adminpanel/add",server_middleware.webpage_verifyAdmin_middleware,
 
 app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
                             server_routes.getadminpanelOrderList);
+
+app.get("/adminpanel/logs",server_middleware.webpage_verifyAdmin_middleware,
+                            server_routes.getadminpanelLogs);
 
 
 app.listen(PORT, ()=>{
