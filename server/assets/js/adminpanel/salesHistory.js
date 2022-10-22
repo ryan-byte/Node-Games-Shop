@@ -34,7 +34,7 @@ function updateSalesHistoryHTML(data){
         <td colspan="4">${saleData.unitPrice}DT</td>
         <td colspan="4">${saleData.quantity}</td>
         <td colspan="4">${saleData.total}DT</td>
-        <td colspan="4">${date.toLocaleDateString("en-GB")}</td>
+        <td colspan="4">${date.toLocaleDateString("en-GB")} ${date.toLocaleTimeString("en-GB")}</td>
         `;
         salesTableBody.append(tr);
 

@@ -33,17 +33,13 @@ username.addEventListener("keydown",(ev)=>{
         showButton.click();
     }
 });
-logType.addEventListener("keydown",(ev)=>{
-    if (ev.key === "Enter"){
-        showButton.click();
-    }
+logType.addEventListener("change",(ev)=>{
+    showButton.click();
 })
 showButton.click();
 
 //main function
 async function viewLogs(start,username,type){
-    console.log(username);
-    console.log(type);
     canLoad = false;
     disableSearchButton(true);
     spinnerStatus(false);

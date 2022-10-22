@@ -67,9 +67,9 @@ async function api_addGame(req,res){
             //log the username action
             let username = res.locals.username;
             if (res.locals.imageName === undefined){
-                await database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`);
+                await database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock}) without an image`,"createGame");
             }else{
-                await database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`);
+                await database.logUserAction(username,`Added ${title}(type: ${type} /price: ${price}/ stock: ${stock})`,"createGame");
             }
         }
         res.sendStatus(dataStatus);
@@ -93,7 +93,7 @@ async function api_removeGame(req,res){
         }
         //log the username action
         let username = res.locals.username;
-        await database.logUserAction(username,`Deleted ${gameTitle} from the game list`);
+        await database.logUserAction(username,`Deleted ${gameTitle} from the game list`,"deleteGame");
     }
     res.sendStatus(status);
 }
@@ -141,9 +141,9 @@ async function api_updateGame(req,res){
         //log the username action
         let username = res.locals.username;
         if (imageName){
-            await database.logUserAction(username,`Updated ${oldValues.title} values ${JSON.stringify(updatedValuesObject)} / Image Updated`);
+            await database.logUserAction(username,`Updated ${oldValues.title} values ${JSON.stringify(updatedValuesObject)} / Image Updated`,"updateGame");
         }else{
-            await database.logUserAction(username,`Updated ${oldValues.title} values ${JSON.stringify(updatedValuesObject)}`);
+            await database.logUserAction(username,`Updated ${oldValues.title} values ${JSON.stringify(updatedValuesObject)}`,"updateGame");
         }
     }
     //send the response
@@ -172,7 +172,7 @@ async function api_declineOrder(req,res){
     const statusCode = await database.declineOrder(orderID);
     //log admin action
     if (statusCode === 200){
-        await database.logUserAction(username,`Declined with the order id of ${orderID}`);
+        await database.logUserAction(username,`Declined with the order id of ${orderID}`,"declineOrder");
     }
     //send a status code back
     res.sendStatus(statusCode);
@@ -191,7 +191,7 @@ async function api_verifyOrder(req,res){
             return;
         }
         res.status(200).send({error:false,message:"order has been verified"});
-        await database.logUserAction(username,`Verified with the order id of ${orderID}`);
+        await database.logUserAction(username,`Verified with the order id of ${orderID}`,"verifyGame");
         return;
     }
     //send a status code back
@@ -211,14 +211,12 @@ async function api_getSalesHistory(req,res){
 }
 
 async function api_getLogs(req,res){
+    /must verify query params in a middleware that must be called before this route/
     let {start,limit,username,type} = req.query;
     start = parseInt(start);
     limit = parseInt(limit);
 
-    console.log(username);
-    console.log(type);
-
-    let data = await database.getLogs(start,limit);
+    let data = await database.getLogs(start,limit,username,type);
     if (data["error"]){
         res.sendStatus(502)
     }else{

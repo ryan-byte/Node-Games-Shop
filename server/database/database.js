@@ -276,10 +276,19 @@ async function getSaleHistory(gameID){
     }
 }
 
-async function getLogs(start,limit){
+async function getLogs(start,limit,username,type){
     try{
+        //prepare filter
+        let filter = {username:{$regex:`${username}`,$options:"i"},type}
+        if (username === ""){
+            delete filter.username;
+        }
+        if (type === ""){
+            delete filter.type;            
+        }
+        //make the request
         const latestTimestamp = { timeStamp: -1 };
-        let logs = await logsCollection.find({}).skip(start).limit(limit).sort(latestTimestamp).toArray();
+        let logs = await logsCollection.find(filter).skip(start).limit(limit).sort(latestTimestamp).toArray();
         let counts = await logsCollection.estimatedDocumentCount()
         return {counts,logs};
     }catch (err){
@@ -541,10 +550,10 @@ async function openID_userLogin(service,id,email,name){
 
 
 
-async function logUserAction(username,action){
+async function logUserAction(username,action,type){
     try{
         let timeStamp = Math.floor(Date.now() / 1000)
-        await logsCollection.insertOne({username,action,timeStamp});
+        await logsCollection.insertOne({username,action,type,timeStamp});
     }catch(err){
         console.error("log user action error:\n\n" + err);
     }

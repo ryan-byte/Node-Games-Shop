@@ -60,7 +60,7 @@ async function postAdminLogin(req,res){
             });
 
             //save logs
-            await database.logUserAction(username,`Admin logged in`);
+            await database.logUserAction(username,`Admin logged in`,"login");
             //redirect
             res.redirect("/adminpanel");
         }catch (err){
@@ -153,7 +153,7 @@ async function postUserLogin(req,res){
             });
             
             //save logs
-            await database.logUserAction(username,`User logged in`);
+            await database.logUserAction(username,`User logged in`,"login");
             //redirect
             res.redirect("/");
         }catch (err){
@@ -200,7 +200,7 @@ async function googleConnect_redirect(req,res){
     });
     
     //save logs
-    await database.logUserAction(username,`User logged in`);
+    await database.logUserAction(username,`User logged in`,"login");
     //redirect
     res.redirect("/");
 
@@ -291,7 +291,7 @@ async function postOrder(req,res){
     let output = await database.createNewOrder(userID,FirstName,LastName,TelNumber,Address,City,PostalCode,games);
     //log action
     if (output.orderID){
-        await database.logUserAction(decodedJWT.username,`Created an order with the id of ${output.orderID}`);
+        await database.logUserAction(decodedJWT.username,`Created an order with the id of ${output.orderID}`,"createOrder");
     }
     //send back the status code to the client
     res.sendStatus(output.status);
