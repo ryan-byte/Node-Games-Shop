@@ -275,6 +275,18 @@ async function getSaleHistory(gameID){
         return {error:"db error"};
     }
 }
+
+async function getLogs(skip,limit){
+    try{
+        const latestTimestamp = { timeStamp: -1 };
+        let logs = await logsCollection.find({}).skip(skip).limit(limit).sort(latestTimestamp).toArray();
+        let counts = await logsCollection.estimatedDocumentCount()
+        return {counts,logs};
+    }catch (err){
+        console.error("getting Logs error:\n\n" + err);
+        return {error:"db error"};
+    }
+}
 //normal user
 async function userExist(username,email){
     try{
@@ -633,4 +645,5 @@ module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 getUserLatestOrders,
                 verifyUserSignup,createVerifiedUser,
                 getSaleHistory,
-                openID_userExist,openID_saveUser,openID_userLogin};
+                openID_userExist,openID_saveUser,openID_userLogin,
+                getLogs};

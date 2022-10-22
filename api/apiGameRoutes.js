@@ -191,6 +191,20 @@ async function api_getSalesHistory(req,res){
     }
 }
 
+async function api_getLogs(req,res){
+    let {skip,limit} = req.query;
+    skip = parseInt(skip);
+    limit = parseInt(limit);
+
+    let data = await database.getLogs(skip,limit);
+    if (data["error"]){
+        res.sendStatus(502)
+    }else{
+        res.status(200);
+        res.json(data);
+    }
+}
+
 //normal users api
 async function api_getLatestOrders(req,res){
     //get the user ID that is stored in the cookie
@@ -256,4 +270,5 @@ module.exports = {  api_getAllgames,
                     api_getOrder,
                     api_verifyOrder,api_declineOrder,
                     api_getSalesHistory,
-                    api_getLatestOrders,api_getAllUserDeliveryInfo,api_getSpecificUserDeliveryInfo}
+                    api_getLatestOrders,api_getAllUserDeliveryInfo,api_getSpecificUserDeliveryInfo,
+                    api_getLogs}
