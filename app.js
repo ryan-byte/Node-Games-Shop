@@ -137,6 +137,9 @@ app.get("/adminpanel/add",server_middleware.webpage_verifyAdmin_middleware,
 app.get("/adminpanel/order",server_middleware.webpage_verifyAdmin_middleware,
                             server_routes.getadminpanelOrderList);
 
+app.get("/adminpanel/logs",server_middleware.webpage_verifyAdmin_middleware,
+                            server_routes.getadminpanelLogs);
+
 
 app.listen(PORT, ()=>{
     console.log("\x1b[33m" + "server is on port " + PORT + "\x1b[0m");

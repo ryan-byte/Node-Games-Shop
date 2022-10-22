@@ -411,6 +411,10 @@ function getadminpanelOrderList(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/ordersList.html"));
 }
 
+function getadminpanelLogs(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/logs.html"));
+}
+
 
 
 
@@ -423,6 +427,7 @@ module.exports = {getHomepage,
                 getadminpanel,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
+                getadminpanelLogs,
                 logout,
                 getUserLogin,postUserLogin,getUserOrdersHistoryPage,
                 getUserSignup,postUserSignup,

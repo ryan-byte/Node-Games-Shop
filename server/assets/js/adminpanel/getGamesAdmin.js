@@ -1,7 +1,7 @@
 const searchButton = document.getElementById("search");
 const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
-const button = document.getElementById("spinner");
+const spinner = document.getElementById("spinner");
 
 getAllgames();
 //main function
@@ -87,9 +87,9 @@ function adminpanel_renderGame(tr,data){
 }
 function spinnerStatus(hide = true){
     if (hide){
-        button.style.display = "none";
+        spinner.style.display = "none";
     }else{
-        button.style.display = "block";
+        spinner.style.display = "block";
     }
 }
 

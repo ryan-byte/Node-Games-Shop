@@ -192,11 +192,11 @@ async function api_getSalesHistory(req,res){
 }
 
 async function api_getLogs(req,res){
-    let {skip,limit} = req.query;
-    skip = parseInt(skip);
+    let {start,limit} = req.query;
+    start = parseInt(start);
     limit = parseInt(limit);
 
-    let data = await database.getLogs(skip,limit);
+    let data = await database.getLogs(start,limit);
     if (data["error"]){
         res.sendStatus(502)
     }else{

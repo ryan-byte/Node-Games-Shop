@@ -276,10 +276,10 @@ async function getSaleHistory(gameID){
     }
 }
 
-async function getLogs(skip,limit){
+async function getLogs(start,limit){
     try{
         const latestTimestamp = { timeStamp: -1 };
-        let logs = await logsCollection.find({}).skip(skip).limit(limit).sort(latestTimestamp).toArray();
+        let logs = await logsCollection.find({}).skip(start).limit(limit).sort(latestTimestamp).toArray();
         let counts = await logsCollection.estimatedDocumentCount()
         return {counts,logs};
     }catch (err){

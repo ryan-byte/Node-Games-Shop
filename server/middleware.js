@@ -287,11 +287,11 @@ function verifyGameInputs(req,res,next){
 }
 
 function verifyLogsInputs(req,res,next){
-    let {skip,limit} = req.query;
-    skip = parseInt(skip);
+    let {start,limit} = req.query;
+    start = parseInt(start);
     limit = parseInt(limit);
-    const invalid = typeof skip === "undefined" ||
-                    isNaN(skip) ||
+    const invalid = typeof start === "undefined" ||
+                    isNaN(start) ||
                     typeof limit === "undefined" ||
                     isNaN(limit);
                         

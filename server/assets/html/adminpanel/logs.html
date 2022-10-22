@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin panel</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/spinner.css">
+    <link rel="stylesheet" href="/css/adminpanel.css">
+
+    <link rel="stylesheet" href="/css/newAlert.css">
+    <script defer src="/js/newAlert.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand" href="#">Admin panel</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link"  href="/adminpanel" >Manage Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link "  href="/adminpanel/add">Add New Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminpanel/order">Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page">Logs</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item" id = "loginOrLogoutButtonContainer">
+                    <form action="/logout" method="post">
+                        <button id = "submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container-xxl my-md-4 bd-layout">
+        <div class="bd-main order-1">
+            
+            <div class="container-fluid">
+                <div class="d-flex justify-content-center">
+                    <div class="search-container">
+                        <button id = "viewLogsButton" class="btn btn-outline-primary">show</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>  
+                            <th scope="col" colspan="4">User</th>
+                            <th scope="col" colspan="4">Action</th>
+                            <th scope="col" colspan="1">Date</th>   
+                        </tr>
+                    </thead>
+                    <tbody id = "logsContainer">
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div id = "spinner" class="spinner-border" role="status">
+                <span  class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </main>
+
+
+    <footer></footer>
+
+    <script defer src="/js/adminpanel/logs.js"></script>
+
+    <script defer src="/js/bootstrap.min.js"></script>
+    <script src="/js/changeUiOnLoggedUsers.js"></script>
+
+    <script defer src="/js/addFooter.js"></script>
+</body>
+</html>
