@@ -1,4 +1,5 @@
 const loginButtonContainer = document.getElementById("loginOrLogoutButtonContainer");
+const adminLoginButton = document.getElementById("adminLoginButton");
 
 onload();
 
@@ -9,6 +10,11 @@ async function onload(){
         let userData = JSON.parse(decodeURIComponent(userDataCookie));
         if (userData.admin) adminUser_changeLoginButtonToUsername(userData.username);
         else normalUser_changeLoginButtonToUsername(userData.username);
+        //hide the admin login button
+        if (adminLoginButton!==null){
+            console.log("removing admin login button");
+            adminLoginButton.style.display = "none";
+        }
 
     }catch(err){
         console.log("User is not logged in");

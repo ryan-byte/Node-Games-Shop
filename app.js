@@ -131,6 +131,8 @@ app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,
 //admin allowed pages
 app.get("/adminpanel",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.getadminpanel);
+app.get("/adminpanel/manage",server_middleware.webpage_verifyAdmin_middleware,
+                    server_routes.getadminpanelManage);
 app.get("/adminpanel/add",server_middleware.webpage_verifyAdmin_middleware,
                     server_routes.getadminpanelAddGame);
 
