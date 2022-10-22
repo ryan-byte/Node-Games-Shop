@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage games</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/spinner.css">
+    <link rel="stylesheet" href="/css/adminpanel.css">
+
+    <link rel="stylesheet" href="/css/newAlert.css">
+    <script defer src="/js/newAlert.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminpanel/manage">Manage Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link "  href="/adminpanel/add">Add New Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminpanel/order">Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminpanel/logs">Logs</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item" id = "loginOrLogoutButtonContainer">
+                    <form action="/logout" method="post">
+                        <button id = "submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container-fluid my-md-4 bd-layout p-4">
+        <div class="jumbotron text-center">
+            <h1 class="display-4">Welcome!</h1>
+            <p class="lead">This is the admin panel, here you can manage games, manage orders and view logs</p>
+            <hr class="my-4">
+            <div class="container-fluid">
+                <div class="row">
+                    <div id = "leftColumn" class="col"></div>
+                    <div id = "centerColumn" class="col-5">
+                        <div class="container-fluid text-start">
+                            <div class="row">
+                                <div class="col"><a href="/adminpanel/manage" class="link-primary">manage games</a></div>
+                                <div class="col">(update/delete/sales games) </div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><a href="/adminpanel/add" class="link-primary">add games</a> </div>
+                                <div class="col">(create games) </div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><a href="/adminpanel/order" class="link-primary">order</a></div>
+                                <div class="col">(view/verify/decline orders) </div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><a href="/adminpanel/logs" class="link-primary">logs</a></div>
+                                <div class="col">(view logs)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id = "rightColumn" class="col"></div>
+                </div>
+        </div>
+    </main>
+    
+    <footer></footer>
+
+    <script defer src="/js/adminpanel/adminpanelWelcome.js"></script>
+
+    <script defer src="/js/bootstrap.min.js"></script>
+    <script src="/js/changeUiOnLoggedUsers.js"></script>
+
+    <script defer src="/js/addFooter.js"></script>
+</body>
+</html>

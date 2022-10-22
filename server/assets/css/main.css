@@ -97,6 +97,21 @@ main{
         height: 300px;
     }
 }
+
+@media only screen and (min-width: 1600px) {
+    .gameItem{
+        width: 15%;
+        height: 300px;
+    }
+}
+
+@media only screen and (min-width: 2300px) {
+    .gameItem{
+        width: 10%;
+        height: 300px;
+    }
+}
+
 .cart{
     cursor: pointer;
 }

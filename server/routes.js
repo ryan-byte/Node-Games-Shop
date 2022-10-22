@@ -408,6 +408,9 @@ function getUserOrdersHistoryPage(req,res){
 
 //admin users only
 function getadminpanel(req,res){
+    res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/index.html"));
+}
+function getadminpanelManage(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/adminpanel/manageGames.html"));
 }
 function getadminpanelAddGame(req,res){
@@ -432,6 +435,7 @@ module.exports = {getHomepage,
                 getAdminLogin,
                 postAdminLogin,
                 getadminpanel,
+                getadminpanelManage,
                 getadminpanelAddGame,
                 getadminpanelOrderList,
                 getadminpanelLogs,
