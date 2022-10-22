@@ -51,13 +51,34 @@
     <main class="container-xxl my-md-4 bd-layout">
         <div class="bd-main order-1">
             
-            <div class="container-fluid">
-                <div class="d-flex justify-content-center">
-                    <div class="search-container">
-                        <button id = "viewLogsButton" class="btn btn-outline-primary">show</button>
+            <div id = "filterPanel" class="container-fluid p-3">                
+                <div class = "row input-group ">
+                    <div class="col">
+                        
+                    </div>
+                    <div class="col">
+                        <input required name="username" id="username" placeholder="username" type="text" class="form-control">
+                    </div>
+                    <div class="col">
+                        <select class="form-select" id = "logType" aria-label="Default select example">
+                            <option value="" selected>All logs</option>
+                            <option value="login">Login</option>
+                            <option value="createGame">Create game</option>
+                            <option value="updateGame">Update game</option>
+                            <option value="deleteGame">Delete game</option>
+                            <option value="verifyGame">Verify order</option>
+                            <option value="declineOrder">Decline order</option>
+                            <option value="createOrder">Create order</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button id = "showButton" class = "btn btn-primary">Show</button>
+                        
                     </div>
                 </div>
             </div>
+
+            <br>
             
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">

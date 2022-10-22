@@ -211,9 +211,12 @@ async function api_getSalesHistory(req,res){
 }
 
 async function api_getLogs(req,res){
-    let {start,limit} = req.query;
+    let {start,limit,username,type} = req.query;
     start = parseInt(start);
     limit = parseInt(limit);
+
+    console.log(username);
+    console.log(type);
 
     let data = await database.getLogs(start,limit);
     if (data["error"]){

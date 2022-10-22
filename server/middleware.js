@@ -287,13 +287,15 @@ function verifyGameInputs(req,res,next){
 }
 
 function verifyLogsInputs(req,res,next){
-    let {start,limit} = req.query;
+    let {start,limit,username,type} = req.query;
     start = parseInt(start);
     limit = parseInt(limit);
     const invalid = typeof start === "undefined" ||
                     isNaN(start) ||
                     typeof limit === "undefined" ||
-                    isNaN(limit);
+                    isNaN(limit)||
+                    typeof username === "undefined"||
+                    typeof type === "undefined";
                         
     if (invalid) res.sendStatus(400);
     else next();

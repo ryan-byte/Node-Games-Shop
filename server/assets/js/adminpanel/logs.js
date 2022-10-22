@@ -1,18 +1,14 @@
 const logsContainer = document.getElementById("logsContainer");
-const viewLogsButton = document.getElementById("viewLogsButton");
 const spinner = document.getElementById("spinner");
+const username = document.getElementById("username");
+const logType = document.getElementById("logType");
+const showButton = document.getElementById("showButton");
 const limit = 20;
 
 let currentLogDoc = 0;
 let totalLogsDocs = 0;
 let canLoad = true;
 
-viewLogsButton.addEventListener("click",(ev)=>{
-    logsContainer.innerHTML = "";
-    currentLogDoc = 0;
-    viewLogs(currentLogDoc);
-})
-viewLogsButton.click();
 
 //detect when the user reached the bottom of the page
 window.onscroll = function(ev) {
@@ -26,15 +22,34 @@ window.onscroll = function(ev) {
         }
     }
 };
+//event
+showButton.addEventListener("click",(ev)=>{
+    logsContainer.innerHTML = "";
+    currentLogDoc = 0;
+    viewLogs(currentLogDoc,username.value,logType.value);
+});
+username.addEventListener("keydown",(ev)=>{
+    if (ev.key === "Enter"){
+        showButton.click();
+    }
+});
+logType.addEventListener("keydown",(ev)=>{
+    if (ev.key === "Enter"){
+        showButton.click();
+    }
+})
+showButton.click();
 
 //main function
-async function viewLogs(start = 0){
+async function viewLogs(start,username,type){
+    console.log(username);
+    console.log(type);
     canLoad = false;
+    disableSearchButton(true);
     spinnerStatus(false);
-    disableViewLogsButton(true);
     try{
 
-        const request = await fetch(`/api/logs?start=${start}&limit=${limit}`);
+        const request = await fetch(`/api/logs?start=${start}&limit=${limit}&username=${username}&type=${type}`);
         requestLogs_statusCodeOutput(request.status);
         const jsonData = await request.json();
 
@@ -46,8 +61,8 @@ async function viewLogs(start = 0){
             console.error(err);
         }
     }
+    disableSearchButton(false);
     spinnerStatus(true);
-    disableViewLogsButton(false);
     canLoad = true;
 }
 
@@ -71,13 +86,13 @@ function showLogs(logsList){
 }
 
 //utils functions
-function disableViewLogsButton (bool){
-    viewLogsButton.disabled = bool;
-}
 function spinnerStatus(hide = true){
     if (hide){
         spinner.style.display = "none";
     }else{
         spinner.style.display = "block";
     }
+}
+function disableSearchButton (bool){
+    showButton.disabled = bool;
 }
