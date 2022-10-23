@@ -8,21 +8,9 @@ main{
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
 
-.gameImage{
-    width: 100%;
-    height:100%;
-    background-size: auto 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-}
 .cartImage{
     width: 100%;
     height:100%;
-}
-.gameItem:hover>.gameImage{
-    animation-name: imageHoverAnimation;
-    animation-duration: 0.3s;
-    animation-fill-mode: forwards;
 }
 @keyframes imageHoverAnimation {
     100%{
@@ -56,25 +44,14 @@ main{
     color: rgb(255, 255, 255);
     display: none;
 }
-.gameItem:hover>.info, .gameItem:hover>.title, .gameItem:hover>.gameBottom{
-    display: block;
-}
 .price{
     text-align: center;
 }
 
 
-.gameItem{
-    position: relative;
-    width: 80%;
-    height: 200px;
-}
 .search-container{
     display: flex;
     max-width: 500px;
-}
-.addGameForm{
-    max-width: 1000px;
 }
 @media only screen and (max-width: 500px) {
     .search-container{
@@ -82,39 +59,26 @@ main{
 
     }
 }
-@media only screen and (min-width: 500px) {
-    .gameItem{
-        width: 30%;
-        height: 200px;
-    }
-}
-@media only screen and (min-width: 800px) {
-    .gameItem{
-        width: 20%;
-        height: 200px;
-    }
+.addGameForm{
+    max-width: 1000px;
 }
 
-@media only screen and (min-width: 1000px) {
-    .gameItem{
-        width: 20%;
-        height: 300px;
-    }
+
+
+.gameItemWidth{
+    width: 200px;
+}
+.gameItemHeight{
+    height: 425px;
+}
+.gameImageMaxHeight{
+    max-height: 250px;
+}
+.gameImageHolderHeight{
+    height: 250px;
 }
 
-@media only screen and (min-width: 1600px) {
-    .gameItem{
-        width: 15%;
-        height: 300px;
-    }
-}
 
-@media only screen and (min-width: 2300px) {
-    .gameItem{
-        width: 10%;
-        height: 300px;
-    }
-}
 
 .cart{
     cursor: pointer;
