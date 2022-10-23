@@ -72,19 +72,17 @@
 
     <!-- Modal -->
     <div class="modal fade " id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-fullscreen-xl-down modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
             <h5 class="modal-title" id="cartModalLabel">Cart</h5>
             <button id = "closeModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body container-fluid">
-                <div class="row">
-                    <div class="col border-end" id="gamesSide">
-                        
-                    </div>
-                    <div class="col-3 ms-5">
-                        <div class="position-fixed">
+                <div class="d-flex flex-column bd-highlight mb-3">
+                    
+                    <div class="bd-highlight p-2">
+                        <div>
                             <div style="text-align: center;font: bold;">
                                 <b>total:</b> <span id = "totalMoney"></span>.000 DT<br><br>
                                 <div id = "cartMoneyButtons">
@@ -94,6 +92,12 @@
                             </div>
                         </div>
                     </div>
+                    <hr>
+                    <div class="bd-highlight p-2" id="gamesSide">
+                        
+                    </div>
+                </div>
+                    
                 </div>
             </div>
             <div class="modal-footer">
