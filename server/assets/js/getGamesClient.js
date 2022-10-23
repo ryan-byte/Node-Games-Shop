@@ -3,8 +3,6 @@ const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
 const spinner = document.getElementById("spinner");
 
-console.log(window.innerWidth);
-
 const limit = 12;
 let currentLogDoc = 0;
 let totalLogsDocs = 0;
@@ -70,9 +68,7 @@ function getGames_statusCodeOutput(statusCode){
 function showGames(gamesData){
     gamesData.forEach(data => {
         let div = document.createElement("div");
-        div.classList.add("m-2");
-        div.classList.add("gameItemHeight");
-        div.classList.add("gameItemWidth");
+        div.classList.add("m-2","gameItemHeight","gameItemWidth");
         renderGame(div,data);
         itemContainer.appendChild(div)
     });
@@ -89,9 +85,10 @@ function renderGame(div,data){
             <img class = "gameItemWidth gameImageMaxHeight"  src="${data.imageURL}" class="card-img-top" alt="${data.title} image">
         </div>
         <div class="card-body position-relative">
-            <h5 class="card-title text-center">${data.title}</h5>
+            <h6 class="card-title text-center">${data.title}</h6>
             <div class = "position-absolute bottom-0 start-50 translate-middle-x text-center" style = "width:100%">
-                <h5 class="card-title" style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></h5>
+                <b> ${data.price}DT </b>
+                <p class="card-title" style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></p>
                 <button type="button" class="btn btn-warning" onclick="storeGameInCart(this.parentElement.parentElement.parentElement.parentElement.dataset.allData)">add to cart</button>
             </div>
         </div>
