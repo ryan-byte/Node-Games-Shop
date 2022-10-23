@@ -3,7 +3,7 @@ const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
 const spinner = document.getElementById("spinner");
 
-const limit = 8;
+const limit = 12;
 let currentLogDoc = 0;
 let totalLogsDocs = 0;
 let canLoad = true;
@@ -68,8 +68,7 @@ function getGames_statusCodeOutput(statusCode){
 function showGames(gamesData){
     gamesData.forEach(data => {
         let div = document.createElement("div");
-        div.classList.add("gameItem");
-        div.classList.add("m-2");
+        div.classList.add("m-2","gameItemHeight","gameItemWidth");
         renderGame(div,data);
         itemContainer.appendChild(div)
     });
@@ -81,16 +80,19 @@ function renderGame(div,data){
     div.dataset.price = data.price;
     div.dataset.allData = JSON.stringify(data);
     div.innerHTML = `
-    <div class="gameImage" style="background-image:url('${data.imageURL}');"></div>
-    <div class="title">
-        <b> ${data.title} </b>
-    </div>
-    <div class="info" >
-        <h3 class="price"><b> ${data.price}DT </b></h3>
-        <h5 style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></h5>
-        <button type="button" class="btn btn-warning" onclick="storeGameInCart(this.parentElement.parentElement.dataset.allData)">add to cart</button>
-    </div>
-    `;
+    <div class="card gameItemHeight">
+        <div class = " border gameItemWidth gameImageHolderHeight">
+            <img class = "gameItemWidth gameImageMaxHeight"  src="${data.imageURL}" class="card-img-top" alt="${data.title} image">
+        </div>
+        <div class="card-body position-relative">
+            <h6 class="card-title text-center">${data.title}</h6>
+            <div class = "position-absolute bottom-0 start-50 translate-middle-x text-center" style = "width:100%">
+                <b> ${data.price}DT </b>
+                <p class="card-title" style="color: ${data.stock>0 ? "rgb(0,255,0)":"rgb(255,0,0)"};"><b> ${data.stock>0 ? "In stock":"Out of stock"} </b></p>
+                <button type="button" class="btn btn-warning" onclick="storeGameInCart(this.parentElement.parentElement.parentElement.parentElement.dataset.allData)">add to cart</button>
+            </div>
+        </div>
+    </div>`;
 }
 
 

@@ -14,7 +14,7 @@
     <script defer src="/js/newAlert.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Game Shop</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,8 +45,11 @@
             <span  class="visually-hidden">Loading...</span>
         </div><br>
         <div class = "d-flex flex-row bd-highlight mb-3 justify-content-center ">
-            <a id = "createInfo" href = "/order/information/add" type="button" class="btn btn-success mx-3">Add Informations</a>
-            <button id = "edit" type="button" class="btn btn-warning mx-3">Edit</button>
+            <a id = "createInfo" href = "/order/information/add" type="button" class="btn btn-success mx-3">Create</a>
+            <button id = "edit" type="button" class="btn btn-warning mx-3">Modify</button>
+            <button id = "deleteInfo" type="button" class="btn btn-danger mx-3">Delete</button>
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto">
             <button id = "next" type="button" class="btn btn-primary mx-3">Next</button>
         </div>
     </main>

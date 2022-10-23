@@ -84,7 +84,7 @@ function showCartGames(cart){
         <div>
             <b>Title: </b> ${cart[i].title} <br>
             <b>Price: </b> ${cart[i].price} DT <br>
-            <b>Type: </b> ${cart[i].stock} <br>
+            <b>Type: </b> ${cart[i].type} <br>
             <b>Quantity: </b> <input data-id="${cart[i]["_id"]}" style="max-width:50px" min = "1" class = "quantity" type="number" onchange="quantityChanged(this)" value = "${currentGameQuantity}"><br>
         </div>
         <div class = "garbageButton position-absolute top-0 end-0" data-id = "${cart[i]["_id"]}" onclick = "deleteGameFromCart(this)">

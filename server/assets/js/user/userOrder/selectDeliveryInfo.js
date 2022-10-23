@@ -1,6 +1,7 @@
 const infoContainer = document.getElementById("infoContainer");
 const next = document.getElementById("next");
 const edit = document.getElementById("edit");
+const deleteInfo = document.getElementById("deleteInfo");
 const spinner = document.getElementById("spinner");
 
 
@@ -87,6 +88,7 @@ edit.addEventListener("click",async (ev)=>{
 
 
 
+
 async function selectRequest(deliveryInfoId,redirectURL){
     let data = "deliveryInfoId=" +deliveryInfoId; 
     let request = await fetch("/order/information/select",{
@@ -103,6 +105,46 @@ async function selectRequest(deliveryInfoId,redirectURL){
     }
 }
 
+//deleteInfo button functions
+deleteInfo.addEventListener("click",async (ev)=>{
+    disableSelectButtons(true);
+    spinnerStatus(false);
+    if (selectedElement === ""){
+        return;
+    }
+    let deliveryInfoId = selectedElement.dataset.id;
+    let status = await deleteDeliveryInfoRequest(deliveryInfoId);
+    disableSelectButtons(false);
+    spinnerStatus(true);
+
+    if (status === 200){
+        selectedElement.remove();
+    }
+})
+
+async function deleteDeliveryInfoRequest(deliveryInfoId){
+    let endpoint = "/order/information/delete";
+    let data = "deliveryInfoId=" +deliveryInfoId; 
+    let request = await fetch(endpoint,{
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method:"delete",
+        body:data
+    })
+    let status = request.status;
+    deleteStatusFeedback(status)
+    return status;
+}
+function deleteStatusFeedback(status){
+    if (status === 404){
+        newAlert_danger("Delivery info Not Found (reload the page)");
+    }else if (status === 502){
+        newAlert_danger("Bad Gateway");
+    }else if (status === 400){
+        newAlert_danger("Bad parameters");
+    }
+}
 //user feedback
 function statusFeedback(status){
     if (status === 404){
@@ -130,7 +172,9 @@ function disableSelectButtons(bool){
     if (bool){
         next.classList.add("disabled");
         edit.classList.add("disabled");
+        deleteInfo.classList.add("disabled");
     }else{
+        deleteInfo.classList.remove("disabled");
         next.classList.remove("disabled");
         edit.classList.remove("disabled");
     }
