@@ -120,12 +120,17 @@ app.post("/order/confirmation",server_middleware.onlyNormalUsersAllowed,
 app.get("/order/information/add",server_middleware.onlyNormalUsersAllowed,
                     server_routes.getDeliveryInfoAdd);
 app.post("/order/information/add",server_middleware.onlyNormalUsersAllowed,
+                    server_middleware.verifyDeliveryInfoInput_add,
                     server_routes.postDeliveryInfoAdd);
 
 app.get("/order/information/edit",server_middleware.onlyNormalUsersAllowed,
                     server_routes.getDeliveryInfoEdit);
 app.put("/order/information/edit",server_middleware.onlyNormalUsersAllowed,
+                    server_middleware.verifyDeliveryInfoInput_edit,
                     server_routes.putDeliveryInfoEdit);
+                    
+app.delete("/order/information/delete",server_middleware.onlyNormalUsersAllowed,
+                    server_routes.deleteDeliveryInfo);
 
 app.get("/userOrders",server_middleware.onlyNormalUsersAllowed,
                     server_routes.getUserOrdersHistoryPage);

@@ -48,7 +48,6 @@ const getGamesByTitle = async (title,start,limit)=>{
         const query = {title:{$regex:`${title}`,$options:"i"}};
         let allGames = await gamesCollection.find(query).limit(limit).skip(start).toArray()
         let counts = await gamesCollection.countDocuments(query);
-        console.log(counts);
         return {counts,data:allGames};
     }catch (err){
         console.error("getting all games by title error:\n\n" + err);
@@ -500,6 +499,20 @@ async function editUserDeliveryInfo(userID,deliveryInfoId,FirstName,LastName,Tel
     }
 }
 
+async function deleteUserDeliveryInfo(userID,deliveryInfoId){
+    try{
+        const filter = {"_id": new ObjectId(deliveryInfoId),userID};
+        await userInfoCollection.deleteOne(filter);
+        return 200;
+    }catch (err){
+        if(err instanceof BSONTypeError){
+            return 404;
+        }else{
+            return 502;
+        };
+    }
+}
+
 async function getAllUserDeliveryInfo(userID){
     try{
         let data = await userInfoCollection.find({userID}).toArray();
@@ -667,7 +680,7 @@ async function reduceStock(gamesIDList,gamesIDAndQuantity){
 module.exports = {getAllgames,getGamesByTitle,getGamesByIDs,
                 addNewGame,removeGame,updateGame,
                 createAdmin,getAdmin,verifyAdmin,logUserAction,
-                createNewOrder,getOrders,addUserDeliveryInfo,editUserDeliveryInfo,
+                createNewOrder,getOrders,addUserDeliveryInfo,editUserDeliveryInfo,deleteUserDeliveryInfo,
                 getAllUserDeliveryInfo,getSpecificUserDeliveryInfo,
                 verifyOrder,declineOrder,
                 verifyUserCredentials,createUnverifiedUser,deleteUnverifiedUser,

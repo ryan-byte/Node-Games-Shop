@@ -314,6 +314,55 @@ function verifyLogsInputs(req,res,next){
     else next();
 }
 
+function verifyDeliveryInfoInput_add(req,res,next){
+    const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
+    let parsedTelNumber = parseInt(TelNumber);
+    let invalid =   FirstName === ""||
+                    typeof FirstName === "undefined"||
+                    LastName === ""||
+                    typeof LastName === "undefined"||
+                    TelNumber === ""||
+                    typeof TelNumber === "undefined"||
+                    isNaN(parsedTelNumber) ||
+                    parsedTelNumber < 10000000 ||
+                    parsedTelNumber > 99999999 ||
+                    Address === ""||
+                    typeof Address === "undefined"||
+                    City === ""||
+                    typeof City === "undefined"||
+                    PostalCode === ""||
+                    typeof PostalCode === "undefined";
+    if (invalid){
+        res.sendStatus(400);
+        return;
+    }else next();
+}
+function verifyDeliveryInfoInput_edit(req,res,next){
+    const {deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
+    let parsedTelNumber = parseInt(TelNumber);
+    let invalid =   deliveryInfoId === ""||
+                    typeof deliveryInfoId === "undefined"||
+                    FirstName === ""||
+                    typeof FirstName === "undefined"||
+                    LastName === ""||
+                    typeof LastName === "undefined"||
+                    TelNumber === ""||
+                    typeof TelNumber === "undefined"||
+                    isNaN(parsedTelNumber) ||
+                    parsedTelNumber < 10000000 ||
+                    parsedTelNumber > 99999999 ||
+                    Address === ""||
+                    typeof Address === "undefined"||
+                    City === ""||
+                    typeof City === "undefined"||
+                    PostalCode === ""||
+                    typeof PostalCode === "undefined";
+    if (invalid){
+        res.sendStatus(400);
+        return;
+    }else next();
+}
+
 //openID middleware
 function confirmAntiForgeryState(req,res,next){
     let state = req.query.state;
@@ -376,4 +425,5 @@ module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
                 noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
                 unverifiedUsers,
             
-                googleConnect_redirect_middleware,confirmAntiForgeryState};
+                googleConnect_redirect_middleware,confirmAntiForgeryState,
+                verifyDeliveryInfoInput_add,verifyDeliveryInfoInput_edit};

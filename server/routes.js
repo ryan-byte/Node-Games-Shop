@@ -326,27 +326,8 @@ function getDeliveryInfoAdd(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/addDeliveryInfo.html"));
 }
 async function postDeliveryInfoAdd(req,res){
+    //must verify inputs in a middleware
     const {FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
-    let parsedTelNumber = parseInt(TelNumber);
-    let invalid =   FirstName === ""||
-                    typeof FirstName === "undefined"||
-                    LastName === ""||
-                    typeof LastName === "undefined"||
-                    TelNumber === ""||
-                    typeof TelNumber === "undefined"||
-                    isNaN(parsedTelNumber) ||
-                    parsedTelNumber < 10000000 ||
-                    parsedTelNumber > 99999999 ||
-                    Address === ""||
-                    typeof Address === "undefined"||
-                    City === ""||
-                    typeof City === "undefined"||
-                    PostalCode === ""||
-                    typeof PostalCode === "undefined";
-    if (invalid){
-        res.sendStatus(400);
-        return;
-    }
     //last thing is to get the user ID that is stored in the cookie
     //note that the cookie must be verified in a middleware before this route
     let allCookies = cookie.parse(req.headers.cookie || "");
@@ -363,25 +344,23 @@ function getDeliveryInfoEdit(req,res){
     res.status(200).sendFile(path.join(__dirname + "/assets/html/user/userOrder/editDeliveryInfo.html"));
 }
 async function putDeliveryInfoEdit(req,res){
+    //must verify inputs in a middleware
     const {deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode} = req.body;
-    let parsedTelNumber = parseInt(TelNumber);
+    //last thing is to get the user ID that is stored in the cookie
+    //note that the cookie must be verified in a middleware before this route
+    let allCookies = cookie.parse(req.headers.cookie || "");
+    let accessToken = allCookies[accessCookieName];
+    let userID = jwt.decode(accessToken).userID;
+    //when everything is fine then add the order to the database
+    let statusCode = await database.editUserDeliveryInfo(userID,deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode);
+    //send back the status code to the client
+    res.sendStatus(statusCode); 
+}
+
+async function deleteDeliveryInfo(req,res){
+    const {deliveryInfoId} = req.body;
     let invalid =   deliveryInfoId === ""||
-                    typeof deliveryInfoId === "undefined"||
-                    FirstName === ""||
-                    typeof FirstName === "undefined"||
-                    LastName === ""||
-                    typeof LastName === "undefined"||
-                    TelNumber === ""||
-                    typeof TelNumber === "undefined"||
-                    isNaN(parsedTelNumber) ||
-                    parsedTelNumber < 10000000 ||
-                    parsedTelNumber > 99999999 ||
-                    Address === ""||
-                    typeof Address === "undefined"||
-                    City === ""||
-                    typeof City === "undefined"||
-                    PostalCode === ""||
-                    typeof PostalCode === "undefined";
+                    typeof deliveryInfoId === "undefined";
     if (invalid){
         res.sendStatus(400);
         return;
@@ -392,10 +371,9 @@ async function putDeliveryInfoEdit(req,res){
     let accessToken = allCookies[accessCookieName];
     let userID = jwt.decode(accessToken).userID;
     //when everything is fine then add the order to the database
-    let statusCode = await database.editUserDeliveryInfo(userID,deliveryInfoId,FirstName,LastName,TelNumber,Address,City,PostalCode);
+    let statusCode = await database.deleteUserDeliveryInfo(userID,deliveryInfoId);
     //send back the status code to the client
     res.sendStatus(statusCode);
-    
 }
 
 function getOrderConfirmationPage(req,res){
@@ -431,7 +409,7 @@ function getadminpanelLogs(req,res){
 
 module.exports = {getHomepage,
                 postOrder,getDeliveryInfoSelect,getDeliveryInfoAdd,getDeliveryInfoEdit,putDeliveryInfoEdit,
-                postDeliveryInfoAdd,selectDeliveryInfo,getOrderConfirmationPage,
+                postDeliveryInfoAdd,selectDeliveryInfo,getOrderConfirmationPage,deleteDeliveryInfo,
                 getAdminLogin,
                 postAdminLogin,
                 getadminpanel,
