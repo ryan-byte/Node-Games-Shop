@@ -22,19 +22,21 @@ app.use(express.static('./server/assets'));
 
 //public api
 app.get("/api/games",rateLimiter_Middleware(),
+                    server_middleware.verifyGetGameInputs,
                     api_routes.api_getAllgames);
 app.get("/api/games/id/:ids",rateLimiter_Middleware(),
                     api_routes.api_getMultipleGamesByID);
 app.get("/api/games/:title",rateLimiter_Middleware(),
+                    server_middleware.verifyGetGameInputs,
                     api_routes.api_getGameByTitle);
 //admins api
 app.post("/api/games",rateLimiter_Middleware(),
-                    server_middleware.verifyGameInputs,
+                    server_middleware.verifyPostGameInputs,
                     server_middleware.api_verifyAdmin_middleware,
                     server_middleware.add_new_image_upload_middleware,
                     api_routes.api_addGame);
 app.put("/api/games/:id",rateLimiter_Middleware(),
-                    server_middleware.verifyGameInputs,
+                    server_middleware.verifyPostGameInputs,
                     server_middleware.api_verifyAdmin_middleware,
                     server_middleware.upadte_image_upload_middleware,
                     api_routes.api_updateGame);

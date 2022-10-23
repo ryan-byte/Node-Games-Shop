@@ -1,6 +1,6 @@
 async function deleteGame(elem){
     //confirm alert function
-    let confirmation = confirm("Are you sure?");
+    let confirmation = confirm("Are you sure? (the game sales history will be deleted forever)");
     if (confirmation){
         //get the object id
         let gameElem = elem.parentElement.parentElement;

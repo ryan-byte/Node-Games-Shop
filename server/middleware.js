@@ -267,7 +267,7 @@ function upadte_image_upload_middleware(req,res,next){
     req.pipe(bb);
 }
 
-function verifyGameInputs(req,res,next){
+function verifyPostGameInputs(req,res,next){
     let {title,price,stock,type} = req.query;
     price = parseInt(price);
     stock = parseInt(stock);
@@ -281,6 +281,19 @@ function verifyGameInputs(req,res,next){
                         type === ""||
                         price === ""||
                         stock === "";
+                        
+    if (invalid) res.sendStatus(400);
+    else next();
+}
+
+function verifyGetGameInputs(req,res,next){
+    let {start,limit} = req.query;
+    start = parseInt(start);
+    limit = parseInt(limit);
+    const invalid = typeof start === "undefined" ||
+                    isNaN(start) ||
+                    typeof limit === "undefined" ||
+                    isNaN(limit);
                         
     if (invalid) res.sendStatus(400);
     else next();
@@ -359,7 +372,7 @@ async function googleConnect_redirect_middleware(req,res,next){
 
 module.exports = {api_verifyAdmin_middleware,webpage_verifyAdmin_middleware,
                 add_new_image_upload_middleware,upadte_image_upload_middleware,
-                verifyGameInputs,verifyLogsInputs,
+                verifyPostGameInputs,verifyLogsInputs,verifyGetGameInputs,
                 noLoggedUserAllowed,onlyNormalUsersAllowed,anyLoggedUser,
                 unverifiedUsers,
             
