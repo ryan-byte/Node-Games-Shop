@@ -4,12 +4,17 @@ const input_newGameType = document.getElementById("newGameType");
 const input_newGamePrice = document.getElementById("newGamePrice");
 const input_newGameStock = document.getElementById("newGameStock");
 const input_imageFileUpload = document.getElementById("imageFileUpload");
+const spinner = document.getElementById("spinner");
+const addButton = document.getElementById("addButton");
 
 const validationError = document.getElementById("validationError");
 
 
 addGameForm.addEventListener("submit",async (ev)=>{
     ev.preventDefault();
+    //feedback
+    spinnerStatus(false);
+    disableAddButton(true);
     //Get all form data
     let title = input_newGameTitle.value;
     let type = input_newGameType.value;
@@ -26,6 +31,9 @@ addGameForm.addEventListener("submit",async (ev)=>{
         //show an output based on the status code
         addGame_statusCodeOutput(statusCode)
     }
+    //feedback
+    spinnerStatus(true);
+    disableAddButton(false);
 })
 
 function addGame_input_verification(price,stock){
@@ -61,6 +69,7 @@ function addGame_statusCodeOutput(statusCode){
         input_newGamePrice.value  = "";
         input_newGameType.value = "";
         input_newGameStock.value  = "";
+        input_imageFileUpload.value = "";
     }else if (statusCode === 415){
         newAlert_danger("uploading image failed must be (jpeg/jng)")
     }else if (statusCode === 413){
@@ -74,4 +83,16 @@ function addGame_statusCodeOutput(statusCode){
     }else{
         newAlert_danger("unknown error");
     }
+}
+
+//utils functions
+function spinnerStatus(hide = true){
+    if (hide){
+        spinner.style.display = "none";
+    }else{
+        spinner.style.display = "block";
+    }
+}
+function disableAddButton (bool){
+    addButton.disabled = bool;
 }

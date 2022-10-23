@@ -3,16 +3,52 @@ const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
 const spinner = document.getElementById("spinner");
 
-getAllgames();
+
+
+const limit = 20;
+let currentLogDoc = 0;
+let totalLogsDocs = 0;
+let canLoad = true;
+
+//detect when the user reached the bottom of the page
+window.onscroll = function(ev) {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        if (canLoad){
+            if (currentLogDoc < totalLogsDocs){
+                currentLogDoc += limit;
+                getAllgames(titleInput.value,currentLogDoc);
+            }
+        }
+    }
+};
+//events
+titleInput.addEventListener("keypress",(ev)=>{
+    if (ev.key === "Enter"){
+        searchButton.click();
+    }
+})
+searchButton.addEventListener("click",(ev)=>{
+    itemContainer.innerHTML = "";
+    currentLogDoc = 0;
+    getAllgames(titleInput.value,currentLogDoc);
+})
+searchButton.click();
+
+
+
 //main function
-async function getAllgames(title = ""){
+async function getAllgames(title = "",start){
+    canLoad = false;
+    spinnerStatus(false);
+    disableSearchButton(true);
     try{
         spinnerStatus(false);
         disableSearchButton(true);
-        const request = await fetch(`/api/games/${title}`);
+        const request = await fetch(`/api/games/${title}?start=${start}&limit=${limit}`);
         getGames_statusCodeOutput(request.status);
         const jsonData = await request.json();
-        showGames(jsonData);
+        totalLogsDocs = jsonData.counts;
+        showGames(jsonData.data);
     }catch (err){
         if (! err instanceof SyntaxError){
             newAlert_danger("unknown error");
@@ -20,41 +56,25 @@ async function getAllgames(title = ""){
         }
     }
     disableSearchButton(false);
+    spinnerStatus(true);
+    canLoad =true;
 }
 
 //show games functions
 function getGames_statusCodeOutput(statusCode){
     if (statusCode === 502){
-        spinnerStatus(true);
         itemContainer.innerHTML = "Bad Gateway";
     }else if (statusCode === 429){
         newAlert_danger("Too Many Requests")
     }else if (statusCode === 204){
-        spinnerStatus(true);
         itemContainer.innerHTML = "No Content";
     }
 }
 function showGames(gamesData){
-    spinnerStatus(true);
-    itemContainer.innerHTML = `
-    <thead>
-        <tr>  
-            <th scope="col" colspan="4">Title</th>
-            <th scope="col" colspan="4">Type</th>
-            <th scope="col" colspan="4">Price</th>   
-            <th scope="col" colspan="4">Stock</th>
-            <th scope="col" colspan="1">Update</th>   
-            <th scope="col" colspan="1">Delete</th>   
-            <th scope="col" colspan="1">Sales History</th>   
-                                
-        </tr>
-    </thead>
-    <tbody></tbody>`;
-    let itemContainerTBody = itemContainer.getElementsByTagName("tbody")[0];
     gamesData.forEach(data => {
         let tr = document.createElement("tr");
         adminpanel_renderGame(tr,data);
-        itemContainerTBody.appendChild(tr);
+        itemContainer.appendChild(tr);
     });
 }
 function adminpanel_renderGame(tr,data){
@@ -85,6 +105,8 @@ function adminpanel_renderGame(tr,data){
     </td>
     `;
 }
+
+//utils functions
 function spinnerStatus(hide = true){
     if (hide){
         spinner.style.display = "none";
@@ -92,19 +114,6 @@ function spinnerStatus(hide = true){
         spinner.style.display = "block";
     }
 }
-
-//utils functions
 function disableSearchButton (bool){
     searchButton.disabled = bool;
 }
-
-//events
-titleInput.addEventListener("keypress",(ev)=>{
-    if (ev.key === "Enter"){
-        searchButton.click();
-    }
-})
-searchButton.addEventListener("click",(ev)=>{
-    getAllgames(titleInput.value);
-})
-

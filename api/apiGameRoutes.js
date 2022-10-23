@@ -7,17 +7,31 @@ const accessCookieName = "login";
 
 //public api
 async function api_getAllgames(req,res){
-    let data = await database.getAllgames();
+    /must verify query in a middleware that must be called before this route/
+    let {start,limit} = req.query;
+    start = parseInt(start);
+    limit = parseInt(limit);
+
+    let data = await database.getAllgames(start,limit);
     if (data["error"]){
         res.sendStatus(502)
+    }
+    else if (data.length === 0){
+        res.sendStatus(204);
     }else{
         res.status(200);
         res.json(data);
     }
 }
 async function api_getGameByTitle(req,res){
+    /must verify query in a middleware that must be called before this route/
+    let {start,limit} = req.query;
+    start = parseInt(start);
+    limit = parseInt(limit);
+
     let title = req.params.title;
-    let data = await database.getGamesByTitle(title);
+
+    let data = await database.getGamesByTitle(title,start,limit);
     if (data["error"]){
         res.sendStatus(502)
     }

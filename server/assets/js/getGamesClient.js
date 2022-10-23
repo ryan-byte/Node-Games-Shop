@@ -3,17 +3,47 @@ const itemContainer = document.getElementById("itemContainer");
 const titleInput = document.getElementById("title");
 const spinner = document.getElementById("spinner");
 
+const limit = 8;
+let currentLogDoc = 0;
+let totalLogsDocs = 0;
+let canLoad = true;
 
-getAllgames();
+//detect when the user reached the bottom of the page
+window.onscroll = function(ev) {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        if (canLoad){
+            if (currentLogDoc < totalLogsDocs){
+                currentLogDoc += limit;
+                getAllgames(titleInput.value,currentLogDoc);
+            }
+        }
+    }
+};
+//events
+titleInput.addEventListener("keypress",(ev)=>{
+    if (ev.key === "Enter"){
+        searchButton.click();
+    }
+})
+searchButton.addEventListener("click",(ev)=>{
+    itemContainer.innerHTML = "";
+    currentLogDoc = 0;
+    getAllgames(titleInput.value,currentLogDoc);
+})
+searchButton.click();
+
+
 //main function
-async function getAllgames(title = ""){
+async function getAllgames(title = "",start){
+    canLoad = false;
     spinnerStatus(false);
     disableSearchButton(true);
     try{
-        const request = await fetch(`/api/games/${title}`);
+        const request = await fetch(`/api/games/${title}?start=${start}&limit=${limit}`);
         getGames_statusCodeOutput(request.status);
         const jsonData = await request.json();
-        showGames(jsonData);
+        totalLogsDocs = jsonData.counts;
+        showGames(jsonData.data);
     }catch (err){
         if (! err instanceof SyntaxError){
             newAlert_danger("unknown error");
@@ -22,18 +52,20 @@ async function getAllgames(title = ""){
     }
     disableSearchButton(false);
     spinnerStatus(true);
+    canLoad =true;
 }
 
 //show games functions
 function getGames_statusCodeOutput(statusCode){
     if (statusCode === 502){
-        itemContainer.innerHTML = "Bad Gateway";
+        newAlert_danger("Bad Gateway");
+    }else if (statusCode === 400){
+        newAlert_danger("Bad request");
     }else if (statusCode === 204){
         itemContainer.innerHTML = "No Content";
     }
 }
 function showGames(gamesData){
-    itemContainer.innerHTML = "";
     gamesData.forEach(data => {
         let div = document.createElement("div");
         div.classList.add("gameItem");
@@ -74,13 +106,3 @@ function spinnerStatus(hide = true){
     }
 }
 
-
-//events
-titleInput.addEventListener("keypress",(ev)=>{
-    if (ev.key === "Enter"){
-        searchButton.click();
-    }
-})
-searchButton.addEventListener("click",(ev)=>{
-    getAllgames(titleInput.value);
-})

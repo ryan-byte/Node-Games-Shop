@@ -33,20 +33,23 @@ async function setupIndexes(){
 }
 
 
-const getAllgames = async ()=>{
+const getAllgames = async (start,limit)=>{
     try{
-        let allGames = await gamesCollection.find({}).toArray();
-        return allGames;
+        let allGames = await gamesCollection.find().limit(limit).skip(start).toArray();
+        let counts = await gamesCollection.estimatedDocumentCount()
+        return {counts,data:allGames};
     }catch (err){
         console.error("getting all games error:\n\n" + err);
         return {error:"db error"}
     }
 }
-const getGamesByTitle = async (title)=>{
+const getGamesByTitle = async (title,start,limit)=>{
     try{
         const query = {title:{$regex:`${title}`,$options:"i"}};
-        let getGames = await gamesCollection.find(query).toArray()
-        return getGames;
+        let allGames = await gamesCollection.find(query).limit(limit).skip(start).toArray()
+        let counts = await gamesCollection.countDocuments(query);
+        console.log(counts);
+        return {counts,data:allGames};
     }catch (err){
         console.error("getting all games by title error:\n\n" + err);
         return {error:"db error"}

@@ -15,6 +15,10 @@ main{
     background-repeat: no-repeat;
     background-position: center;
 }
+.cartImage{
+    width: 100%;
+    height:100%;
+}
 .gameItem:hover>.gameImage{
     animation-name: imageHoverAnimation;
     animation-duration: 0.3s;
