@@ -90,8 +90,14 @@ const removeGame = async (id)=>{
         if (output.value === null){
             return {status:404};
         }
+        //remove all the game data from the sales history
+        let gameID = output.value._id.toString();
+        await deleteGameFromSalesHistory(gameID);
+
+
         return {status:200,title:output.value.title,imageName:output.value.imageName};
     }catch(err){
+        console.error("remove game error: "+err);
         return {status:400};
     }
 }
@@ -596,9 +602,19 @@ async function saveProductToSalesHistory(gamesQuantityAndPriceList,buyerID){
             };
             docs.push(gameSales);
         }
-        await SalesProductsCollection.insertMany(docs);
+        if (docs.length !== 0){
+            await SalesProductsCollection.insertMany(docs);
+        }
     }catch(err){
         console.error("save product to Sales history error:\n\n" + err);
+    }
+}
+async function deleteGameFromSalesHistory(gameID){
+    try{
+        const query = {"gameID": gameID};
+        await SalesProductsCollection.deleteMany(query);
+    }catch(err){
+        console.error("remove game error: "+err);
     }
 }
 
