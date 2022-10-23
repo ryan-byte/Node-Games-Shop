@@ -16,8 +16,7 @@ window.onscroll = function(ev) {
         if (canLoad){
             if (currentLogDoc < totalLogsDocs){
                 currentLogDoc += limit;
-                console.log("load more content currentlogdoc: "+currentLogDoc);
-                viewLogs(currentLogDoc);
+                viewLogs(currentLogDoc,username.value,logType.value);
             }
         }
     }
