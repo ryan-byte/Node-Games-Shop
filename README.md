@@ -12,7 +12,7 @@
 <a name="overview"/>
 
 ### Overview:
--This web application is a <b> personnal project </b> that is used to server and order games online, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images), gmail (for sending mails to verify users signup)
+-This web application is a <b> personnal project </b> that is used to serve and order games, built with NodeJS, Express, MongoDB, HTML, CSS, JS, Bootstrap, Firebase storage (for storing images in the cloud), gmail (for sending verification code on signup).
 
 <a name="features"/>
 
@@ -27,7 +27,7 @@
 -Admins can view sales history for games <br>
 -Admins can view all orders <br>
 -Admins can verify or decline orders <br>
--Log admin action <br>
+-Admins can see logs <br>
 -Created games images are stored in the cloud <br>
 
 
