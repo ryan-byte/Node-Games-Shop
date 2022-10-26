@@ -172,16 +172,19 @@ For gmail service you should setup an app password (follow these [steps](#setupg
 
 <a name="openID"/>
 
-- <b>Step 6</b>: Create `gmailOpenID.env` in the app root directory, then add the following:
+- Create `gmailOpenID.env` in the app root directory, then add the following:
 ```
 clientID = <string>
 clientSecret = <string>
 redirectURL = <string>
 ```
-Follow this <a href = "https://support.google.com/cloud/answer/6158849?hl=en"> guide </a> to create an oauth client, make sure to add an authorized redirect URI then copy it in the redirectURL field (redirect URI example `http://localhost:3000/openID/google`, make sure you dont set it to an already existing endpoint, to see all endpoints see the app.js).<br>
+Follow this <a href = "https://support.google.com/cloud/answer/6158849?hl=en"> guide </a> to create an oauth client, make sure to add an authorized redirect URI then copy it in the redirectURL field (redirect URI example `http://localhost:3000/openID/google`, make sure you dont set it to an already existing endpoint, to see all endpoints check app.js).<br>
 After creating an oauth client and setting up the redirectURL get the clientID and clientSecret by visiting this  <a href = https://console.cloud.google.com/apis/credentials> page</a>, selecting the created client oauth, you should see the clientID with the secret on the top right of the page.
 
 
+<br>
+<br>
+<br>
 
 <a name = "setupgmailapp"/>
 
