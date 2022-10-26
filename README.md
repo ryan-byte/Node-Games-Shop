@@ -7,7 +7,6 @@
 [Setup gmail app password](#setupgmailapp) <br>
 [Run Project](#run) <br>
 [Create Admin](#createAdmin) <br>
-[Roadmap](#roadmap) <br>
 
 
 <a name="overview"/>
@@ -31,15 +30,54 @@
 -Log admin action <br>
 -Created games images are stored in the cloud <br>
 
+
+<h1> view live: <a href="https://game-shop.onrender.com/"> game-shop </a></h1>
+<h3> admin credentials: <br></h3>
+<code> 
+    username:admin
+</code>
+ <br>
+<code>
+    password:admin
+</code>
+ <br>
+<h3> (note: you should wait 30sec for the first request) </h3>
+
+<h1> setup locally </h1>
+
 <a name="setup"/>
 
-### Setup:
-- Install nodejs from https://nodejs.org/en/download/
-- <b>Step 1</b>: Open the terminal or cmd at the project directory then run:
+<br>
+
+🛑By default the server uses firebase storage for storing images in the cloud (free no credit card required). if you'd like to use local storage instead of a cloud storage you can use the <b> main-v1.0-(local-storage) </b>branch <b> (Note: main-v1.0-(local-storage) branch will no longer be updated) </b> <br>
+
+🟠If you want to use a different cloud storage you should modify the script `server/utils/firebaseStorage.js` <br>
+
+
+#### Steps
+1. clone the repo
+2. install nodejs from https://nodejs.org/en/download/
+3. Install [Dependecies](#dependecies) <br>
+4. Add [config.env file](#configFile) <br>
+5. Setup [cloud storage account](#cloudStorageSetup) (used for storing images in the cloud) <br>
+6. Add [cloud storage configuration](#cloudStorageConfiguration) <br>
+7. Add [email auth](#emailAuth) (used for sending verification code to users email) <br>
+8. Setup  [gmail openID](#openID) (used so that users can signup/signin with gmail) <br>
+
+<br>
+
+<a name="dependecies"/>
+
+- Open the terminal or cmd at the project directory then run:
 ```
 npm i
 ```
-- <b>Step 2</b>: Add `config.env` file to the project folder, then add the following:
+
+<br>
+
+<a name="configFile"/>
+
+- Add `config.env` file to the project folder, then add the following:
 ```
 PORT = <integer>
 jwtSecretKey = <string>
@@ -50,6 +88,7 @@ maxImgUploadSize = <integer>
 unverifiedUserDataExpirationTimeInSec = <integer>
 logsExpirationTimeInSec = <interger>
 ```
+
 #### config.env variables
 ###### PORT (OPTIONAL)
 Port used by the server (default value 3000)
@@ -70,9 +109,14 @@ Max size of the image file for a game (default 5000000 in bytes = 5mb)
 Time for the unverified user to be deleted from the database, also used as an expiration time for verification cookie (default 1800 = 30 min)
 ###### logsExpirationTimeInSec (OPTIONAL)
 Time for the logs to be deleted from the database (default 2592000 = 30 Days)
+<br>
+<br>
+<br>
 
 
-- <b>Step 3</b>: Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br>
+<a name="cloudStorageSetup"/>
+
+- Create a firebase account > create a firebase project > create a firebase web app > copy the firebaseConfig variable content it looks like this <br>
 
 ```
 const firebaseConfig = {
@@ -86,7 +130,14 @@ const firebaseConfig = {
 };
 ```
 
-- <b>Step 4</b>: Create `firebaseConfig.env` in the app root directory, then add the following:
+<br>
+<br>
+<br>
+
+
+<a name="cloudStorageConfiguration"/>
+
+- Create `firebaseConfig.env` in the app root directory, then add the following:
 ```
 apiKey = <replace it with the right value>
 authDomain = <replace it with the right value>
@@ -99,12 +150,13 @@ measurementId = <replace it with the right value>
 Then replace each variable with the right value from `const firebaseConfig` that we copied in the previous step
 
 <br>
-🛑By default the server uses firebase storage for storing images in the cloud (free no credit card required). if you'd like to use local storage instead of a cloud storage you can use the <b> main-v1.0-(local-storage) </b>branch <b> (Note: main-v1.0-(local-storage) branch will no longer be updated) </b> <br>
+<br>
+<br>
 
-🟠If you want to use a different cloud storage you should modify the script `server/utils/firebaseStorage.js` <br>
 
+<a name="emailAuth"/>
 
-- <b>Step 5</b>: Create `emailAuth.env` in the app root directory, then add the following:
+- Create `emailAuth.env` in the app root directory, then add the following:
 ```
 service = <string>
 mail = <string>
@@ -117,6 +169,11 @@ The Address mail used for sending the validation code for validating user signup
 ###### appPassword (REQUIRED)
 For gmail service you should setup an app password (follow these [steps](#setupgmailapp))
 
+<br>
+<br>
+<br>
+
+<a name="openID"/>
 
 - <b>Step 6</b>: Create `gmailOpenID.env` in the app root directory, then add the following:
 ```
@@ -156,55 +213,6 @@ node createAdmin.js
 - Input the username 
 - Input the password 
 - Input the confirm password
-
-
-<a name="roadmap"/>
-
-### Roadmap:
-#### Foundation
-
-- [x] public get api for games
-- [x] limit the get api requests to 60 per min (use bucket token algorithm) note: make sure to store bucket token in Redis in production
-- [x] save games in mongodb
-- [x] admin register script that cannot be accessed which will create an admin user (must use password hashing)
-- [x] create games post/update/delete api (can only be accessed by admins)
-- [x] create admin login page
-- [x] add admin authorization token to the games post/update/delete api (secure cookies)
-- [x] admin panel frontend (search games/ update game/ delete game/ add new game)
-- [x] admin panel logout
-- [x] admin login verification
-- [x] log admin actions
-- [x] secure the backend code for admin login
-- [x] use dotenv code to seperate secret informations from the source code
-- [x] rendering games (frontend)
-- [x] make the admin panel simpler for development
-- [x] orders cart (client)
-- [x] order (client) 
-- [x] verify order (backend)
-- [x] admin verification of the order (admin panel) 
-- [x] update the README file
-
-
-#### Features
-- [x] make it responsive
-- [x] can add quantity in the cart
-- [ ] blacklist ip if the admin password is wrong for few times
-- [ ] make the game type selectable + verification
-- [x] user register
-- [x] user register verification by sending email
-- [x] login/register with google openID
-- [x] login page for users/admin
-- [x] users can track their orders
-- [ ] limit the number of games loaded and more will be loaded when scrolling down
-
-
-#### Production
-- [ ] polish the frontend
-- [ ] clean the backend code
-- [ ] secure the backend code
-- [ ] change the api request limiter to work in redis cache instead of memory
-- [ ] after adding SSL certificate for encrypted connection make sure to set every cookie flag to secure
-- [x] store the images in a cloud storage
 
 #### Notes:
 
