@@ -32,6 +32,12 @@
 
 
 <h1> view live: <a href="https://game-shop.onrender.com/"> game-shop </a></h1>
+<code>
+   username:admin
+</code><br>
+<code>
+  password:admin
+</code><br>
 <h3> (note: you should wait 30sec for the first request) </h3>
 
 <h1> setup locally </h1>
